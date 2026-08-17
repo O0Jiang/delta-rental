@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>三角洲账号出租 · 可选账号</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: #0f1419; color: #e6e6e6; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 20px 16px 90px; }
+  header { text-align: center; padding: 26px 0 16px; }
+  header h1 { font-size: 23px; color: #ffd24a; letter-spacing: 1px; }
+  header p { font-size: 13px; color: #8a94a6; margin-top: 6px; }
+  .filters { display: flex; flex-wrap: wrap; gap: 10px; background: #1a212b; padding: 14px; border-radius: 12px; margin: 16px 0; }
+  .filters select, .filters input { background: #0f1419; color: #e6e6e6; border: 1px solid #2d3744; border-radius: 8px; padding: 9px 10px; font-size: 13px; flex: 1; min-width: 110px; }
+  .filters button { background: #ffd24a; color: #0f1419; border: none; border-radius: 8px; padding: 9px 16px; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 560px){ .grid { grid-template-columns: 1fr; } }
+  .card { background: #1a212b; border: 1px solid #2d3744; border-radius: 12px; overflow: hidden; display: flex; flex-direction: row; }
+  .card .left { width: 88px; flex-shrink: 0; background: #121820; border-right: 1px solid #2d3744; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 14px 4px; gap: 18px; }
+  .coin-box { display: flex; flex-direction: column; align-items: center; width: 100%; }
+  .coin-label { font-size: 11px; color: #8a94a6; line-height: 1; }
+  .coin-val { font-size: 24px; font-weight: 800; color: #ffd24a; margin-top: 8px; line-height: 1; white-space: nowrap; }
+  .coin-unit { font-size: 12px; font-weight: 700; margin-left: 1px; }
+  .ins-box { width: 100%; border: 1px solid #5e4a18; background: #2d220b; color: #ffd24a; border-radius: 8px; padding: 8px 4px; font-size: 14px; font-weight: 800; }
+  .ins-label { font-size: 10px; color: #c4a33a; font-weight: 400; }
+  .ratio-box { width: 100%; border: 1px solid #1f4a5a; background: #0c2630; color: #6fd3e8; border-radius: 8px; padding: 5px 4px; font-size: 14px; font-weight: 800; }
+  .ratio-label { font-size: 10px; color: #4a9fb5; font-weight: 400; }
+  .card .right { flex: 1; padding: 12px 13px; display: flex; flex-direction: column; gap: 7px; }
+  .card .top { display: flex; justify-content: space-between; align-items: center; }
+  .card .rank { font-size: 15px; font-weight: 700; color: #fff; }
+  .badge { font-size: 11px; padding: 3px 9px; border-radius: 20px; white-space: nowrap; }
+  .ok { background: #16351f; color: #5fd97a; }
+  .busy { background: #3a2a12; color: #ffb24a; }
+  .maint { background: #2d2d2d; color: #aaa; }
+  .row-kpi { display: flex; gap: 6px; }
+  .kpi { flex: 1; background: #0f1419; border: 1px solid #2d3744; border-radius: 9px; padding: 7px 2px; text-align: center; }
+  .k-label { font-size: 10px; color: #8a94a6; }
+  .k-val { font-size: 14px; font-weight: 800; color: #ffd24a; margin-top: 2px; }
+  .row-stats { font-size: 12px; color: #b8c0cc; background: #0f1419; border: 1px solid #2d3744; border-radius: 8px; padding: 7px 9px; }
+  .row-info { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .row-info span { font-size: 11.5px; background: #0f1419; border: 1px solid #2d3744; color: #b8c0cc; padding: 3px 8px; border-radius: 6px; }
+  .rank-tag { background: #2a2410 !important; border-color: #5e4a18 !important; color: #ffd24a !important; font-weight: 700; font-size: 12.5px; padding: 4px 10px; border-radius: 6px; }
+  .level-tag { background: #0c2630 !important; border: 1px solid #1f4a5a !important; color: #6fd3e8 !important; font-weight: 700; font-size: 12.5px; padding: 4px 10px; border-radius: 6px; }
+  .zone-q { background: #3a1416 !important; color: #ff6b6b !important; border-color: #7a2a2e !important; }
+  .zone-v { background: #0f2e1a !important; color: #5fd97a !important; border-color: #1f5a35 !important; }
+  .row-note { font-size: 11.5px; color: #8a94a6; line-height: 1.45; }
+  .contact { position: fixed; bottom: 0; left: 0; right: 0; background: #ffd24a; color: #0f1419; text-align: center; padding: 14px; font-weight: 700; font-size: 15px; cursor: pointer; z-index: 5; }
+  .empty { text-align: center; color: #8a94a6; padding: 40px 0; font-size: 14px; grid-column: 1 / -1; }
+  .loading { text-align: center; color: #8a94a6; padding: 40px 0; font-size: 14px; grid-column: 1 / -1; }
+
+  .mask { position: fixed; inset: 0; background: rgba(0,0,0,.6); display: none; align-items: center; justify-content: center; z-index: 10; padding: 16px; }
+  .mask.show { display: flex; }
+  .modal { background: #1a212b; border: 1px solid #2d3744; border-radius: 14px; padding: 20px; width: 100%; max-width: 380px; }
+  .modal h3 { color: #ffd24a; font-size: 17px; margin-bottom: 14px; text-align: center; }
+  .modal img { width: 100%; border-radius: 10px; margin: 10px 0; }
+  .modal .cancel { width: 100%; padding: 11px; border-radius: 8px; border: none; font-size: 14px; background: #2d3744; color: #e6e6e6; cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>三角洲账号出租</h1>
+    <p>以下账号可供租赁 · 看中请长按二维码加微信对接 · 号主自助上架、实时同步</p>
+  </header>
+
+  <div class="filters">
+    <select id="fRank"><option value="">全部段位</option><option value="青铜">青铜</option><option value="白银">白银</option><option value="黄金">黄金</option><option value="铂金">铂金</option><option value="钻石">钻石</option><option value="黑鹰">黑鹰</option><option value="三角洲巅峰">三角洲巅峰</option></select>
+    <select id="fStatus"><option value="可租" selected>可租</option><option value="已租">已租</option></select>
+    <input id="fMax" type="number" placeholder="最高租金">
+    <button onclick="apply()">筛选</button>
+  </div>
+
+  <div class="grid" id="list"><div class="loading">加载中…</div></div>
+</div>
+
+<div class="contact" id="contactBtn" onclick="openQr()">看中账号？点此加微信对接</div>
+
+<div class="mask" id="qrMask">
+  <div class="modal" style="text-align:center;">
+    <h3>长按二维码识别，加微信对接</h3>
+    <img src="wechat-qr.jpg" alt="微信二维码" style="width:100%;border-radius:10px;margin:10px 0;">
+    <button type="button" class="cancel" onclick="closeQr()" style="width:100%;">关闭</button>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script>
+let DATA = [];
+
+function statusClass(s){ return s === "可租" ? "ok" : s === "已租" ? "busy" : "maint"; }
+
+function coinParts(c){
+  if(!c) return { num: "—", unit: "" };
+  const m = String(c).match(/([\d.]+)\s*(M)?/i);
+  if(m) return { num: m[1], unit: m[2] ? "M" : "" };
+  return { num: String(c).replace(/纯币/g,"").trim() || "—", unit: "" };
+}
+
+function render(list){
+  const el = document.getElementById("list");
+  if(!list.length){ el.innerHTML = '<div class="empty">暂无符合条件账号，调低筛选试试</div>'; return; }
+  el.innerHTML = list.map(d=>{
+    const seq = "#" + (d._seq || "");
+    const cp = coinParts(d.coin);
+    const ti = d.ti ? `体力 ${d.ti}` : "";
+    const fu = d.fu ? `负重 ${d.fu}` : "";
+    const tf = (ti + (ti && fu ? " · " : "") + fu) || "—";
+    return `
+    <div class="card">
+      <div class="left">
+        <div class="coin-box">
+          <div class="coin-label">纯币</div>
+          <div class="coin-val">${cp.num}<span class="coin-unit">${cp.unit}</span></div>
+        </div>
+        <div class="ins-box">
+          <div class="ins-label">保险</div>
+          <div>${d.insurance || "—"}</div>
+        </div>
+        <div class="ratio-box">
+          <div class="ratio-label">比例</div>
+          <div>${d.ratio || "—"}</div>
+        </div>
+      </div>
+      <div class="right">
+        <div class="top"><span class="rank">${seq}</span><span class="badge ${statusClass(d.status)}">${d.status}</span></div>
+        <div class="row-kpi">
+          <div class="kpi"><div class="k-label">价格</div><div class="k-val">￥${d.price}</div></div>
+          <div class="kpi"><div class="k-label">押金</div><div class="k-val">${d.deposit ? ("￥"+d.deposit) : "—"}</div></div>
+        </div>
+        <div class="row-stats">${tf}</div>
+        <div class="row-info">
+          ${d.rank && d.rank !== "未标注" ? `<span class="rank-tag">段位 ${d.rank}</span>` : ""}
+          ${d.level?`<span class="level-tag">${d.level}</span>`:""}
+          ${d.zone?`<span class="${d.zone==='Q区'?'zone-q':d.zone==='V区'?'zone-v':''}">${d.zone}</span>`:""}
+        </div>
+        ${d.note?`<div class="row-note">${String(d.note).replace(/\n/g,"<br>")}</div>`:""}
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function apply(){
+  const r = document.getElementById("fRank").value;
+  const s = document.getElementById("fStatus").value;
+  const m = parseFloat(document.getElementById("fMax").value) || 99999;
+  render(DATA.filter(d => {
+    if(r && !(d.rank||"").includes(r)) return false;
+    if(s === "已租") { if(d.status !== "已租") return false; }
+    else { if(d.status === "已租") return false; }
+    if((d.price||0) > m) return false;
+    return true;
+  }));
+}
+
+// 优先读本地 accounts.json（本地预览），否则读 GitHub raw（线上）
+async function refresh(){
+  try {
+    const r = await fetch("accounts.json");
+    if(r.ok){ DATA = await r.json(); DATA.forEach((d,i)=> d._seq = i+1); apply(); return; }
+  } catch(e){}
+  try {
+    const r = await fetch(RAW_URL + "?t=" + Date.now());
+    if(r.ok){ DATA = await r.json(); DATA.forEach((d,i)=> d._seq = i+1); apply(); return; }
+  } catch(e){}
+  DATA = []; apply();
+}
+
+function openQr(){ document.getElementById("qrMask").classList.add("show"); }
+function closeQr(){ document.getElementById("qrMask").classList.remove("show"); }
+document.getElementById("qrMask").addEventListener("click", e=>{ if(e.target.id==="qrMask") closeQr(); });
+
+refresh();
+setInterval(refresh, 30000); // 每30秒轮询，号主提交后自动出现
+</script>
+</body>
+</html>

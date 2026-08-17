@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>号主登记 · 三角洲账号出租</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif; background:#0f1419; color:#e6e6e6; }
+  .wrap { max-width:520px; margin:0 auto; padding:24px 16px 60px; }
+  h1 { font-size:20px; color:#ffd24a; text-align:center; margin-bottom:4px; }
+  .sub { font-size:12px; color:#8a94a6; text-align:center; margin-bottom:18px; }
+  label { display:block; font-size:12px; color:#b8c0cc; margin:12px 0 4px; }
+  input,select,textarea { width:100%; background:#0f1419; color:#e6e6e6; border:1px solid #2d3744; border-radius:8px; padding:10px; font-size:14px; }
+  textarea { resize:vertical; min-height:60px; }
+  .row { display:flex; gap:10px; }
+  .row > div { flex:1; }
+  .required { color:#ff6b6b; }
+  button { width:100%; margin-top:20px; background:#ffd24a; color:#0f1419; border:none; border-radius:10px; padding:13px; font-size:15px; font-weight:700; cursor:pointer; }
+  .hint { font-size:11px; color:#8a94a6; margin-top:12px; line-height:1.6; background:#1a212b; border:1px solid #2d3744; border-radius:8px; padding:10px; }
+  .ok-msg { display:none; background:#16351f; color:#5fd97a; border:1px solid #1f5a35; border-radius:8px; padding:12px; margin-top:14px; font-size:13px; text-align:center; }
+  .err-msg { display:none; background:#3a1416; color:#ff6b6b; border:1px solid #7a2a2e; border-radius:8px; padding:12px; margin-top:14px; font-size:13px; text-align:center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>号主出租登记</h1>
+  <div class="sub">填写后直接上架到出租网页，租号人立即可见</div>
+  <form id="regForm">
+    <label>段位 <span class="required">*</span></label>
+    <select name="rank" required>
+      <option value="">请选择</option>
+      <option>青铜</option><option>白银</option><option>黄金</option><option>铂金</option>
+      <option>钻石</option><option>黑鹰</option><option>三角洲巅峰</option>
+    </select>
+    <div class="row">
+      <div>
+        <label>等级（选填）</label>
+        <input name="level" type="number" placeholder="如 60，即60级">
+      </div>
+      <div>
+        <label>区服 <span class="required">*</span></label>
+        <select name="zone" required>
+          <option value="">请选择</option>
+          <option>Q区</option><option>V区</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label>租金/天(元) <span class="required">*</span></label>
+        <input name="price" type="number" required placeholder="30">
+      </div>
+      <div>
+        <label>押金(元,选填)</label>
+        <input name="deposit" type="number" placeholder="200">
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label>纯币 <span class="required">*</span></label>
+        <input name="coin" required placeholder="如 50M">
+      </div>
+      <div>
+        <label>保险(选填)</label>
+        <input name="insurance" placeholder="如 9">
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label>比例(选填)</label>
+        <input name="ratio" placeholder="如 1:29">
+      </div>
+      <div>
+        <label>体力/负重(选填)</label>
+        <input name="tifu" placeholder="如 7体6负">
+      </div>
+    </div>
+    <label>装备亮点 / 卖点 <span class="required">*</span></label>
+    <textarea name="gear" required placeholder="满改M4、稀有皮肤等"></textarea>
+    <label>备注（选填）</label>
+    <textarea name="note" placeholder="租期要求等"></textarea>
+    <label>你的微信号（选填，方便中介对接）</label>
+    <input name="wechat" placeholder="仅中介可见，不公开">
+    <button type="submit">提交并上架</button>
+    <div class="ok-msg" id="okMsg"></div>
+    <div class="err-msg" id="errMsg"></div>
+    <div class="hint">
+      数据安全提示：请勿在表单填写账号密码，成交时由中介私下对接。<br>
+      提交即通过 GitHub 直接写入数据文件并上架。
+    </div>
+  </form>
+</div>
+<script src="config.js"></script>
+<script>
+function b64(str){ return btoa(unescape(encodeURIComponent(str))); }
+function unb64(b){ return decodeURIComponent(escape(atob(b))); }
+
+document.getElementById("regForm").addEventListener("submit", async (e)=>{
+  e.preventDefault();
+  const ok=document.getElementById("okMsg"), err=document.getElementById("errMsg");
+  ok.style.display="none"; err.style.display="none";
+  const fd = new FormData(e.target);
+  const g = Object.fromEntries(fd.entries());
+  const tifu = (g.tifu||"").trim();
+  let ti="", fu="";
+  const m = tifu.match(/(\d+)\s*体/); if(m) ti=m[1];
+  const m2 = tifu.match(/(\d+)\s*负/); if(m2) fu=m2[1];
+  const rec = {
+    id: "U" + Date.now(),
+    rank: g.rank,
+    level: g.level ? (g.level + "级") : "",
+    zone: g.zone,
+    price: Number(g.price),
+    deposit: g.deposit ? Number(g.deposit) : "",
+    coin: g.coin,
+    insurance: g.insurance || "",
+    ratio: g.ratio || "",
+    ti: ti,
+    fu: fu,
+    status: "可租",
+    wechat: g.wechat || "",
+    note: [g.gear, g.note].filter(Boolean).join("\n")
+  };
+  try {
+    const headers = { Authorization:`Bearer ${GH_TOKEN}`, Accept:"application/vnd.github+json" };
+    const getResp = await fetch(API_URL, { headers });
+    let list=[], sha=null;
+    if(getResp.ok){ const j=await getResp.json(); list=JSON.parse(unb64(j.content)); sha=j.sha; }
+    else if(getResp.status!==404){ throw new Error("读取数据失败："+getResp.status); }
+    list.push(rec);
+    const body = { message:"add account via form", content: b64(JSON.stringify(list,null,2)), branch: GH_BRANCH };
+    if(sha) body.sha = sha;
+    const putResp = await fetch(API_URL, { method:"PUT", headers:{...headers,"Content-Type":"application/json"}, body: JSON.stringify(body) });
+    if(!putResp.ok){ const e2=await putResp.json().catch(()=>({})); throw new Error("提交失败："+putResp.status+" "+(e2.message||"")); }
+    ok.textContent="登记成功！账号已上架，租号人网页几秒后即可看到。";
+    ok.style.display="block";
+    e.target.reset();
+  } catch(ex){
+    err.textContent="提交出错："+ex.message+"（请确认 config.js 中仓库名与 PAT 已正确填写，且 PAT 有该仓库写权限）";
+    err.style.display="block";
+    console.error(ex);
+  }
+});
+</script>
+</body>
+</html>
