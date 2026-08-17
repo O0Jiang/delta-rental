@@ -214,6 +214,24 @@
 let DATA = [];
 let ANN = { title:"租号必看", bars:[] };
 
+// 利润/加价率：号主底价(d.price) + 全局加价率 = 租客上架价，差价为平台利润
+let MARKUP = 0.1;  // 默认 10%，由 profit.json 控制，管理后台可改
+function listedPrice(base){ const m = Number(base)||0; return Math.round(m * (1 + MARKUP)); }
+function profitOf(base){ return listedPrice(base) - (Number(base)||0); }
+
+const PROFIT_API = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/profit.json`;
+const PROFIT_RAW = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/profit.json`;
+async function loadProfit(){
+  try {
+    const r = await fetch(PROFIT_API + "?t=" + Date.now(), { headers:{ Authorization:`Bearer ${GH_TOKEN}`, Accept:"application/vnd.github+json" } });
+    if(r.ok){ const j = await r.json(); const o = JSON.parse(unb64(j.content)); if(typeof o.markup === "number") MARKUP = o.markup; apply(); return; }
+  } catch(e){}
+  try {
+    const r = await fetch(PROFIT_RAW + "?t=" + Date.now());
+    if(r.ok){ const o = await r.json(); if(typeof o.markup === "number") MARKUP = o.markup; apply(); return; }
+  } catch(e){}
+}
+
 function statusClass(s){ return s === "可租" ? "ok" : s === "已租" ? "busy" : "maint"; }
 function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, c=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
 
@@ -252,7 +270,7 @@ function render(list){
       <div class="right">
         <div class="top"><span class="rank">编号 ${seq}</span><span class="badge ${statusClass(d.status)}">${d.status}</span></div>
         <div class="row-kpi">
-          <div class="kpi"><div class="k-label">价格</div><div class="k-val">￥${d.price}</div></div>
+          <div class="kpi"><div class="k-label">租金</div><div class="k-val">￥${listedPrice(d.price)}</div></div>
           <div class="kpi"><div class="k-label">押金</div><div class="k-val">${d.deposit ? ("￥"+d.deposit) : "—"}</div></div>
         </div>
         <div class="row-stats">${tf}</div>
@@ -277,7 +295,7 @@ function apply(){
   const sortBy = document.getElementById("fSort").value;
   let list = DATA.filter(d => {
     if(d.status === "已租") return false; // 默认只展示可租账号
-    if((d.price||0) > m) return false;
+    if(listedPrice(d.price) > m) return false;
     return true;
   });
   // 排序（默认保持数据原顺序，即管理员在后台调过的顺序）
@@ -411,8 +429,10 @@ function updatePricePreview(){
   const c = parseFloat(document.querySelector('input[name=coin]').value);
   const r = parseInt(document.querySelector('input[name=ratio]').value, 10);
   if(c > 0 && r > 0){
-    const price = Math.round(c * 100 / r);
-    p.textContent = `💰 预计租金：￥${price}（纯币 ${c}M ÷ 比例 1:${r}）`;
+    const base = Math.round(c * 100 / r);
+    const listed = Math.round(base * (1 + MARKUP));
+    const profit = listed - base;
+    p.innerHTML = `💰 号主底价 ￥${base} ｜ 上架价 ￥${listed}（含 ${(MARKUP*100)}% 加价，你的利润 ￥${profit}）`;
     p.classList.add("active");
   } else {
     p.textContent = "💰 预计租金：填好「纯币」和「比例」后自动算出";
@@ -424,6 +444,7 @@ document.querySelector('input[name=ratio]').addEventListener("input", updatePric
 
 refresh();
 loadAnn();
+loadProfit();
 setInterval(refresh, 30000); // 每30秒轮询，号主提交后自动出现
 </script>
 </body>
