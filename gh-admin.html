@@ -21,6 +21,16 @@
   .stat .v { font-size:21px; font-weight:800; color:#ffd24a; margin-top:3px; }
   .stat.g .v { color:#5fd97a; } .stat.o .v { color:#ffb24a; }
 
+  /* 利润汇总 */
+  .profit-box { background:#1a212b; border:1px solid #5e4a18; border-radius:11px; padding:12px 14px; margin:12px 0; }
+  .pb-head { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px; }
+  .pb-title { font-size:15px; font-weight:800; color:#ffd24a; }
+  .pb-mu { font-size:12px; color:#b8c0cc; display:flex; align-items:center; gap:6px; }
+  .pb-mu input { width:64px; background:#0f1419; color:#e6e6e6; border:1px solid #2d3744; border-radius:7px; padding:7px 8px; font-size:13px; }
+  .pb-stats { display:flex; gap:10px; flex-wrap:wrap; }
+  .pb-stats .stat { flex:1; min-width:100px; }
+  .t-profit { background:#2d220b; border-color:#5e4a18; color:#ffd24a; font-weight:800; }
+
   /* 工具栏 */
   .bar { display:flex; gap:9px; background:#1a212b; padding:12px; border-radius:11px; flex-wrap:wrap; align-items:center; }
   .bar input, .bar select { background:#0f1419; color:#e6e6e6; border:1px solid #2d3744; border-radius:8px; padding:9px 10px; font-size:13px; min-width:110px; }
@@ -132,6 +142,18 @@
     <div class="stat g"><div class="l">可租</div><div class="v" id="sOk">—</div></div>
     <div class="stat o"><div class="l">已租</div><div class="v" id="sBusy">—</div></div>
     <div class="stat"><div class="l">其他/维护</div><div class="v" id="sOther">—</div></div>
+  </div>
+
+  <div class="profit-box" id="profitBox">
+    <div class="pb-head">
+      <span class="pb-title">💰 利润汇总（按加价率自动算）</span>
+      <span class="pb-mu">加价率 <input id="muInput" type="number" step="0.5" min="0" placeholder="10"> % <button class="btn btn-y" id="muSave" onclick="saveMarkup()">保存</button></span>
+    </div>
+    <div class="pb-stats">
+      <div class="stat"><div class="l">总底价</div><div class="v" id="pBase">—</div></div>
+      <div class="stat g"><div class="l">总营收(上架价)</div><div class="v" id="pListed">—</div></div>
+      <div class="stat o"><div class="l">总利润</div><div class="v" id="pProfit">—</div></div>
+    </div>
   </div>
 
   <div class="bar">
@@ -293,6 +315,7 @@ async function reload(showMsg){
   try {
     document.getElementById("list").innerHTML = '<div class="loading">加载中…</div>';
     DATA = await load();
+    await loadProfit();
     SEL.clear();
     renderList();
     if(showMsg) toast("已刷新，当前 " + DATA.length + " 条");
@@ -376,6 +399,60 @@ function renderStats(){
   document.getElementById("sOther").textContent = t - ok - bs;
 }
 
+/* ================= 利润汇总（加价率） ================= */
+let MARKUP = 0.1;
+function listedPrice(base){ const m = Number(base)||0; return Math.round(m * (1 + MARKUP)); }
+function profitOf(base){ return listedPrice(base) - (Number(base)||0); }
+
+async function loadProfit(){
+  try {
+    const r = await fetch(PROFIT_API + "?t=" + Date.now(), { headers: HEAD() });
+    if(r.ok){ const j = await r.json(); const o = JSON.parse(unb64(j.content)); if(typeof o.markup === "number") MARKUP = o.markup; return; }
+  } catch(e){}
+  try {
+    const r = await fetch(PROFIT_RAW + "?t=" + Date.now());
+    if(r.ok){ const o = await r.json(); if(typeof o.markup === "number") MARKUP = o.markup; return; }
+  } catch(e){}
+}
+
+function renderProfit(){
+  let base = 0, listed = 0;
+  DATA.forEach(d=>{ base += Number(d.price)||0; listed += listedPrice(d.price); });
+  const profit = listed - base;
+  document.getElementById("pBase").textContent = "￥" + Math.round(base);
+  document.getElementById("pListed").textContent = "￥" + Math.round(listed);
+  document.getElementById("pProfit").textContent = "￥" + Math.round(profit);
+  const mi = document.getElementById("muInput");
+  if(mi && document.activeElement !== mi) mi.value = Math.round(MARKUP * 1000) / 10;
+}
+
+async function saveMarkup(){
+  const v = parseFloat(document.getElementById("muInput").value);
+  if(isNaN(v) || v < 0){ toast("请输入有效加价率", true); return; }
+  const markup = v / 100;
+  const btn = document.getElementById("muSave");
+  btn.disabled = true; btn.textContent = "保存中…";
+  try {
+    const r0 = await fetch(PROFIT_API + "?t=" + Date.now(), { headers: HEAD() });
+    let sha = null;
+    if(r0.ok){ const j0 = await r0.json(); sha = j0.sha; }
+    else if(r0.status !== 404){ throw new Error("读取失败 " + r0.status); }
+    const content = JSON.stringify({ markup }, null, 2);
+    const body = { message:"更新加价率", content: b64(content), branch: GH_BRANCH };
+    if(sha) body.sha = sha;
+    const resp = await fetch(PROFIT_API, { method:"PUT", headers:{ ...HEAD(), "Content-Type":"application/json" }, body: JSON.stringify(body) });
+    if(!resp.ok){ const ej = await resp.json().catch(()=>({})); throw new Error(resp.status + " " + (ej.message||"")); }
+    MARKUP = markup;
+    btn.disabled = false; btn.textContent = "保存";
+    renderList();
+    toast("加价率已更新为 " + v + "%");
+  } catch(e){
+    btn.disabled = false; btn.textContent = "保存";
+    toast("保存失败：" + e.message, true);
+    console.error(e);
+  }
+}
+
 function renderList(){
   renderStats();
   const rows = visibleList();
@@ -394,7 +471,8 @@ function renderList(){
         <div class="l1">
           <span class="seq" title="账号编号">#${noOf(d, seq-1)}</span>
           <span class="badge ${statusClass(d.status)}">${esc(d.status||"—")}</span>
-          <span class="tag t-price">￥${esc(d.price)}</span>
+          <span class="tag t-price" title="号主底价">底价 ￥${esc(d.price)}</span>
+          <span class="tag t-profit" title="加价后的利润">利润 ￥${profitOf(d.price)}</span>
           ${d.deposit?`<span class="tag">押金 ${esc(d.deposit)}</span>`:""}
           ${(d.rank||"").trim()?`<span class="tag t-rank">${esc(d.rank)}</span>`:`<span class="tag">未标段位</span>`}
           ${d.level?`<span class="tag t-lv">${esc(d.level)}</span>`:""}
@@ -419,6 +497,7 @@ function renderList(){
     </div>`;
   }).join("");
   updateBulk();
+  renderProfit();
 }
 
 /* ================= 选择 / 批量 ================= */
