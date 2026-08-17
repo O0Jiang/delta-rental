@@ -22,5 +22,28 @@
     "eff": 3,
     "fun": 1,
     "reliable": 5
+  },
+  {
+    "id": "U1786977463895",
+    "no": 2,
+    "type": "陪玩",
+    "name": "佚名2",
+    "avatar": "",
+    "games": "三角洲行动/王者荣耀/蛋仔派对",
+    "status": "可接",
+    "platform": "",
+    "mic": "",
+    "online": "",
+    "price": 90,
+    "unit": "局",
+    "strong": "",
+    "note": "",
+    "tech": 5,
+    "comm": 5,
+    "patience": 5,
+    "eff": 5,
+    "fun": 1,
+    "reliable": 5,
+    "image": ""
   }
 ]
