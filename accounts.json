@@ -736,5 +736,21 @@
     "ratio": "1:32",
     "deposit": "200",
     "no": 41
+  },
+  {
+    "id": "U1786957716139",
+    "rank": "钻石",
+    "level": "60级",
+    "zone": "Q区",
+    "price": 225,
+    "deposit": 200,
+    "coin": "90 M纯币",
+    "insurance": "9",
+    "ratio": "1:40",
+    "ti": "6",
+    "fu": "6",
+    "status": "可租",
+    "note": "无",
+    "no": 42
   }
 ]
