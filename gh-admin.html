@@ -94,6 +94,9 @@
   .modal textarea { resize:vertical; min-height:54px; }
   .frow { display:flex; gap:10px; } .frow > div { flex:1; }
   @media (max-width:520px){ .frow { flex-wrap:wrap; } .frow > div { min-width:calc(50% - 5px); } }
+  .radar-inputs { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:4px; }
+  .radar-inputs > div label { display:block; font-size:11px; color:#b8c0cc; margin:0 0 4px; }
+  .radar-inputs input { width:100%; }
   .modal .foot { display:flex; gap:10px; margin-top:18px; }
   .modal .foot .btn { flex:1; padding:12px; font-size:14px; }
 
@@ -168,7 +171,7 @@
   <div class="tabs">
     <button class="tab active" id="tabPw" onclick="setType('陪玩')">🎮 陪玩</button>
     <button class="tab" id="tabDg" onclick="setType('代肝')">⚔️ 代肝</button>
-    <button class="tab" id="tabAll" onclick="setType('')">全部（含旧租号）</button>
+    <button class="tab" id="tabAll" onclick="setType('')">全部</button>
   </div>
 
   <div class="bulk" id="bulk">
@@ -202,6 +205,12 @@
         </div>
       </div>
       <div class="frow">
+        <div><label>昵称 <span class="req">*</span></label><input name="name" placeholder="如 夜刃"></div>
+        <div><label>头像(图片链接)</label><input name="avatar" placeholder="https://… 留空用昵称首字"></div>
+      </div>
+      <label>擅长的游戏</label>
+      <input name="games" placeholder="如 三角洲行动 / PUBG">
+      <div class="frow">
         <div>
           <label>段位</label>
           <input name="rank" list="rankList" placeholder="如 铂金 / 钻石 II（留空=不标注）">
@@ -227,6 +236,15 @@
       <textarea name="strong" placeholder="擅长干员·枪械·模式 / 代刷内容·代练项目"></textarea>
       <label>备注</label>
       <textarea name="note" placeholder="服务要求等"></textarea>
+      <label>自我特点（六边形雷达，每项 0–100）</label>
+      <div class="radar-inputs">
+        <div><label>技术</label><input name="tech" type="number" min="0" max="100" placeholder="0-100"></div>
+        <div><label>沟通</label><input name="comm" type="number" min="0" max="100" placeholder="0-100"></div>
+        <div><label>耐心</label><input name="patience" type="number" min="0" max="100" placeholder="0-100"></div>
+        <div><label>效率</label><input name="eff" type="number" min="0" max="100" placeholder="0-100"></div>
+        <div><label>娱乐</label><input name="fun" type="number" min="0" max="100" placeholder="0-100"></div>
+        <div><label>靠谱</label><input name="reliable" type="number" min="0" max="100" placeholder="0-100"></div>
+      </div>
       <div class="foot">
         <button class="btn btn-y" id="edSave" onclick="saveEdit()">保存</button>
         <button class="btn btn-d" onclick="closeEdit()">取消</button>
@@ -385,7 +403,7 @@ function visibleList(){
     if(fr === "__none"){ if((d.rank||"").trim()) return false; }
     else if(fr && !(d.rank||"").includes(fr)) return false;
     if(q){
-      const hay = [seq, d.no, d.id, d.type, d.rank, d.platform, d.mic, d.online, d.price, d.unit, d.strong, d.note, d.status]
+      const hay = [seq, d.no, d.id, d.type, d.name, d.games, d.rank, d.platform, d.mic, d.online, d.price, d.unit, d.strong, d.note, d.status, d.tech, d.comm, d.patience, d.eff, d.fun, d.reliable]
                     .map(x=>String(x==null?"":x)).join(" ").toLowerCase();
       if(!hay.includes(q)) return false;
     }
@@ -478,6 +496,7 @@ function renderList(){
       <div class="body">
         <div class="l1">
           <span class="seq" title="编号">#${noOf(d, seq-1)}</span>
+          ${d.name?`<span class="tag t-rank" style="background:#241a3a;border-color:#5e4a8a;color:#c9b3ff">${esc(d.name)}</span>`:""}
           <span class="tag t-type">${esc(typeTxt)}</span>
           <span class="badge ${statusClass(d.status)}">${esc(d.status||"—")}</span>
           <span class="tag t-price" title="接单到底价">底价 ￥${esc(d.price)}</span>
@@ -598,7 +617,7 @@ async function copyOne(id){
 }
 
 /* ================= 新增 / 编辑 ================= */
-const FIELDS = ["type","rank","status","platform","mic","online","price","unit","strong","note"];
+const FIELDS = ["type","name","avatar","games","rank","status","platform","mic","online","price","unit","strong","note","tech","comm","patience","eff","fun","reliable"];
 let EDIT_ID = null;
 
 function openEdit(id){
@@ -635,6 +654,9 @@ async function saveEdit(){
 
   const patch = {
     type: g.type || "陪玩",
+    name: g.name,
+    avatar: g.avatar,
+    games: g.games,
     rank: g.rank,
     status: g.status || "可接",
     platform: g.platform,
@@ -643,7 +665,13 @@ async function saveEdit(){
     price: Number(g.price),
     unit: g.unit || "局",
     strong: g.strong,
-    note: g.note
+    note: g.note,
+    tech: Number(g.tech) || 0,
+    comm: Number(g.comm) || 0,
+    patience: Number(g.patience) || 0,
+    eff: Number(g.eff) || 0,
+    fun: Number(g.fun) || 0,
+    reliable: Number(g.reliable) || 0
   };
   const editing = EDIT_ID;
   const okDone = await mutate(list=>{
