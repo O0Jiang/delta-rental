@@ -189,7 +189,7 @@
         </div>
       </div>
       <div class="frow">
-        <div><label>租金/天(元) <span class="req">*</span></label><input name="price" type="number" placeholder="30"></div>
+        <div><label>租金(元) <span class="req">*</span></label><input name="price" type="number" placeholder="30"></div>
         <div><label>押金(元)</label><input name="deposit" type="number" placeholder="200"></div>
       </div>
       <div class="frow">
@@ -394,7 +394,7 @@ function renderList(){
         <div class="l1">
           <span class="seq" title="账号编号">#${noOf(d, seq-1)}</span>
           <span class="badge ${statusClass(d.status)}">${esc(d.status||"—")}</span>
-          <span class="tag t-price">￥${esc(d.price)}/天</span>
+          <span class="tag t-price">￥${esc(d.price)}</span>
           ${d.deposit?`<span class="tag">押金 ${esc(d.deposit)}</span>`:""}
           ${(d.rank||"").trim()?`<span class="tag t-rank">${esc(d.rank)}</span>`:`<span class="tag">未标段位</span>`}
           ${d.level?`<span class="tag t-lv">${esc(d.level)}</span>`:""}
@@ -487,7 +487,7 @@ function askDelete(id){
   const seq = DATA.findIndex(x=>String(x.id)===String(id)) + 1;
   const rankTxt = (d.rank || "").trim() || "未标段位";
   const priceTxt = (d.price == null ? "" : d.price);
-  showConfirm("确认删除", `将永久删除 <b>#${d.no != null && d.no !== "" ? d.no : seq}</b>（${esc(rankTxt)} · ￥${esc(priceTxt)}/天），无法撤销。`, async ()=>{
+  showConfirm("确认删除", `将永久删除 <b>#${d.no != null && d.no !== "" ? d.no : seq}</b>（${esc(rankTxt)} · ￥${esc(priceTxt)}），无法撤销。`, async ()=>{
     closeConfirm();
     const okDone = await mutate(list=>{
       const i = findIdx(list,id);
