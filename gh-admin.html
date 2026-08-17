@@ -329,6 +329,7 @@ function findIdx(list, id){ return list.findIndex(x => String(x.id) === String(i
 
 /* ================= 渲染 ================= */
 function statusClass(s){ return s === "可租" ? "ok" : s === "已租" ? "busy" : "maint"; }
+function noOf(d, i){ const n = (d.no != null && d.no !== "") ? d.no : (i+1); return String(n).padStart(3,"0"); }
 
 function visibleList(){
   const q = document.getElementById("q").value.trim().toLowerCase();
@@ -340,7 +341,7 @@ function visibleList(){
     if(fr === "__none"){ if((d.rank||"").trim()) return false; }
     else if(fr && !(d.rank||"").includes(fr)) return false;
     if(q){
-      const hay = [seq, d.id, d.rank, d.level, d.zone, d.price, d.coin, d.gear, d.note, d.wechat, d.status]
+      const hay = [seq, d.no, d.id, d.rank, d.level, d.zone, d.price, d.coin, d.gear, d.note, d.wechat, d.status]
                     .map(x=>String(x==null?"":x)).join(" ").toLowerCase();
       if(!hay.includes(q)) return false;
     }
@@ -374,7 +375,7 @@ function renderList(){
       <input class="ck" type="checkbox" ${isSel?"checked":""} onchange="toggleSel('${id}',this.checked)">
       <div class="body">
         <div class="l1">
-          <span class="seq">#${seq}</span>
+          <span class="seq" title="账号编号">#${noOf(d, seq-1)}</span>
           <span class="badge ${statusClass(d.status)}">${esc(d.status||"—")}</span>
           <span class="tag t-price">￥${esc(d.price)}/天</span>
           ${d.deposit?`<span class="tag">押金 ${esc(d.deposit)}</span>`:""}
@@ -469,7 +470,7 @@ function askDelete(id){
   const seq = DATA.findIndex(x=>String(x.id)===String(id)) + 1;
   const rankTxt = (d.rank || "").trim() || "未标段位";
   const priceTxt = (d.price == null ? "" : d.price);
-  showConfirm("确认删除", `将永久删除 <b>#${seq}</b>（${esc(rankTxt)} · ￥${esc(priceTxt)}/天），无法撤销。`, async ()=>{
+  showConfirm("确认删除", `将永久删除 <b>#${d.no != null && d.no !== "" ? d.no : seq}</b>（${esc(rankTxt)} · ￥${esc(priceTxt)}/天），无法撤销。`, async ()=>{
     closeConfirm();
     const okDone = await mutate(list=>{
       const i = findIdx(list,id);
@@ -488,6 +489,8 @@ async function copyOne(id){
     const c = JSON.parse(JSON.stringify(list[i]));
     c.id = "U" + Date.now();
     c.status = "可租";
+    const maxNo = Math.max(0, ...list.map(x=>Number(x.no)).filter(n=>!isNaN(n)));
+    c.no = maxNo + 1;
     list.splice(i+1, 0, c);
     return true;
   }, "复制账号");
@@ -505,7 +508,7 @@ function openEdit(id){
   if(id){
     const d = DATA.find(x=>String(x.id)===String(id)) || {};
     const seq = DATA.findIndex(x=>String(x.id)===String(id)) + 1;
-    document.getElementById("edTitle").textContent = "编辑账号 #" + seq;
+    document.getElementById("edTitle").textContent = "编辑账号 #" + (d.no != null && d.no !== "" ? d.no : seq);
     document.getElementById("edSub").textContent = "id: " + id;
     FIELDS.forEach(k=>{ if(f[k]) f[k].value = (d[k] == null ? "" : d[k]); });
     if(f.status && !["可租","已租","维护中"].includes(d.status||"")){
@@ -542,7 +545,8 @@ async function saveEdit(){
       if(i < 0) throw new Error("该记录已不存在（可能已被删除），请刷新后重试");
       Object.assign(list[i], patch);
     } else {
-      list.push({ id:"U"+Date.now(), ...patch, image:"" });
+      const maxNo = Math.max(0, ...list.map(x=>Number(x.no)).filter(n=>!isNaN(n)));
+      list.push({ id:"U"+Date.now(), no: maxNo + 1, ...patch, image:"" });
     }
     return true;
   }, editing ? "编辑账号信息" : "管理员新增账号");
