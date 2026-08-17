@@ -18,6 +18,12 @@ const _GH_TOK_PARTS = [
 ];
 const GH_TOKEN = _GH_TOK_PARTS.join("");
 
+// ===== 管理后台密码（gh-admin.html 使用）=====
+// 注意：这是前端密码，只用于「防止路人误入乱改」，查看网页源码是能看到的。
+// 真正的安全依赖：① 管理页地址不要公开（只有你自己知道）② 令牌只授权本仓库单文件读写。
+// 想改密码就改下面这行，然后让我重新部署一次即可。
+const ADMIN_PASS = "admin168";
+
 const DATA_PATH = "accounts.json";
 const RAW_URL = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/${DATA_PATH}`;
 const API_URL = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${DATA_PATH}`;
