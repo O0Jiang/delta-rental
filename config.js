@@ -27,3 +27,8 @@ const ADMIN_PASS = "cosboss";
 const DATA_PATH = "accounts.json";
 const RAW_URL = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/${DATA_PATH}`;
 const API_URL = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${DATA_PATH}`;
+
+// 利润/加价率配置（profit.json）：号主底价 + 加价率 = 租客上架价，差价为利润
+const PROFIT_PATH = "profit.json";
+const PROFIT_RAW = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/${PROFIT_PATH}`;
+const PROFIT_API = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${PROFIT_PATH}`;
