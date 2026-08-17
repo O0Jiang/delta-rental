@@ -40,6 +40,10 @@
   .btn-d { background:#2d3744; color:#e6e6e6; }
   .btn:disabled { opacity:.45; cursor:not-allowed; }
 
+  .tabs { display:flex; gap:8px; margin:0 0 12px; flex-wrap:wrap; }
+  .tab { border:1px solid #2d3744; background:#1a212b; color:#b8c0cc; border-radius:20px; padding:7px 16px; font-size:13px; font-weight:600; cursor:pointer; }
+  .tab.active { background:#ffd24a; color:#0f1419; border-color:#ffd24a; }
+
   .bulk { display:none; align-items:center; gap:9px; background:#22303f; border:1px solid #2d6cdf; padding:10px 12px; border-radius:10px; margin-top:10px; flex-wrap:wrap; }
   .bulk.show { display:flex; }
   .bulk .n { font-size:13px; color:#6fd3e8; font-weight:700; }
@@ -159,6 +163,12 @@
     <button class="btn btn-d" onclick="reload(true)">↻ 刷新</button>
     <button class="btn btn-d" onclick="exportJson()">⤓ 备份</button>
     <button class="btn btn-d" onclick="openAnn()">📢 公告管理</button>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" id="tabPw" onclick="setType('陪玩')">🎮 陪玩</button>
+    <button class="tab" id="tabDg" onclick="setType('代肝')">⚔️ 代肝</button>
+    <button class="tab" id="tabAll" onclick="setType('')">全部（含旧租号）</button>
   </div>
 
   <div class="bulk" id="bulk">
@@ -289,6 +299,14 @@ if(sessionStorage.getItem("dr_admin") === "1"){
 
 /* ================= 数据读写（并发安全） ================= */
 let DATA = [], SHA = null, SEL = new Set(), BUSY = false;
+let TYPE_FILTER = "陪玩";
+function setType(t){
+  TYPE_FILTER = t;
+  document.getElementById("tabPw").classList.toggle("active", t === "陪玩");
+  document.getElementById("tabDg").classList.toggle("active", t === "代肝");
+  document.getElementById("tabAll").classList.toggle("active", t === "");
+  renderList();
+}
 
 async function load(){
   const r = await fetch(API_URL + "?t=" + Date.now(), { headers: HEAD() });
@@ -306,7 +324,7 @@ async function reload(showMsg){
     await loadProfit();
     SEL.clear();
     renderList();
-    if(showMsg) toast("已刷新，当前 " + DATA.length + " 条");
+    if(showMsg) toast("已刷新，当前陪玩/代肝 " + DATA.filter(d=>d.type==="陪玩"||d.type==="代肝").length + " 条");
   } catch(e){
     document.getElementById("list").innerHTML = '<div class="empty">' + esc(e.message) + '</div>';
     toast(e.message, true);
@@ -361,6 +379,7 @@ function visibleList(){
   const fs = document.getElementById("fStatus").value;
   const fr = document.getElementById("fRank").value;
   return DATA.map((d,i)=>({ d, seq:i+1 })).filter(({d,seq})=>{
+    if(TYPE_FILTER && d.type !== TYPE_FILTER) return false;
     if(fs === "__other"){ if(d.status === "可接" || d.status === "忙碌") return false; }
     else if(fs && d.status !== fs) return false;
     if(fr === "__none"){ if((d.rank||"").trim()) return false; }
@@ -599,7 +618,7 @@ function openEdit(id){
     document.getElementById("edTitle").textContent = "新增接单";
     document.getElementById("edSub").textContent = "由管理员直接上架";
     f.status.value = "可接";
-    f.type.value = "陪玩";
+    f.type.value = (TYPE_FILTER === "代肝") ? "代肝" : "陪玩";
   }
   document.getElementById("edMask").classList.add("show");
 }
