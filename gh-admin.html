@@ -146,6 +146,7 @@
     <button class="btn btn-y" onclick="openEdit(null)">＋ 新增账号</button>
     <button class="btn btn-d" onclick="reload(true)">↻ 刷新</button>
     <button class="btn btn-d" onclick="exportJson()">⤓ 备份</button>
+    <button class="btn btn-d" onclick="openAnn()">📢 公告管理</button>
   </div>
 
   <div class="bulk" id="bulk">
@@ -227,6 +228,22 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- 公告管理弹窗 -->
+<div class="mask" id="annMask">
+  <div class="modal">
+    <h3>公告管理</h3>
+    <div class="mh">显示在租号展示页顶部公告栏，内容每行一条</div>
+    <label>公告标题</label>
+    <input id="annTitle" placeholder="如：租号必看：安全须知与交易公告">
+    <label>公告内容（每行一条）</label>
+    <textarea id="annBody" style="min-height:210px;" placeholder="第一行内容&#10;第二行内容"></textarea>
+    <div class="foot">
+      <button class="btn btn-y" id="annSave" onclick="saveAnn()">保存</button>
+      <button class="btn btn-d" onclick="closeAnn()">取消</button>
+    </div>
+  </div>
+</div>
 
 <script src="config.js"></script>
 <script>
@@ -575,6 +592,57 @@ function exportJson(){
   a.download = `accounts-backup-${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}.json`;
   a.click(); URL.revokeObjectURL(a.href);
   toast("备份文件已下载");
+}
+
+/* ================= 公告管理 ================= */
+const ANN_API = API_URL.replace('accounts.json','ann.json');
+
+async function openAnn(){
+  try {
+    const r = await fetch(ANN_API + "?t=" + Date.now(), { headers: HEAD() });
+    if(r.ok){
+      const j = await r.json();
+      const a = JSON.parse(unb64(j.content));
+      document.getElementById("annTitle").value = a.title || "";
+      document.getElementById("annBody").value = (a.bars && a.bars.length) ? a.bars.join("\n") : (a.body || "");
+    } else if(r.status === 404){
+      document.getElementById("annTitle").value = "";
+      document.getElementById("annBody").value = "";
+    } else {
+      toast("读取公告失败：" + r.status, true); return;
+    }
+  } catch(e){
+    toast("读取公告出错：" + e.message, true); return;
+  }
+  document.getElementById("annMask").classList.add("show");
+}
+function closeAnn(){ document.getElementById("annMask").classList.remove("show"); }
+document.getElementById("annMask").addEventListener("click", e=>{ if(e.target.id==="annMask") closeAnn(); });
+
+async function saveAnn(){
+  const title = document.getElementById("annTitle").value.trim();
+  const body = document.getElementById("annBody").value;
+  const bars = body.split("\n").map(s=>s.trim()).filter(Boolean);
+  if(!title){ toast("请填写公告标题", true); return; }
+  const btn = document.getElementById("annSave");
+  btn.disabled = true; btn.textContent = "保存中…";
+  const content = JSON.stringify({ title, bars }, null, 2);
+  try {
+    const r0 = await fetch(ANN_API + "?t=" + Date.now(), { headers: HEAD() });
+    let sha = null;
+    if(r0.ok){ const j0 = await r0.json(); sha = j0.sha; }
+    const body2 = { message:"更新公告内容", content: b64(content), branch: GH_BRANCH };
+    if(sha) body2.sha = sha;
+    const resp = await fetch(ANN_API, { method:"PUT", headers:{ ...HEAD(), "Content-Type":"application/json" }, body: JSON.stringify(body2) });
+    if(!resp.ok){ const ej = await resp.json().catch(()=>({})); throw new Error(resp.status + " " + (ej.message || "")); }
+    btn.disabled = false; btn.textContent = "保存";
+    closeAnn();
+    toast("公告已更新，展示页几十秒内生效");
+  } catch(e){
+    btn.disabled = false; btn.textContent = "保存";
+    toast("保存公告失败：" + e.message, true);
+    console.error(e);
+  }
 }
 
 /* 启动 */
