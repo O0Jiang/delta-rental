@@ -164,7 +164,7 @@ function unb64(b){ return decodeURIComponent(escape(atob(b))); }
 
 // 头像（失败回退到昵称首字）
 function avatarHTML(d){
-  const nm = (d.name || d.rank || "?").trim();
+  const nm = (d.name || "?").trim();
   const ini = nm.slice(0,1) || "?";
   if(d.avatar){
     return `<div class="ava"><img src="${esc(d.avatar)}" alt="${esc(nm)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"><span class="ava-ini" style="display:none">${esc(ini)}</span></div>`;
@@ -194,8 +194,11 @@ function radarSVG(vals, size){
 
 function renderCard(d){
   const seq = "#" + (d.no ? String(d.no).padStart(3,"0") : "");
+  // 六边形存的是 1–5，放大到 0–100 再画雷达；缺值/越界按 3 处理
+  const v5 = x => { const n = Number(x); return (n >= 1 && n <= 5) ? n : 3; };
+  const to100 = x => v5(x) * 20;
   const radar = radarSVG(
-    [Number(d.tech)||0, Number(d.comm)||0, Number(d.patience)||0, Number(d.eff)||0, Number(d.fun)||0, Number(d.reliable)||0],
+    [to100(d.tech), to100(d.comm), to100(d.patience), to100(d.eff), to100(d.fun), to100(d.reliable)],
     168);
   const tags = [];
   if(d.platform) tags.push(`<span class="tag">${esc(d.platform)}</span>`);
@@ -207,7 +210,7 @@ function renderCard(d){
       ${avatarHTML(d)}
       <div class="who">
         <div class="name">${esc(d.name || "未命名")}</div>
-        <div class="sub">${esc(d.rank || "未标段位")} · ${esc(d.type || "")}</div>
+        <div class="sub">${esc(d.type || "")}</div>
       </div>
       <span class="badge ${statusClass(d.status)}">${esc(d.status || "可接")}</span>
     </div>
