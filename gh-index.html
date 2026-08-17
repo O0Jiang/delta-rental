@@ -219,8 +219,6 @@ let MARKUP = 0.1;  // 默认 10%，由 profit.json 控制，管理后台可改
 function listedPrice(base){ const m = Number(base)||0; return Math.round(m * (1 + MARKUP)); }
 function profitOf(base){ return listedPrice(base) - (Number(base)||0); }
 
-const PROFIT_API = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/profit.json`;
-const PROFIT_RAW = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/profit.json`;
 async function loadProfit(){
   try {
     const r = await fetch(PROFIT_API + "?t=" + Date.now(), { headers:{ Authorization:`Bearer ${GH_TOKEN}`, Accept:"application/vnd.github+json" } });
