@@ -8,9 +8,17 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: #0f1419; color: #e6e6e6; }
   .wrap { max-width: 760px; margin: 0 auto; padding: 20px 16px 90px; }
-  header { text-align: center; padding: 26px 0 16px; }
-  header h1 { font-size: 23px; color: #ffd24a; letter-spacing: 1px; }
+  header { text-align: center; padding: 26px 0 12px; }
+  header h1 { font-size: 24px; color: #ffd24a; letter-spacing: 1px; }
   header p { font-size: 13px; color: #8a94a6; margin-top: 6px; }
+  .notice-bar { display: flex; align-items: center; gap: 10px; background: #1a212b; border: 1px solid #2d3744; border-radius: 12px; padding: 12px 14px; margin: 14px 0 10px; cursor: pointer; transition: background .15s; }
+  .notice-bar:hover { background: #222b38; }
+  .notice-dot { width: 8px; height: 8px; border-radius: 50%; background: #ff6b6b; box-shadow: 0 0 6px #ff6b6b; flex-shrink: 0; }
+  .notice-title { flex: 1; font-size: 13px; color: #e6e6e6; }
+  .notice-arrow { color: #8a94a6; font-size: 18px; }
+  .notice-body { font-size: 13px; color: #b8c0cc; line-height: 1.75; max-height: 60vh; overflow-y: auto; padding-right: 6px; }
+  .notice-body p { margin-bottom: 12px; }
+  .notice-body b { color: #ffd24a; font-weight: 600; }
   .filters { display: flex; flex-wrap: wrap; gap: 10px; background: #1a212b; padding: 14px; border-radius: 12px; margin: 16px 0; }
   .filters select, .filters input { background: #0f1419; color: #e6e6e6; border: 1px solid #2d3744; border-radius: 8px; padding: 9px 10px; font-size: 13px; flex: 1; min-width: 110px; }
   .filters button { background: #ffd24a; color: #0f1419; border: none; border-radius: 8px; padding: 9px 16px; font-size: 13px; font-weight: 600; cursor: pointer; }
@@ -73,22 +81,24 @@
 <body>
 <div class="wrap">
   <header>
-    <h1>三角洲账号出租</h1>
-    <p>以下账号可供租赁 · 看中请长按二维码加微信对接 · 号主自助上架、实时同步</p>
+    <h1>COS电竞 · 三角洲账号出租</h1>
+    <p>以下账号可供租赁 · 选中后长按二维码加微信对接 · 号主自助上架、实时同步</p>
   </header>
 
+  <div class="notice-bar" onclick="openNotice()">
+    <span class="notice-dot"></span>
+    <span class="notice-title">📢 租号必看：安全须知与交易公告</span>
+    <span class="notice-arrow">›</span>
+  </div>
+
   <div class="filters">
-    <select id="fRank"><option value="">全部段位</option><option value="青铜">青铜</option><option value="白银">白银</option><option value="黄金">黄金</option><option value="铂金">铂金</option><option value="钻石">钻石</option><option value="黑鹰">黑鹰</option><option value="三角洲巅峰">三角洲巅峰</option></select>
-    <select id="fStatus"><option value="可租" selected>可租</option><option value="已租">已租</option></select>
-    <select id="fIns" title="按保险格数筛选">
-      <option value="">保险不限</option><option value="8">保险≥8格</option><option value="9">保险≥9格</option><option value="10">保险≥10格</option><option value="11">保险≥11格</option><option value="12">保险≥12格</option>
-    </select>
-    <select id="fRatio" title="按账号比例筛选">
-      <option value="">比例不限</option><option value="25">比例≥1:25</option><option value="28">比例≥1:28</option><option value="30">比例≥1:30</option><option value="35">比例≥1:35</option>
-    </select>
     <input id="fMax" type="number" placeholder="最高租金">
     <select id="fSort" title="排序方式">
-      <option value="">排序：默认</option><option value="ins">保险格数↓</option><option value="ratio">比例↓</option><option value="price">租金↑</option><option value="coin">纯币↓</option>
+      <option value="">排序：默认</option>
+      <option value="ins">保险格数↓</option>
+      <option value="ratio">比例↓</option>
+      <option value="price">租金↑</option>
+      <option value="coin">纯币↓</option>
     </select>
     <button onclick="apply()">筛选</button>
     <button class="owner-btn" onclick="openOwner()">+ 我要出租</button>
@@ -105,6 +115,22 @@
     <h3>长按二维码识别，加微信对接</h3>
     <img src="wechat-qr.jpg" alt="微信二维码" style="width:100%;border-radius:10px;margin:10px 0;">
     <button type="button" class="cancel" onclick="closeQr()">关闭</button>
+  </div>
+</div>
+
+<!-- 公告 / 安全须知 -->
+<div class="mask" id="noticeMask">
+  <div class="modal">
+    <h3>租号必看 · 安全须知</h3>
+    <div class="notice-body">
+      <p><b>1. 交易方式</b><br>选中账号后长按二维码添加客服微信，确认租期、押金与账号状态后再付款。</p>
+      <p><b>2. 账号安全</b><br>租号期间请勿使用外挂、第三方插件或进行任何违规操作，否则押金不退并追究责任。</p>
+      <p><b>3. 密码与验证</b><br>账号密码仅在成交后由客服私发，请勿在任何公开页面填写真实密码。</p>
+      <p><b>4. 装备与资产</b><br>租号前请截图留存账号资产；租用期间人为损坏、出售或转移装备的，按市场价赔偿。</p>
+      <p><b>5. 押金与退款</b><br>退租并验收无误后 2 小时内退还押金；超时联系客服处理。</p>
+      <p><b>6. 售后联系</b><br>任何问题请联系页面底部微信客服，保留聊天记录以便售后。</p>
+    </div>
+    <button type="button" class="cancel" onclick="closeNotice()">我知道了</button>
   </div>
 </div>
 
@@ -241,19 +267,11 @@ function ratioNum(v){ const s = String(v||""); const m = s.match(/1\s*:\s*(\d+)/
 function coinNum(c){ const m = String(c||"").match(/([\d.]+)/); return m ? parseFloat(m[1]) : 0; }
 
 function apply(){
-  const r = document.getElementById("fRank").value;
-  const s = document.getElementById("fStatus").value;
   const m = parseFloat(document.getElementById("fMax").value) || 99999;
-  const insMin = parseInt(document.getElementById("fIns").value) || 0;
-  const ratMin = parseInt(document.getElementById("fRatio").value) || 0;
   const sortBy = document.getElementById("fSort").value;
   let list = DATA.filter(d => {
-    if(r && !(d.rank||"").includes(r)) return false;
-    if(s === "已租") { if(d.status !== "已租") return false; }
-    else { if(d.status === "已租") return false; }
+    if(d.status === "已租") return false; // 默认只展示可租账号
     if((d.price||0) > m) return false;
-    if(insMin && insNum(d.insurance) < insMin) return false;
-    if(ratMin && ratioNum(d.ratio) < ratMin) return false;
     return true;
   });
   // 排序（默认保持数据原顺序，即管理员在后台调过的顺序）
@@ -285,8 +303,11 @@ function openQr(){ document.getElementById("qrMask").classList.add("show"); }
 function closeQr(){ document.getElementById("qrMask").classList.remove("show"); }
 function openOwner(){ document.getElementById("ownerMask").classList.add("show"); }
 function closeOwner(){ document.getElementById("ownerMask").classList.remove("show"); }
+function openNotice(){ document.getElementById("noticeMask").classList.add("show"); }
+function closeNotice(){ document.getElementById("noticeMask").classList.remove("show"); }
 document.getElementById("qrMask").addEventListener("click", e=>{ if(e.target.id==="qrMask") closeQr(); });
 document.getElementById("ownerMask").addEventListener("click", e=>{ if(e.target.id==="ownerMask") closeOwner(); });
+document.getElementById("noticeMask").addEventListener("click", e=>{ if(e.target.id==="noticeMask") closeNotice(); });
 
 // ===== 我要出租：方案A 直写仓库（单个细粒度令牌，仅限本仓库 Contents 读写）=====
 function b64(str){ return btoa(unescape(encodeURIComponent(str))); }
