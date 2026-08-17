@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>账号管理后台 · 三角洲租号</title>
+<title>陪玩·代肝管理后台 · COS电竞</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
   body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif; background:#0f1419; color:#e6e6e6; }
@@ -14,14 +14,12 @@
   header .sub { font-size:12px; color:#8a94a6; margin-top:4px; }
   .headlinks a { font-size:12px; color:#6fd3e8; text-decoration:none; margin-left:12px; }
 
-  /* 统计 */
   .stats { display:flex; gap:10px; margin:8px 0 14px; flex-wrap:wrap; }
   .stat { flex:1; min-width:100px; background:#1a212b; border:1px solid #2d3744; border-radius:10px; padding:11px 12px; }
   .stat .l { font-size:11px; color:#8a94a6; }
   .stat .v { font-size:21px; font-weight:800; color:#ffd24a; margin-top:3px; }
   .stat.g .v { color:#5fd97a; } .stat.o .v { color:#ffb24a; }
 
-  /* 利润汇总 */
   .profit-box { background:#1a212b; border:1px solid #5e4a18; border-radius:11px; padding:12px 14px; margin:12px 0; }
   .pb-head { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px; }
   .pb-title { font-size:15px; font-weight:800; color:#ffd24a; }
@@ -31,7 +29,6 @@
   .pb-stats .stat { flex:1; min-width:100px; }
   .t-profit { background:#2d220b; border-color:#5e4a18; color:#ffd24a; font-weight:800; }
 
-  /* 工具栏 */
   .bar { display:flex; gap:9px; background:#1a212b; padding:12px; border-radius:11px; flex-wrap:wrap; align-items:center; }
   .bar input, .bar select { background:#0f1419; color:#e6e6e6; border:1px solid #2d3744; border-radius:8px; padding:9px 10px; font-size:13px; min-width:110px; }
   .bar input.search { flex:1; min-width:150px; }
@@ -43,12 +40,10 @@
   .btn-d { background:#2d3744; color:#e6e6e6; }
   .btn:disabled { opacity:.45; cursor:not-allowed; }
 
-  /* 批量操作条 */
   .bulk { display:none; align-items:center; gap:9px; background:#22303f; border:1px solid #2d6cdf; padding:10px 12px; border-radius:10px; margin-top:10px; flex-wrap:wrap; }
   .bulk.show { display:flex; }
   .bulk .n { font-size:13px; color:#6fd3e8; font-weight:700; }
 
-  /* 列表 */
   .list { margin-top:14px; display:flex; flex-direction:column; gap:9px; }
   .row { background:#1a212b; border:1px solid #2d3744; border-radius:11px; padding:11px 12px; display:flex; gap:11px; align-items:flex-start; }
   .row.sel { border-color:#2d6cdf; background:#1b2430; }
@@ -57,10 +52,8 @@
   .row .l1 { display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
   .seq { font-size:13px; font-weight:800; color:#fff; background:#0f1419; border:1px solid #2d3744; border-radius:6px; padding:2px 7px; }
   .tag { font-size:11.5px; padding:3px 8px; border-radius:6px; background:#0f1419; border:1px solid #2d3744; color:#b8c0cc; }
+  .t-type { background:#2a2410; border-color:#5e4a18; color:#ffd24a; font-weight:700; }
   .t-rank { background:#2a2410; border-color:#5e4a18; color:#ffd24a; font-weight:700; }
-  .t-lv { background:#0c2630; border-color:#1f4a5a; color:#6fd3e8; font-weight:700; }
-  .t-q { background:#3a1416; border-color:#7a2a2e; color:#ff6b6b; }
-  .t-v { background:#0f2e1a; border-color:#1f5a35; color:#5fd97a; }
   .t-price { background:#2a2410; border-color:#5e4a18; color:#ffd24a; font-weight:800; }
   .badge { font-size:11px; padding:3px 9px; border-radius:20px; font-weight:600; }
   .ok { background:#16351f; color:#5fd97a; }
@@ -82,12 +75,10 @@
 
   .empty, .loading { text-align:center; color:#8a94a6; padding:36px 0; font-size:14px; }
 
-  /* 提示条 */
   .toast { position:fixed; left:50%; transform:translateX(-50%); bottom:26px; background:#16351f; color:#5fd97a; border:1px solid #1f5a35; padding:12px 20px; border-radius:10px; font-size:14px; z-index:60; display:none; box-shadow:0 6px 20px rgba(0,0,0,.5); max-width:90%; text-align:center; }
   .toast.err { background:#3a1416; color:#ff8b8b; border-color:#7a2a2e; }
   .toast.show { display:block; }
 
-  /* 遮罩/弹窗 */
   .mask { position:fixed; inset:0; background:rgba(0,0,0,.72); display:none; align-items:center; justify-content:center; z-index:50; padding:16px; overflow-y:auto; }
   .mask.show { display:flex; }
   .modal { background:#1a212b; border:1px solid #2d3744; border-radius:14px; padding:20px; width:100%; max-width:520px; margin:auto; }
@@ -102,7 +93,6 @@
   .modal .foot { display:flex; gap:10px; margin-top:18px; }
   .modal .foot .btn { flex:1; padding:12px; font-size:14px; }
 
-  /* 登录门 */
   #gate { position:fixed; inset:0; background:#0f1419; display:flex; align-items:center; justify-content:center; z-index:100; padding:20px; }
   #gate .box { background:#1a212b; border:1px solid #2d3744; border-radius:14px; padding:26px 22px; width:100%; max-width:330px; text-align:center; }
   #gate h2 { color:#ffd24a; font-size:18px; margin-bottom:6px; }
@@ -128,20 +118,20 @@
 <div class="wrap" id="app" style="display:none;">
   <header>
     <div>
-      <h1>账号管理后台</h1>
-      <div class="sub">所有改动直接写入 GitHub 数据文件，租号页几十秒内同步</div>
+      <h1>陪玩·代肝管理后台</h1>
+      <div class="sub">所有改动直接写入 GitHub 数据文件，展示页几十秒内同步</div>
     </div>
     <div class="headlinks">
-      <a href="gh-index.html" target="_blank">↗ 打开租号展示页</a>
+      <a href="gh-index.html" target="_blank">↗ 打开展示页</a>
       <a href="#" onclick="logout();return false;">退出</a>
     </div>
   </header>
 
   <div class="stats">
-    <div class="stat"><div class="l">总账号</div><div class="v" id="sTotal">—</div></div>
-    <div class="stat g"><div class="l">可租</div><div class="v" id="sOk">—</div></div>
-    <div class="stat o"><div class="l">已租</div><div class="v" id="sBusy">—</div></div>
-    <div class="stat"><div class="l">其他/维护</div><div class="v" id="sOther">—</div></div>
+    <div class="stat"><div class="l">总服务</div><div class="v" id="sTotal">—</div></div>
+    <div class="stat g"><div class="l">陪玩</div><div class="v" id="sPw">—</div></div>
+    <div class="stat o"><div class="l">代肝</div><div class="v" id="sDg">—</div></div>
+    <div class="stat"><div class="l">忙碌中</div><div class="v" id="sBusy">—</div></div>
   </div>
 
   <div class="profit-box" id="profitBox">
@@ -157,15 +147,15 @@
   </div>
 
   <div class="bar">
-    <input class="search" id="q" type="text" placeholder="搜索：段位 / 卖点 / 微信 / 编号…" oninput="renderList()">
+    <input class="search" id="q" type="text" placeholder="搜索：段位 / 擅长 / 编号…" oninput="renderList()">
     <select id="fStatus" onchange="renderList()">
-      <option value="">全部状态</option><option>可租</option><option>已租</option><option value="__other">其他/维护</option>
+      <option value="">全部状态</option><option>可接</option><option>忙碌</option><option value="__other">其他/维护</option>
     </select>
     <select id="fRank" onchange="renderList()">
       <option value="">全部段位</option><option>青铜</option><option>白银</option><option>黄金</option>
       <option>铂金</option><option>钻石</option><option>黑鹰</option><option>三角洲巅峰</option><option value="__none">未标段位</option>
     </select>
-    <button class="btn btn-y" onclick="openEdit(null)">＋ 新增账号</button>
+    <button class="btn btn-y" onclick="openEdit(null)">＋ 新增接单</button>
     <button class="btn btn-d" onclick="reload(true)">↻ 刷新</button>
     <button class="btn btn-d" onclick="exportJson()">⤓ 备份</button>
     <button class="btn btn-d" onclick="openAnn()">📢 公告管理</button>
@@ -173,8 +163,8 @@
 
   <div class="bulk" id="bulk">
     <span class="n" id="bulkN">已选 0 条</span>
-    <button class="btn btn-g" onclick="bulkStatus('可租')">批量设为可租</button>
-    <button class="btn btn-b" onclick="bulkStatus('已租')">批量设为已租</button>
+    <button class="btn btn-g" onclick="bulkStatus('可接')">批量设为可接</button>
+    <button class="btn btn-b" onclick="bulkStatus('忙碌')">批量设为忙碌</button>
     <button class="btn btn-r" onclick="bulkDelete()">批量删除</button>
     <button class="btn btn-d" onclick="clearSel()">取消选择</button>
   </div>
@@ -185,9 +175,22 @@
 <!-- 编辑/新增弹窗 -->
 <div class="mask" id="edMask">
   <div class="modal">
-    <h3 id="edTitle">编辑账号</h3>
+    <h3 id="edTitle">编辑服务</h3>
     <div class="mh" id="edSub"></div>
     <form id="edForm" onsubmit="return false;">
+      <div class="frow">
+        <div>
+          <label>服务类型 <span class="req">*</span></label>
+          <select name="type">
+            <option value="陪玩">陪玩</option>
+            <option value="代肝">代肝</option>
+          </select>
+        </div>
+        <div>
+          <label>状态 <span class="req">*</span></label>
+          <select name="status"><option>可接</option><option>忙碌</option><option>维护中</option></select>
+        </div>
+      </div>
       <div class="frow">
         <div>
           <label>段位</label>
@@ -198,37 +201,22 @@
           </datalist>
         </div>
         <div>
-          <label>状态 <span class="req">*</span></label>
-          <select name="status"><option>可租</option><option>已租</option><option>维护中</option></select>
+          <label>游戏端</label>
+          <select name="platform"><option value="">请选择</option><option>PC</option><option>手游</option></select>
         </div>
       </div>
       <div class="frow">
-        <div><label>等级</label><input name="level" placeholder="如 60级"></div>
-        <div>
-          <label>区服</label>
-          <input name="zone" list="zoneList" placeholder="Q区 / V区">
-          <datalist id="zoneList"><option>Q区</option><option>V区</option></datalist>
-        </div>
+        <div><label>价格(元) <span class="req">*</span></label><input name="price" type="number" step="0.5" placeholder="50"></div>
+        <div><label>计价单位</label><select name="unit"><option value="局">局</option><option value="单">单</option></select></div>
       </div>
       <div class="frow">
-        <div><label>租金(元) <span class="req">*</span></label><input name="price" type="number" placeholder="30"></div>
-        <div><label>押金(元)</label><input name="deposit" type="number" placeholder="200"></div>
+        <div><label>是否带麦</label><select name="mic"><option value="">请选择</option><option>带麦</option><option>不带麦</option></select></div>
+        <div><label>在线时段</label><input name="online" placeholder="如 晚8-12点"></div>
       </div>
-      <div class="frow">
-        <div><label>纯币</label><input name="coin" placeholder="如 50M"></div>
-        <div><label>保险</label><input name="insurance" placeholder="如 8"></div>
-      </div>
-      <div class="frow">
-        <div><label>比例</label><input name="ratio" placeholder="如 1:29"></div>
-        <div><label>体力</label><input name="ti" placeholder="如 7"></div>
-        <div><label>负重</label><input name="fu" placeholder="如 6"></div>
-      </div>
-      <label>角色皮肤 / 刀皮 / AW子弹数量</label>
-      <textarea name="gear" placeholder="角色皮肤/刀皮/AW子弹数量"></textarea>
+      <label>擅长 / 服务内容 <span class="req">*</span></label>
+      <textarea name="strong" placeholder="擅长干员·枪械·模式 / 代刷内容·代练项目"></textarea>
       <label>备注</label>
-      <textarea name="note" placeholder="租期要求、扣押金规则等"></textarea>
-      <label>号主微信（不公开展示）</label>
-      <input name="wechat" placeholder="仅管理端可见">
+      <textarea name="note" placeholder="服务要求等"></textarea>
       <div class="foot">
         <button class="btn btn-y" id="edSave" onclick="saveEdit()">保存</button>
         <button class="btn btn-d" onclick="closeEdit()">取消</button>
@@ -255,9 +243,9 @@
 <div class="mask" id="annMask">
   <div class="modal">
     <h3>公告管理</h3>
-    <div class="mh">显示在租号展示页顶部公告栏，内容每行一条</div>
+    <div class="mh">显示在展示页顶部公告栏，内容每行一条</div>
     <label>公告标题</label>
-    <input id="annTitle" placeholder="如：租号必看：安全须知与交易公告">
+    <input id="annTitle" placeholder="如：接单必看：安全须知与交易公告">
     <label>公告内容（每行一条）</label>
     <textarea id="annBody" style="min-height:210px;" placeholder="第一行内容&#10;第二行内容"></textarea>
     <div class="foot">
@@ -325,18 +313,15 @@ async function reload(showMsg){
   }
 }
 
-/* 核心：所有写操作都走这里。
-   每次都重新拉最新数据再改，按唯一 id 定位，sha 冲突自动重试。
-   这样即使号主此刻正在提交新账号，也不会被管理端覆盖掉。 */
 async function mutate(mutator, message){
   if(BUSY){ toast("上一个操作还在进行中，请稍候", true); return false; }
   BUSY = true;
   try {
     let lastErr = null;
     for(let i = 0; i < 3; i++){
-      const fresh = await load();                       // 1. 拉最新
+      const fresh = await load();
       const next = JSON.parse(JSON.stringify(fresh));
-      const r = mutator(next);                          // 2. 在最新数据上改
+      const r = mutator(next);
       if(r === false){ BUSY = false; return false; }
       try {
         const body = { message, content: b64(JSON.stringify(next, null, 2)), branch: GH_BRANCH, sha: SHA };
@@ -347,12 +332,12 @@ async function mutate(mutator, message){
         }
         const rj = await resp.json();
         SHA = rj.content.sha;
-        DATA = next;                                    // 3. 成功后同步本地
+        DATA = next;
         SEL.clear(); renderList();
         BUSY = false; return true;
       } catch(e){
         lastErr = e;
-        if(!/409|422|conflict|sha/i.test(e.message)) break;  // 非冲突错误不重试
+        if(!/409|422|conflict|sha/i.test(e.message)) break;
       }
     }
     BUSY = false;
@@ -368,7 +353,7 @@ async function mutate(mutator, message){
 function findIdx(list, id){ return list.findIndex(x => String(x.id) === String(id)); }
 
 /* ================= 渲染 ================= */
-function statusClass(s){ return s === "可租" ? "ok" : s === "已租" ? "busy" : "maint"; }
+function statusClass(s){ return s === "可接" ? "ok" : s === "忙碌" ? "busy" : "maint"; }
 function noOf(d, i){ const n = (d.no != null && d.no !== "") ? d.no : (i+1); return String(n).padStart(3,"0"); }
 
 function visibleList(){
@@ -376,12 +361,12 @@ function visibleList(){
   const fs = document.getElementById("fStatus").value;
   const fr = document.getElementById("fRank").value;
   return DATA.map((d,i)=>({ d, seq:i+1 })).filter(({d,seq})=>{
-    if(fs === "__other"){ if(d.status === "可租" || d.status === "已租") return false; }
+    if(fs === "__other"){ if(d.status === "可接" || d.status === "忙碌") return false; }
     else if(fs && d.status !== fs) return false;
     if(fr === "__none"){ if((d.rank||"").trim()) return false; }
     else if(fr && !(d.rank||"").includes(fr)) return false;
     if(q){
-      const hay = [seq, d.no, d.id, d.rank, d.level, d.zone, d.price, d.coin, d.gear, d.note, d.wechat, d.status]
+      const hay = [seq, d.no, d.id, d.type, d.rank, d.platform, d.mic, d.online, d.price, d.unit, d.strong, d.note, d.status]
                     .map(x=>String(x==null?"":x)).join(" ").toLowerCase();
       if(!hay.includes(q)) return false;
     }
@@ -390,13 +375,14 @@ function visibleList(){
 }
 
 function renderStats(){
-  const t = DATA.length;
-  const ok = DATA.filter(d=>d.status==="可租").length;
-  const bs = DATA.filter(d=>d.status==="已租").length;
-  document.getElementById("sTotal").textContent = t;
-  document.getElementById("sOk").textContent = ok;
-  document.getElementById("sBusy").textContent = bs;
-  document.getElementById("sOther").textContent = t - ok - bs;
+  const all = DATA.filter(d => d.type === "陪玩" || d.type === "代肝");
+  const pw = all.filter(d=>d.type === "陪玩").length;
+  const dg = all.filter(d=>d.type === "代肝").length;
+  const busy = all.filter(d=>d.status === "忙碌").length;
+  document.getElementById("sTotal").textContent = all.length;
+  document.getElementById("sPw").textContent = pw;
+  document.getElementById("sDg").textContent = dg;
+  document.getElementById("sBusy").textContent = busy;
 }
 
 /* ================= 利润汇总（加价率） ================= */
@@ -417,7 +403,11 @@ async function loadProfit(){
 
 function renderProfit(){
   let base = 0, listed = 0;
-  DATA.forEach(d=>{ base += Number(d.price)||0; listed += listedPrice(d.price); });
+  DATA.forEach(d=>{
+    if(d.type === "陪玩" || d.type === "代肝"){
+      base += Number(d.price)||0; listed += listedPrice(d.price);
+    }
+  });
   const profit = listed - base;
   document.getElementById("pBase").textContent = "￥" + Math.round(base);
   document.getElementById("pListed").textContent = "￥" + Math.round(listed);
@@ -457,31 +447,26 @@ function renderList(){
   renderStats();
   const rows = visibleList();
   const el = document.getElementById("list");
-  if(!rows.length){ el.innerHTML = '<div class="empty">没有符合条件的账号</div>'; updateBulk(); return; }
+  if(!rows.length){ el.innerHTML = '<div class="empty">没有符合条件的服务记录</div>'; updateBulk(); return; }
   el.innerHTML = rows.map(({d,seq})=>{
     const id = esc(d.id);
-    const zoneCls = d.zone === "Q区" ? "t-q" : d.zone === "V区" ? "t-v" : "";
-    const tf = [d.ti?("体"+d.ti):"", d.fu?("负"+d.fu):""].filter(Boolean).join(" ");
-    const desc = [d.gear, d.note].filter(Boolean).join(" ｜ ");
+    const typeTxt = (d.type === "陪玩" || d.type === "代肝") ? d.type : "旧·租号";
+    const desc = [d.strong, d.note].filter(Boolean).join(" ｜ ");
     const isSel = SEL.has(String(d.id));
     return `
     <div class="row ${isSel?"sel":""}">
       <input class="ck" type="checkbox" ${isSel?"checked":""} onchange="toggleSel('${id}',this.checked)">
       <div class="body">
         <div class="l1">
-          <span class="seq" title="账号编号">#${noOf(d, seq-1)}</span>
+          <span class="seq" title="编号">#${noOf(d, seq-1)}</span>
+          <span class="tag t-type">${esc(typeTxt)}</span>
           <span class="badge ${statusClass(d.status)}">${esc(d.status||"—")}</span>
-          <span class="tag t-price" title="号主底价">底价 ￥${esc(d.price)}</span>
+          <span class="tag t-price" title="接单到底价">底价 ￥${esc(d.price)}</span>
           <span class="tag t-profit" title="加价后的利润">利润 ￥${profitOf(d.price)}</span>
-          ${d.deposit?`<span class="tag">押金 ${esc(d.deposit)}</span>`:""}
           ${(d.rank||"").trim()?`<span class="tag t-rank">${esc(d.rank)}</span>`:`<span class="tag">未标段位</span>`}
-          ${d.level?`<span class="tag t-lv">${esc(d.level)}</span>`:""}
-          ${d.zone?`<span class="tag ${zoneCls}">${esc(d.zone)}</span>`:""}
-          ${d.coin?`<span class="tag">纯币 ${esc(d.coin)}</span>`:""}
-          ${d.insurance?`<span class="tag">保险 ${esc(d.insurance)}</span>`:""}
-          ${d.ratio?`<span class="tag">比例 ${esc(d.ratio)}</span>`:""}
-          ${tf?`<span class="tag">${esc(tf)}</span>`:""}
-          ${d.wechat?`<span class="tag">微信 ${esc(d.wechat)}</span>`:""}
+          ${d.platform?`<span class="tag">${esc(d.platform)}</span>`:""}
+          ${d.mic?`<span class="tag">${esc(d.mic)}</span>`:""}
+          ${d.online?`<span class="tag">在线 ${esc(d.online)}</span>`:""}
         </div>
         ${desc?`<div class="l2">${esc(desc)}</div>`:""}
         <div class="idtxt">id: ${id}</div>
@@ -489,7 +474,7 @@ function renderList(){
       <div class="acts">
         <button class="mini m-mv" title="上移" onclick="move('${id}',-1)">↑</button>
         <button class="mini m-mv" title="下移" onclick="move('${id}',1)">↓</button>
-        <button class="mini m-toggle" onclick="toggleStatus('${id}')">${d.status==="可租"?"设为已租":"设为可租"}</button>
+        <button class="mini m-toggle" onclick="toggleStatus('${id}')">${d.status==="可接"?"设为忙碌":"设为可接"}</button>
         <button class="mini m-edit" onclick="openEdit('${id}')">编辑</button>
         <button class="mini m-copy" onclick="copyOne('${id}')">复制</button>
         <button class="mini m-del" onclick="askDelete('${id}')">删除</button>
@@ -522,7 +507,7 @@ async function bulkStatus(st){
 function bulkDelete(){
   const ids = [...SEL];
   if(!ids.length) return;
-  showConfirm("确认批量删除", `将永久删除选中的 <b style="color:#ff8b8b">${ids.length}</b> 条账号，无法撤销。<br>建议先点工具栏「⤓ 备份」导出一份。`, async ()=>{
+  showConfirm("确认批量删除", `将永久删除选中的 <b style="color:#ff8b8b">${ids.length}</b> 条服务记录，无法撤销。<br>建议先点工具栏「⤓ 备份」导出一份。`, async ()=>{
     closeConfirm();
     const okDone = await mutate(list=>{
       const before = list.length;
@@ -531,7 +516,7 @@ function bulkDelete(){
       if(kept.length === before) throw new Error("选中的记录在最新数据中已不存在");
       list.length = 0; kept.forEach(x=>list.push(x));
       return true;
-    }, `批量删除 ${ids.length} 条账号`);
+    }, `批量删除 ${ids.length} 条服务`);
     if(okDone) toast(`已删除 ${ids.length} 条`);
   });
 }
@@ -542,10 +527,10 @@ async function toggleStatus(id){
   const okDone = await mutate(list=>{
     const i = findIdx(list,id);
     if(i < 0) throw new Error("该记录已不存在（可能已被删除），请刷新");
-    to = list[i].status === "可租" ? "已租" : "可租";
+    to = list[i].status === "可接" ? "忙碌" : "可接";
     list[i].status = to;
     return true;
-  }, "切换账号状态");
+  }, "切换服务状态");
   if(okDone) toast("已设为「" + to + "」");
 }
 
@@ -554,26 +539,26 @@ async function move(id, dir){
     const i = findIdx(list,id);
     if(i < 0) throw new Error("该记录已不存在，请刷新");
     const j = i + dir;
-    if(j < 0 || j >= list.length) return false;   // 已在顶/底，不提交
+    if(j < 0 || j >= list.length) return false;
     const t = list[i]; list[i] = list[j]; list[j] = t;
     return true;
-  }, "调整账号展示顺序");
+  }, "调整展示顺序");
   if(okDone) toast("顺序已调整");
 }
 
 function askDelete(id){
   const d = DATA.find(x=>String(x.id)===String(id)) || {};
   const seq = DATA.findIndex(x=>String(x.id)===String(id)) + 1;
-  const rankTxt = (d.rank || "").trim() || "未标段位";
+  const typeTxt = (d.type||"旧·租号");
   const priceTxt = (d.price == null ? "" : d.price);
-  showConfirm("确认删除", `将永久删除 <b>#${d.no != null && d.no !== "" ? d.no : seq}</b>（${esc(rankTxt)} · ￥${esc(priceTxt)}），无法撤销。`, async ()=>{
+  showConfirm("确认删除", `将永久删除 <b>#${d.no != null && d.no !== "" ? d.no : seq}</b>（${esc(typeTxt)} · ￥${esc(priceTxt)}），无法撤销。`, async ()=>{
     closeConfirm();
     const okDone = await mutate(list=>{
       const i = findIdx(list,id);
       if(i < 0) throw new Error("该记录已不存在，请刷新");
       list.splice(i,1);
       return true;
-    }, "删除账号");
+    }, "删除服务记录");
     if(okDone) toast("已删除");
   });
 }
@@ -584,17 +569,17 @@ async function copyOne(id){
     if(i < 0) throw new Error("该记录已不存在，请刷新");
     const c = JSON.parse(JSON.stringify(list[i]));
     c.id = "U" + Date.now();
-    c.status = "可租";
+    c.status = "可接";
     const maxNo = Math.max(0, ...list.map(x=>Number(x.no)).filter(n=>!isNaN(n)));
     c.no = maxNo + 1;
     list.splice(i+1, 0, c);
     return true;
-  }, "复制账号");
+  }, "复制服务记录");
   if(okDone) toast("已复制一条，可点「编辑」修改");
 }
 
 /* ================= 新增 / 编辑 ================= */
-const FIELDS = ["rank","status","level","zone","price","deposit","coin","insurance","ratio","ti","fu","gear","note","wechat"];
+const FIELDS = ["type","rank","status","platform","mic","online","price","unit","strong","note"];
 let EDIT_ID = null;
 
 function openEdit(id){
@@ -604,16 +589,17 @@ function openEdit(id){
   if(id){
     const d = DATA.find(x=>String(x.id)===String(id)) || {};
     const seq = DATA.findIndex(x=>String(x.id)===String(id)) + 1;
-    document.getElementById("edTitle").textContent = "编辑账号 #" + (d.no != null && d.no !== "" ? d.no : seq);
+    document.getElementById("edTitle").textContent = "编辑服务 #" + (d.no != null && d.no !== "" ? d.no : seq);
     document.getElementById("edSub").textContent = "id: " + id;
     FIELDS.forEach(k=>{ if(f[k]) f[k].value = (d[k] == null ? "" : d[k]); });
-    if(f.status && !["可租","已租","维护中"].includes(d.status||"")){
+    if(f.status && !["可接","忙碌","维护中"].includes(d.status||"")){
       const o = document.createElement("option"); o.textContent = d.status || ""; f.status.appendChild(o); f.status.value = d.status || "";
     }
   } else {
-    document.getElementById("edTitle").textContent = "新增账号";
+    document.getElementById("edTitle").textContent = "新增接单";
     document.getElementById("edSub").textContent = "由管理员直接上架";
-    f.status.value = "可租";
+    f.status.value = "可接";
+    f.type.value = "陪玩";
   }
   document.getElementById("edMask").classList.add("show");
 }
@@ -624,15 +610,21 @@ async function saveEdit(){
   const f = document.getElementById("edForm");
   const g = {};
   FIELDS.forEach(k=>{ if(f[k]) g[k] = String(f[k].value || "").trim(); });
-  if(!g.price){ toast("租金必须填写", true); return; }
+  if(!g.price){ toast("价格必须填写", true); return; }
   const btn = document.getElementById("edSave");
   btn.disabled = true; btn.textContent = "保存中…";
 
   const patch = {
-    rank:g.rank, status:g.status || "可租", level:g.level, zone:g.zone,
-    price:Number(g.price), deposit:g.deposit ? Number(g.deposit) : "",
-    coin:g.coin, insurance:g.insurance, ratio:g.ratio, ti:g.ti, fu:g.fu,
-    gear:g.gear, note:g.note, wechat:g.wechat
+    type: g.type || "陪玩",
+    rank: g.rank,
+    status: g.status || "可接",
+    platform: g.platform,
+    mic: g.mic,
+    online: g.online,
+    price: Number(g.price),
+    unit: g.unit || "局",
+    strong: g.strong,
+    note: g.note
   };
   const editing = EDIT_ID;
   const okDone = await mutate(list=>{
@@ -645,10 +637,10 @@ async function saveEdit(){
       list.push({ id:"U"+Date.now(), no: maxNo + 1, ...patch, image:"" });
     }
     return true;
-  }, editing ? "编辑账号信息" : "管理员新增账号");
+  }, editing ? "编辑服务信息" : "管理员新增接单");
 
   btn.disabled = false; btn.textContent = "保存";
-  if(okDone){ closeEdit(); toast(editing ? "已保存修改" : "已新增账号"); }
+  if(okDone){ closeEdit(); toast(editing ? "已保存修改" : "已新增接单"); }
 }
 
 /* ================= 确认弹窗 ================= */
