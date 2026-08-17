@@ -695,5 +695,21 @@
     "coin": "81.0 M纯币",
     "ratio": "1:32",
     "deposit": "200"
+  },
+  {
+    "id": "U1786946348100",
+    "rank": "铂金",
+    "level": "60级",
+    "zone": "Q区",
+    "price": 30,
+    "deposit": 200,
+    "coin": "50",
+    "insurance": "8",
+    "ratio": "40",
+    "ti": "",
+    "fu": "",
+    "status": "可租",
+    "wechat": "",
+    "note": "无\n无"
   }
 ]
