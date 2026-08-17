@@ -80,6 +80,18 @@
   .unit-input .unit-suffix { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 12px; color: #8a94a6; pointer-events: none; }
   .price-preview { margin-top: 4px; background: #0c2630; border: 1px solid #1f4a5a; color: #6fd3e8; border-radius: 8px; padding: 13px; font-size: 14px; text-align: center; font-weight: 700; letter-spacing: .3px; }
   .price-preview.active { background: #103040; border-color: #2f6a82; color: #7fe3f5; }
+
+  /* 合规：横幅 + 年龄确认弹窗 + 登记承诺 */
+  .compliance-bar { font-size: 11.5px; color: #c4a33a; background: #2d220b; border: 1px solid #5e4a18; border-radius: 10px; padding: 9px 12px; margin: 0 0 12px; line-height: 1.6; }
+  .compliance-bar b { color: #ffd24a; }
+  .age-modal .age-text { font-size: 13px; color: #b8c0cc; line-height: 1.85; margin: 14px 0; }
+  .age-modal .age-text b { color: #ffd24a; }
+  .age-btn { width: 100%; margin-top: 10px; border: none; border-radius: 10px; padding: 13px; font-size: 15px; font-weight: 700; cursor: pointer; }
+  .age-btn.ok { background: #ffd24a; color: #0f1419; }
+  .age-btn.no { background: #2d3744; color: #e6e6e6; }
+  .age-note { display: none; font-size: 12px; color: #ffb24a; text-align: center; margin-top: 12px; line-height: 1.5; }
+  .modal label.owner-agree { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; color: #b8c0cc; margin: 16px 0 0; line-height: 1.5; cursor: pointer; }
+  .modal label.owner-agree input { margin-top: 2px; flex-shrink: 0; width: auto; }
 </style>
 </head>
 <body>
@@ -88,6 +100,8 @@
     <h1>COS电竞 · 三角洲账号出租</h1>
     <p>以下账号可供租赁 · 选中后长按二维码加微信对接 · 号主自助上架、实时同步</p>
   </header>
+
+  <div class="compliance-bar">⚠️ 本平台仅向 <b>18 周岁以上</b> 成年用户提供游戏账号租赁信息服务。游戏账号出租可能违反游戏运营方用户协议并导致账号封禁，相关风险由用户自行承担；平台仅提供信息撮合，不代收代付资金。</div>
 
   <div class="notice-bar" onclick="openNotice()">
     <span class="notice-dot"></span>
@@ -112,6 +126,21 @@
 </div>
 
 <div class="contact" id="contactBtn" onclick="openQr()">看中账号？点此加微信对接</div>
+
+<!-- 进入年龄确认 -->
+<div class="mask" id="ageMask">
+  <div class="modal age-modal">
+    <h3>进入前须知</h3>
+    <div class="age-text">
+      本平台仅向 <b>18 周岁以上</b> 成年用户提供游戏账号租赁信息服务。<br><br>
+      游戏账号出租可能违反游戏运营方用户协议，存在账号被封禁的风险，由此产生的损失由用户自行承担；平台仅提供信息撮合，不代收、不代付资金，不参与具体交易。<br><br>
+      点击「我已满 18 岁并已知悉以上风险」即代表您确认已成年，并自愿承担相关风险。
+    </div>
+    <button type="button" class="age-btn ok" onclick="acceptAge()">我已满 18 岁并已知悉以上风险</button>
+    <button type="button" class="age-btn no" onclick="rejectAge()">我还未成年</button>
+    <div class="age-note" id="ageNote">抱歉，本平台不向未成年人提供账号租赁服务。</div>
+  </div>
+</div>
 
 <!-- 微信二维码弹窗 -->
 <div class="mask" id="qrMask">
@@ -196,6 +225,10 @@
       <textarea name="gear" required placeholder="角色皮肤/刀皮/AW子弹数量"></textarea>
       <label>备注（选填）</label>
       <textarea name="note" placeholder="租期要求等"></textarea>
+      <label class="owner-agree">
+        <input type="checkbox" name="agree" required>
+        <span>我承诺：所出租账号来源合法、本人已满 18 周岁，并已知悉账号出租可能被游戏运营方封禁的风险。</span>
+      </label>
       <button type="submit" class="submit-btn">提交并上架</button>
       <div class="ok-msg" id="okMsg"></div>
       <div class="err-msg" id="errMsg"></div>
@@ -367,6 +400,12 @@ document.getElementById("regForm").addEventListener("submit", async (e)=>{
   e.preventDefault();
   const ok = document.getElementById("okMsg"), err = document.getElementById("errMsg");
   ok.style.display = "none"; err.style.display = "none";
+  const agreeEl = e.target.agree;
+  if(!agreeEl || !agreeEl.checked){
+    err.textContent = "请先勾选承诺（账号来源合法、已成年、知悉封号风险）后再提交。";
+    err.style.display = "block";
+    return;
+  }
   const fd = new FormData(e.target);
   const g = Object.fromEntries(fd.entries());
   // 纯币：默认单位 M，号主只填数字
@@ -439,6 +478,15 @@ refresh();
 loadAnn();
 loadProfit();
 setInterval(refresh, 30000); // 每30秒轮询，号主提交后自动出现
+
+// ===== 进入年龄确认 =====
+function acceptAge(){ try{ sessionStorage.setItem("age_ok","1"); }catch(e){} document.getElementById("ageMask").classList.remove("show"); }
+function rejectAge(){ document.getElementById("ageNote").style.display = "block"; }
+(function(){
+  try{
+    if(sessionStorage.getItem("age_ok") !== "1"){ document.getElementById("ageMask").classList.add("show"); }
+  }catch(e){ document.getElementById("ageMask").classList.add("show"); }
+})();
 </script>
 </body>
 </html>
