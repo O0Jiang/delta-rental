@@ -711,21 +711,5 @@
     "status": "可租",
     "wechat": "",
     "note": "无\n无"
-  },
-  {
-    "id": "U1786947934037",
-    "rank": "黑鹰",
-    "level": "60级",
-    "zone": "V区",
-    "price": 50,
-    "deposit": 200,
-    "coin": "100",
-    "insurance": "9",
-    "ratio": "40",
-    "ti": "",
-    "fu": "",
-    "status": "可租",
-    "wechat": "",
-    "note": "无"
   }
 ]
