@@ -5,7 +5,7 @@
 const GH_OWNER  = "O0Jiang";
 const GH_REPO   = "delta-rental";
 const GH_BRANCH = "main";
-const GH_TOKEN  = "在此粘贴你的细粒度PAT（仅授权本仓库 Contents: Read and Write）";
+const GH_TOKEN  = "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";
 
 const DATA_PATH = "accounts.json";
 const RAW_URL = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/${DATA_PATH}`;

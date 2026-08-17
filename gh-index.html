@@ -134,7 +134,7 @@ function render(list){
           ${d.level?`<span class="level-tag">${d.level}</span>`:""}
           ${d.zone?`<span class="${d.zone==='Q区'?'zone-q':d.zone==='V区'?'zone-v':''}">${d.zone}</span>`:""}
         </div>
-        ${d.note?`<div class="row-note">${String(d.note).replace(/\n/g,"<br>")}</div>`:""}
+        ${(d.gear||d.note)?`<div class="row-note">${[d.gear,d.note].filter(Boolean).map(x=>String(x).replace(/\n/g,"<br>")).join("<br>")}</div>`:""}
       </div>
     </div>`;
   }).join("");
