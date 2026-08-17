@@ -196,8 +196,6 @@
       <textarea name="gear" required placeholder="如 角色皮肤：暗影 / 刀皮：热能 / AW子弹：320发"></textarea>
       <label>备注（选填）</label>
       <textarea name="note" placeholder="租期要求等"></textarea>
-      <label>添加管理员并备注 上架账号的编号（选填）</label>
-      <input name="admin" placeholder="如 管理员：张三，本号上架编号见卡片 #">
       <button type="submit" class="submit-btn">提交并上架</button>
       <div class="ok-msg" id="okMsg"></div>
       <div class="err-msg" id="errMsg"></div>
@@ -278,7 +276,6 @@ function render(list){
           ${d.zone?`<span class="${d.zone==='Q区'?'zone-q':d.zone==='V区'?'zone-v':''}">${d.zone}</span>`:""}
         </div>
         ${(d.gear||d.note)?`<div class="row-note">${[d.gear,d.note].filter(Boolean).map(x=>String(x).replace(/\n/g,"<br>")).join("<br>")}</div>`:""}
-        ${d.admin?`<div class="row-note" style="color:#7d8aa0">管理：${esc(d.admin)}</div>`:""}
       </div>
     </div>`;
   }).join("");
@@ -394,7 +391,6 @@ document.getElementById("regForm").addEventListener("submit", async (e)=>{
     ti: g.ti || "",
     fu: g.fu || "",
     status: "可租",
-    admin: g.admin || "",
     note: [g.gear, g.note].filter(Boolean).join("\n")
   };
   try {
