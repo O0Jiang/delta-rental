@@ -14,6 +14,7 @@
   .filters { display: flex; flex-wrap: wrap; gap: 10px; background: #1a212b; padding: 14px; border-radius: 12px; margin: 16px 0; }
   .filters select, .filters input { background: #0f1419; color: #e6e6e6; border: 1px solid #2d3744; border-radius: 8px; padding: 9px 10px; font-size: 13px; flex: 1; min-width: 110px; }
   .filters button { background: #ffd24a; color: #0f1419; border: none; border-radius: 8px; padding: 9px 16px; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .owner-btn { background: #2d6cdf !important; color: #fff !important; }
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   @media (max-width: 560px){ .grid { grid-template-columns: 1fr; } }
   .card { background: #1a212b; border: 1px solid #2d3744; border-radius: 12px; overflow: hidden; display: flex; flex-direction: row; }
@@ -49,12 +50,24 @@
   .empty { text-align: center; color: #8a94a6; padding: 40px 0; font-size: 14px; grid-column: 1 / -1; }
   .loading { text-align: center; color: #8a94a6; padding: 40px 0; font-size: 14px; grid-column: 1 / -1; }
 
-  .mask { position: fixed; inset: 0; background: rgba(0,0,0,.6); display: none; align-items: center; justify-content: center; z-index: 10; padding: 16px; }
+  /* 弹窗（二维码 + 我要出租） */
+  .mask { position: fixed; inset: 0; background: rgba(0,0,0,.6); display: none; align-items: center; justify-content: center; z-index: 10; padding: 16px; overflow-y: auto; }
   .mask.show { display: flex; }
-  .modal { background: #1a212b; border: 1px solid #2d3744; border-radius: 14px; padding: 20px; width: 100%; max-width: 380px; }
+  .modal { background: #1a212b; border: 1px solid #2d3744; border-radius: 14px; padding: 20px; width: 100%; max-width: 380px; margin: auto; }
   .modal h3 { color: #ffd24a; font-size: 17px; margin-bottom: 14px; text-align: center; }
-  .modal img { width: 100%; border-radius: 10px; margin: 10px 0; }
-  .modal .cancel { width: 100%; padding: 11px; border-radius: 8px; border: none; font-size: 14px; background: #2d3744; color: #e6e6e6; cursor: pointer; }
+  .modal > .cancel { width: 100%; padding: 11px; border-radius: 8px; border: none; font-size: 14px; background: #2d3744; color: #e6e6e6; cursor: pointer; margin-top: 10px; }
+
+  /* 我要出租表单 */
+  .modal label { display: block; font-size: 12px; color: #b8c0cc; margin: 12px 0 4px; }
+  .modal label .req { color: #ff6b6b; }
+  .modal input, .modal select, .modal textarea { width: 100%; background: #0f1419; color: #e6e6e6; border: 1px solid #2d3744; border-radius: 8px; padding: 10px; font-size: 14px; box-sizing: border-box; }
+  .modal textarea { resize: vertical; min-height: 56px; }
+  .modal .frow { display: flex; gap: 10px; }
+  .modal .frow > div { flex: 1; }
+  .modal .submit-btn { width: 100%; margin-top: 18px; background: #ffd24a; color: #0f1419; border: none; border-radius: 10px; padding: 13px; font-size: 15px; font-weight: 700; cursor: pointer; }
+  .modal .ok-msg { display: none; background: #16351f; color: #5fd97a; border: 1px solid #1f5a35; border-radius: 8px; padding: 12px; margin-top: 14px; font-size: 13px; text-align: center; }
+  .modal .err-msg { display: none; background: #3a1416; color: #ff6b6b; border: 1px solid #7a2a2e; border-radius: 8px; padding: 12px; margin-top: 14px; font-size: 13px; text-align: center; }
+  .modal .hint { font-size: 11px; color: #8a94a6; margin-top: 12px; line-height: 1.6; background: #0f1419; border: 1px solid #2d3744; border-radius: 8px; padding: 10px; }
 </style>
 </head>
 <body>
@@ -69,6 +82,7 @@
     <select id="fStatus"><option value="可租" selected>可租</option><option value="已租">已租</option></select>
     <input id="fMax" type="number" placeholder="最高租金">
     <button onclick="apply()">筛选</button>
+    <button class="owner-btn" onclick="openOwner()">+ 我要出租</button>
   </div>
 
   <div class="grid" id="list"><div class="loading">加载中…</div></div>
@@ -76,11 +90,83 @@
 
 <div class="contact" id="contactBtn" onclick="openQr()">看中账号？点此加微信对接</div>
 
+<!-- 微信二维码弹窗 -->
 <div class="mask" id="qrMask">
   <div class="modal" style="text-align:center;">
     <h3>长按二维码识别，加微信对接</h3>
     <img src="wechat-qr.jpg" alt="微信二维码" style="width:100%;border-radius:10px;margin:10px 0;">
-    <button type="button" class="cancel" onclick="closeQr()" style="width:100%;">关闭</button>
+    <button type="button" class="cancel" onclick="closeQr()">关闭</button>
+  </div>
+</div>
+
+<!-- 我要出租 登记弹窗 -->
+<div class="mask" id="ownerMask">
+  <div class="modal">
+    <h3>📝 我要出租登记</h3>
+    <form id="regForm">
+      <label>段位 <span class="req">*</span></label>
+      <select name="rank" required>
+        <option value="">请选择</option>
+        <option>青铜</option><option>白银</option><option>黄金</option><option>铂金</option>
+        <option>钻石</option><option>黑鹰</option><option>三角洲巅峰</option>
+      </select>
+      <div class="frow">
+        <div>
+          <label>等级（选填）</label>
+          <input name="level" type="number" placeholder="如 60，即60级">
+        </div>
+        <div>
+          <label>区服 <span class="req">*</span></label>
+          <select name="zone" required>
+            <option value="">请选择</option>
+            <option>Q区</option><option>V区</option>
+          </select>
+        </div>
+      </div>
+      <div class="frow">
+        <div>
+          <label>租金/天(元) <span class="req">*</span></label>
+          <input name="price" type="number" required placeholder="30">
+        </div>
+        <div>
+          <label>押金(元,选填)</label>
+          <input name="deposit" type="number" placeholder="200">
+        </div>
+      </div>
+      <div class="frow">
+        <div>
+          <label>纯币 <span class="req">*</span></label>
+          <input name="coin" required placeholder="如 50M">
+        </div>
+        <div>
+          <label>保险(选填)</label>
+          <input name="insurance" placeholder="如 9">
+        </div>
+      </div>
+      <div class="frow">
+        <div>
+          <label>比例(选填)</label>
+          <input name="ratio" placeholder="如 1:29">
+        </div>
+        <div>
+          <label>体力/负重(选填)</label>
+          <input name="tifu" placeholder="如 7体6负">
+        </div>
+      </div>
+      <label>装备亮点 / 卖点 <span class="req">*</span></label>
+      <textarea name="gear" required placeholder="满改M4、稀有皮肤等"></textarea>
+      <label>备注（选填）</label>
+      <textarea name="note" placeholder="租期要求等"></textarea>
+      <label>你的微信号（选填，方便中介对接）</label>
+      <input name="wechat" placeholder="仅中介可见，不公开">
+      <button type="submit" class="submit-btn">提交并上架</button>
+      <div class="ok-msg" id="okMsg"></div>
+      <div class="err-msg" id="errMsg"></div>
+      <div class="hint">
+        数据安全提示：请勿在表单填写账号密码，成交时由中介私下对接。<br>
+        提交即通过 GitHub 直接写入数据并上架，约几十秒后出现在列表中。
+      </div>
+    </form>
   </div>
 </div>
 
@@ -168,7 +254,61 @@ async function refresh(){
 
 function openQr(){ document.getElementById("qrMask").classList.add("show"); }
 function closeQr(){ document.getElementById("qrMask").classList.remove("show"); }
+function openOwner(){ document.getElementById("ownerMask").classList.add("show"); }
+function closeOwner(){ document.getElementById("ownerMask").classList.remove("show"); }
 document.getElementById("qrMask").addEventListener("click", e=>{ if(e.target.id==="qrMask") closeQr(); });
+document.getElementById("ownerMask").addEventListener("click", e=>{ if(e.target.id==="ownerMask") closeOwner(); });
+
+// ===== 我要出租：方案A 直写仓库（单个细粒度令牌，仅限本仓库 Contents 读写）=====
+function b64(str){ return btoa(unescape(encodeURIComponent(str))); }
+function unb64(b){ return decodeURIComponent(escape(atob(b))); }
+
+document.getElementById("regForm").addEventListener("submit", async (e)=>{
+  e.preventDefault();
+  const ok = document.getElementById("okMsg"), err = document.getElementById("errMsg");
+  ok.style.display = "none"; err.style.display = "none";
+  const fd = new FormData(e.target);
+  const g = Object.fromEntries(fd.entries());
+  const tifu = (g.tifu||"").trim();
+  let ti="", fu="";
+  const m1 = tifu.match(/(\d+)\s*体/); if(m1) ti = m1[1];
+  const m2 = tifu.match(/(\d+)\s*负/); if(m2) fu = m2[1];
+  const rec = {
+    id: "U" + Date.now(),
+    rank: g.rank,
+    level: g.level ? (g.level + "级") : "",
+    zone: g.zone,
+    price: Number(g.price),
+    deposit: g.deposit ? Number(g.deposit) : "",
+    coin: g.coin,
+    insurance: g.insurance || "",
+    ratio: g.ratio || "",
+    ti: ti,
+    fu: fu,
+    status: "可租",
+    wechat: g.wechat || "",
+    note: [g.gear, g.note].filter(Boolean).join("\n")
+  };
+  try {
+    const headers = { Authorization:`Bearer ${GH_TOKEN}`, Accept:"application/vnd.github+json" };
+    const getResp = await fetch(API_URL, { headers });
+    let list = [], sha = null;
+    if(getResp.ok){ const j = await getResp.json(); list = JSON.parse(unb64(j.content)); sha = j.sha; }
+    else if(getResp.status !== 404){ throw new Error("读取数据失败：" + getResp.status); }
+    list.push(rec);
+    const body = { message:"add account via form", content: b64(JSON.stringify(list, null, 2)), branch: GH_BRANCH };
+    if(sha) body.sha = sha;
+    const putResp = await fetch(API_URL, { method:"PUT", headers:{...headers,"Content-Type":"application/json"}, body: JSON.stringify(body) });
+    if(!putResp.ok){ const e2 = await putResp.json().catch(()=>({})); throw new Error("提交失败："+putResp.status+" "+(e2.message||"")); }
+    ok.textContent = "登记成功！账号已上架，约几十秒后自动出现在列表中。";
+    ok.style.display = "block";
+    e.target.reset();
+  } catch(ex){
+    err.textContent = "提交出错：" + ex.message + "（请确认 config.js 中令牌已正确填写且有本仓库写权限）";
+    err.style.display = "block";
+    console.error(ex);
+  }
+});
 
 refresh();
 setInterval(refresh, 30000); // 每30秒轮询，号主提交后自动出现
