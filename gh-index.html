@@ -87,7 +87,7 @@
 
   <div class="notice-bar" onclick="openNotice()">
     <span class="notice-dot"></span>
-    <span class="notice-title">📢 租号必看：安全须知与交易公告</span>
+    <span class="notice-title" id="noticeTitle">📢 租号必看</span>
     <span class="notice-arrow">›</span>
   </div>
 
@@ -122,14 +122,7 @@
 <div class="mask" id="noticeMask">
   <div class="modal">
     <h3>租号必看 · 安全须知</h3>
-    <div class="notice-body">
-      <p><b>1. 交易方式</b><br>选中账号后长按二维码添加客服微信，确认租期、押金与账号状态后再付款。</p>
-      <p><b>2. 账号安全</b><br>租号期间请勿使用外挂、第三方插件或进行任何违规操作，否则押金不退并追究责任。</p>
-      <p><b>3. 密码与验证</b><br>账号密码仅在成交后由客服私发，请勿在任何公开页面填写真实密码。</p>
-      <p><b>4. 装备与资产</b><br>租号前请截图留存账号资产；租用期间人为损坏、出售或转移装备的，按市场价赔偿。</p>
-      <p><b>5. 押金与退款</b><br>退租并验收无误后 2 小时内退还押金；超时联系客服处理。</p>
-      <p><b>6. 售后联系</b><br>任何问题请联系页面底部微信客服，保留聊天记录以便售后。</p>
-    </div>
+    <div class="notice-body" id="noticeBody"></div>
     <button type="button" class="cancel" onclick="closeNotice()">我知道了</button>
   </div>
 </div>
@@ -208,8 +201,10 @@
 <script src="config.js"></script>
 <script>
 let DATA = [];
+let ANN = { title:"租号必看", bars:[] };
 
 function statusClass(s){ return s === "可租" ? "ok" : s === "已租" ? "busy" : "maint"; }
+function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, c=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
 
 function coinParts(c){
   if(!c) return { num: "—", unit: "" };
@@ -305,6 +300,36 @@ function openOwner(){ document.getElementById("ownerMask").classList.add("show")
 function closeOwner(){ document.getElementById("ownerMask").classList.remove("show"); }
 function openNotice(){ document.getElementById("noticeMask").classList.add("show"); }
 function closeNotice(){ document.getElementById("noticeMask").classList.remove("show"); }
+
+// 公告：从 ann.json 动态读取（管理台可改）
+const ANN_API = API_URL.replace('accounts.json','ann.json');
+const ANN_RAW = RAW_URL.replace('accounts.json','ann.json');
+function applyAnn(){
+  const t = (ANN && ANN.title) ? ANN.title : "租号必看";
+  document.getElementById("noticeTitle").textContent = "📢 " + t;
+  const b = document.getElementById("noticeBody");
+  if(ANN && ANN.bars && ANN.bars.length){
+    b.innerHTML = ANN.bars.map((s,i)=>`<p><b>${i+1}.</b> ${esc(s)}</p>`).join("");
+  } else if(ANN && ANN.body){
+    b.innerHTML = `<p>${esc(ANN.body).replace(/\n/g,"</p><p>")}</p>`;
+  } else {
+    b.innerHTML = '<p>暂无公告内容</p>';
+  }
+}
+async function loadAnn(){
+  try {
+    const r = await fetch(ANN_API + "?t=" + Date.now(), { headers:{ Authorization:`Bearer ${GH_TOKEN}`, Accept:"application/vnd.github+json" } });
+    if(r.ok){ const j = await r.json(); ANN = JSON.parse(unb64(j.content)); applyAnn(); return; }
+  } catch(e){}
+  try {
+    const r = await fetch(ANN_RAW + "?t=" + Date.now());
+    if(r.ok){ ANN = await r.json(); applyAnn(); return; }
+  } catch(e){}
+  try {
+    const r = await fetch("ann.json");
+    if(r.ok){ ANN = await r.json(); applyAnn(); return; }
+  } catch(e){}
+}
 document.getElementById("qrMask").addEventListener("click", e=>{ if(e.target.id==="qrMask") closeQr(); });
 document.getElementById("ownerMask").addEventListener("click", e=>{ if(e.target.id==="ownerMask") closeOwner(); });
 document.getElementById("noticeMask").addEventListener("click", e=>{ if(e.target.id==="noticeMask") closeNotice(); });
@@ -365,6 +390,7 @@ document.getElementById("regForm").addEventListener("submit", async (e)=>{
 });
 
 refresh();
+loadAnn();
 setInterval(refresh, 30000); // 每30秒轮询，号主提交后自动出现
 </script>
 </body>
