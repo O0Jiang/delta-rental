@@ -80,7 +80,16 @@
   <div class="filters">
     <select id="fRank"><option value="">全部段位</option><option value="青铜">青铜</option><option value="白银">白银</option><option value="黄金">黄金</option><option value="铂金">铂金</option><option value="钻石">钻石</option><option value="黑鹰">黑鹰</option><option value="三角洲巅峰">三角洲巅峰</option></select>
     <select id="fStatus"><option value="可租" selected>可租</option><option value="已租">已租</option></select>
+    <select id="fIns" title="按保险格数筛选">
+      <option value="">保险不限</option><option value="8">保险≥8格</option><option value="9">保险≥9格</option><option value="10">保险≥10格</option><option value="11">保险≥11格</option><option value="12">保险≥12格</option>
+    </select>
+    <select id="fRatio" title="按账号比例筛选">
+      <option value="">比例不限</option><option value="25">比例≥1:25</option><option value="28">比例≥1:28</option><option value="30">比例≥1:30</option><option value="35">比例≥1:35</option>
+    </select>
     <input id="fMax" type="number" placeholder="最高租金">
+    <select id="fSort" title="排序方式">
+      <option value="">排序：默认</option><option value="ins">保险格数↓</option><option value="ratio">比例↓</option><option value="price">租金↑</option><option value="coin">纯币↓</option>
+    </select>
     <button onclick="apply()">筛选</button>
     <button class="owner-btn" onclick="openOwner()">+ 我要出租</button>
   </div>
@@ -187,7 +196,7 @@ function render(list){
   const el = document.getElementById("list");
   if(!list.length){ el.innerHTML = '<div class="empty">暂无符合条件账号，调低筛选试试</div>'; return; }
   el.innerHTML = list.map(d=>{
-    const seq = "#" + (d._seq || "");
+    const seq = "#" + (d.no ? String(d.no).padStart(3,"0") : (d._seq || ""));
     const cp = coinParts(d.coin);
     const ti = d.ti ? `体力 ${d.ti}` : "";
     const fu = d.fu ? `负重 ${d.fu}` : "";
@@ -209,7 +218,7 @@ function render(list){
         </div>
       </div>
       <div class="right">
-        <div class="top"><span class="rank">${seq}</span><span class="badge ${statusClass(d.status)}">${d.status}</span></div>
+        <div class="top"><span class="rank">编号 ${seq}</span><span class="badge ${statusClass(d.status)}">${d.status}</span></div>
         <div class="row-kpi">
           <div class="kpi"><div class="k-label">价格</div><div class="k-val">￥${d.price}</div></div>
           <div class="kpi"><div class="k-label">押金</div><div class="k-val">${d.deposit ? ("￥"+d.deposit) : "—"}</div></div>
@@ -226,17 +235,33 @@ function render(list){
   }).join("");
 }
 
+// 字段数值解析
+function insNum(v){ const m = String(v||"").match(/(\d+)/); return m ? parseInt(m[1],10) : 0; }
+function ratioNum(v){ const s = String(v||""); const m = s.match(/1\s*:\s*(\d+)/i); if(m) return parseInt(m[1],10); const m2 = s.match(/(\d+)/); return m2 ? parseInt(m2[1],10) : 0; }
+function coinNum(c){ const m = String(c||"").match(/([\d.]+)/); return m ? parseFloat(m[1]) : 0; }
+
 function apply(){
   const r = document.getElementById("fRank").value;
   const s = document.getElementById("fStatus").value;
   const m = parseFloat(document.getElementById("fMax").value) || 99999;
-  render(DATA.filter(d => {
+  const insMin = parseInt(document.getElementById("fIns").value) || 0;
+  const ratMin = parseInt(document.getElementById("fRatio").value) || 0;
+  const sortBy = document.getElementById("fSort").value;
+  let list = DATA.filter(d => {
     if(r && !(d.rank||"").includes(r)) return false;
     if(s === "已租") { if(d.status !== "已租") return false; }
     else { if(d.status === "已租") return false; }
     if((d.price||0) > m) return false;
+    if(insMin && insNum(d.insurance) < insMin) return false;
+    if(ratMin && ratioNum(d.ratio) < ratMin) return false;
     return true;
-  }));
+  });
+  // 排序（默认保持数据原顺序，即管理员在后台调过的顺序）
+  if(sortBy === "ins") list.sort((a,b)=> insNum(b.insurance) - insNum(a.insurance));
+  else if(sortBy === "ratio") list.sort((a,b)=> ratioNum(b.ratio) - ratioNum(a.ratio));
+  else if(sortBy === "price") list.sort((a,b)=> (Number(a.price)||0) - (Number(b.price)||0));
+  else if(sortBy === "coin") list.sort((a,b)=> coinNum(b.coin) - coinNum(a.coin));
+  render(list);
 }
 
 // 读取顺序：GitHub API（带令牌，数据最新）→ raw（绕过缓存）→ 本地预览
@@ -299,6 +324,9 @@ document.getElementById("regForm").addEventListener("submit", async (e)=>{
     let list = [], sha = null;
     if(getResp.ok){ const j = await getResp.json(); list = JSON.parse(unb64(j.content)); sha = j.sha; }
     else if(getResp.status !== 404){ throw new Error("读取数据失败：" + getResp.status); }
+    let maxNo = 0;
+    list.forEach(x => { const n = Number(x.no); if(!isNaN(n) && n > maxNo) maxNo = n; });
+    rec.no = maxNo + 1; // 自动接上最大编号
     list.push(rec);
     const body = { message:"add account via form", content: b64(JSON.stringify(list, null, 2)), branch: GH_BRANCH };
     if(sha) body.sha = sha;
