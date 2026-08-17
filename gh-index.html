@@ -428,9 +428,7 @@ function updatePricePreview(){
   const r = parseInt(document.querySelector('input[name=ratio]').value, 10);
   if(c > 0 && r > 0){
     const base = Math.round(c * 100 / r);
-    const listed = Math.round(base * (1 + MARKUP));
-    const profit = listed - base;
-    p.innerHTML = `💰 号主底价 ￥${base} ｜ 上架价 ￥${listed}（含 ${(MARKUP*100)}% 加价，你的利润 ￥${profit}）`;
+    p.innerHTML = `💰 号主到手价：￥${base}（按 纯币 ${c}M ÷ 比例 1:${r} 自动核算）`;
     p.classList.add("active");
   } else {
     p.textContent = "💰 预计租金：填好「纯币」和「比例」后自动算出";
