@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>三角洲陪玩·代肝 · COS电竞</title>
+<title>三角洲陪玩·代肝 · COS电竞俱乐部</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: #0f1419; color: #e6e6e6; }
@@ -23,52 +23,40 @@
   .block { margin: 18px 0; }
   .block-head { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; margin-bottom: 12px; }
   .block-head h2 { font-size: 18px; color: #ffd24a; }
-  .block-tools { display: flex; flex-wrap: wrap; gap: 8px; }
-  .block-tools input, .block-tools select { background: #0f1419; color: #e6e6e6; border: 1px solid #2d3744; border-radius: 8px; padding: 9px 10px; font-size: 13px; }
-  .block-tools input { width: 120px; }
-  .block-tools button { background: #ffd24a; color: #0f1419; border: none; border-radius: 8px; padding: 9px 14px; font-size: 13px; font-weight: 600; cursor: pointer; }
-  .owner-btn { background: #2d6cdf !important; color: #fff !important; }
+  .cnt { font-size: 12px; color: #8a94a6; }
 
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   @media (max-width: 560px){ .grid { grid-template-columns: 1fr; } }
-  .card { background: #1a212b; border: 1px solid #2d3744; border-radius: 12px; padding: 13px; display: flex; flex-direction: column; gap: 9px; }
-  .card .top { display: flex; justify-content: space-between; align-items: center; }
-  .card .rank { font-size: 17px; font-weight: 800; color: #ffd24a; }
+  .card { background: #1a212b; border: 1px solid #2d3744; border-radius: 12px; padding: 13px; display: flex; flex-direction: column; gap: 10px; }
+  .card .top { display: flex; align-items: center; gap: 10px; }
+  .card .who { flex: 1; min-width: 0; }
+  .card .name { font-size: 15px; font-weight: 700; color: #fff; }
+  .card .sub { font-size: 12px; color: #8a94a6; margin-top: 2px; }
+  .ava { width: 46px; height: 46px; border-radius: 50%; overflow: hidden; background: #22303f; border: 1px solid #2d3744; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .ava img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .ava-ini { font-size: 18px; font-weight: 800; color: #ffd24a; }
   .badge { font-size: 11px; padding: 3px 9px; border-radius: 20px; white-space: nowrap; }
   .ok { background: #16351f; color: #5fd97a; }
   .busy { background: #3a2a12; color: #ffb24a; }
   .maint { background: #2d2d2d; color: #aaa; }
-  .card .price { font-size: 20px; font-weight: 800; color: #fff; }
+  .games { font-size: 12.5px; color: #b8c0cc; background: #0f1419; border: 1px solid #2d3744; border-radius: 8px; padding: 7px 9px; }
+  .price-row { display: flex; align-items: baseline; }
+  .card .price { font-size: 19px; font-weight: 800; color: #fff; }
   .card .price small { font-size: 12px; color: #8a94a6; font-weight: 600; margin-left: 2px; }
+  .radar-wrap { text-align: center; padding: 2px 0; }
   .row-info { display: flex; flex-wrap: wrap; gap: 6px; }
   .tag { font-size: 11.5px; background: #0f1419; border: 1px solid #2d3744; color: #b8c0cc; padding: 3px 8px; border-radius: 6px; }
   .card .note { font-size: 12px; color: #8a94a6; line-height: 1.5; }
   .card .note b { color: #b8c0cc; }
   .seq-line { font-size: 10.5px; color: #5a6474; }
-  .empty { text-align: center; color: #8a94a6; padding: 40px 0; font-size: 14px; grid-column: 1 / -1; }
-  .loading { text-align: center; color: #8a94a6; padding: 40px 0; font-size: 14px; grid-column: 1 / -1; }
 
-  /* 弹窗（二维码 + 我要接单） */
+  /* 弹窗（二维码 + 公告） */
   .mask { position: fixed; inset: 0; background: rgba(0,0,0,.6); display: none; align-items: center; justify-content: center; z-index: 10; padding: 16px; overflow-y: auto; }
   .mask.show { display: flex; }
   .modal { background: #1a212b; border: 1px solid #2d3744; border-radius: 14px; padding: 20px; width: 100%; max-width: 380px; margin: auto; }
   .modal h3 { color: #ffd24a; font-size: 17px; margin-bottom: 14px; text-align: center; }
-  .modal > .cancel { width: 100%; padding: 11px; border-radius: 8px; border: none; font-size: 14px; background: #2d3744; color: #e6e6e6; cursor: pointer; margin-top: 10px; }
 
-  .modal label { display: block; font-size: 12px; color: #b8c0cc; margin: 12px 0 4px; }
-  .modal label .req { color: #ff6b6b; }
-  .modal input, .modal select, .modal textarea { width: 100%; background: #0f1419; color: #e6e6e6; border: 1px solid #2d3744; border-radius: 8px; padding: 10px; font-size: 14px; box-sizing: border-box; }
-  .modal textarea { resize: vertical; min-height: 56px; }
-  .modal .frow { display: flex; gap: 10px; }
-  .modal .frow > div { flex: 1; }
-  .modal .submit-btn { width: 100%; margin-top: 18px; background: #ffd24a; color: #0f1419; border: none; border-radius: 10px; padding: 13px; font-size: 15px; font-weight: 700; cursor: pointer; }
-  .modal .ok-msg { display: none; background: #16351f; color: #5fd97a; border: 1px solid #1f5a35; border-radius: 8px; padding: 12px; margin-top: 14px; font-size: 13px; text-align: center; }
-  .modal .err-msg { display: none; background: #3a1416; color: #ff6b6b; border: 1px solid #7a2a2e; border-radius: 8px; padding: 12px; margin-top: 14px; font-size: 13px; text-align: center; }
-  .modal .hint { font-size: 11px; color: #8a94a6; margin-top: 12px; line-height: 1.6; background: #0f1419; border: 1px solid #2d3744; border-radius: 8px; padding: 10px; }
-  .price-preview { margin-top: 4px; background: #0c2630; border: 1px solid #1f4a5a; color: #6fd3e8; border-radius: 8px; padding: 13px; font-size: 14px; text-align: center; font-weight: 700; letter-spacing: .3px; }
-  .price-preview.active { background: #103040; border-color: #2f6a82; color: #7fe3f5; }
-
-  /* 合规：横幅 + 年龄确认弹窗 + 登记承诺 */
+  /* 合规：横幅 + 年龄确认弹窗 */
   .compliance-bar { font-size: 11.5px; color: #c4a33a; background: #2d220b; border: 1px solid #5e4a18; border-radius: 10px; padding: 9px 12px; margin: 0 0 12px; line-height: 1.6; }
   .compliance-bar b { color: #ffd24a; }
   .age-modal .age-text { font-size: 13px; color: #b8c0cc; line-height: 1.85; margin: 14px 0; }
@@ -77,8 +65,6 @@
   .age-btn.ok { background: #ffd24a; color: #0f1419; }
   .age-btn.no { background: #2d3744; color: #e6e6e6; }
   .age-note { display: none; font-size: 12px; color: #ffb24a; text-align: center; margin-top: 12px; line-height: 1.5; }
-  .modal label.owner-agree { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; color: #b8c0cc; margin: 16px 0 0; line-height: 1.5; cursor: pointer; }
-  .modal label.owner-agree input { margin-top: 2px; flex-shrink: 0; width: auto; }
 
   .contact { position: fixed; bottom: 0; left: 0; right: 0; background: #ffd24a; color: #0f1419; text-align: center; padding: 14px; font-weight: 700; font-size: 15px; cursor: pointer; z-index: 5; }
 </style>
@@ -86,8 +72,8 @@
 <body>
 <div class="wrap">
   <header>
-    <h1>COS电竞 · 三角洲陪玩·代肝</h1>
-    <p>技术护航 / 跑刀代刷 · 选中后长按二维码加微信对接 · 服务者自助上架、实时同步</p>
+    <h1>COS电竞俱乐部 · 陪玩·代肝</h1>
+    <p>技术护航 / 跑刀代刷 · 俱乐部成员展示 · 看中后长按二维码加微信对接</p>
   </header>
 
   <div class="compliance-bar">⚠️ 本平台仅向 <b>18 周岁以上</b> 成年用户提供游戏陪玩/代肝信息服务。陪玩为同场游戏、不登录他人账号；代肝需登录客户账号，可能违反游戏运营方用户协议并导致账号封禁，相关风险由用户自行承担。平台仅提供信息撮合，不代收代付资金。</div>
@@ -102,16 +88,7 @@
   <section class="block">
     <div class="block-head">
       <h2>🎮 陪玩 · 技术护航</h2>
-      <div class="block-tools">
-        <input id="fMaxPw" type="number" placeholder="最高价(元/局)">
-        <select id="fSortPw" title="排序方式">
-          <option value="">排序：默认</option>
-          <option value="price">价格↑</option>
-          <option value="rank">段位</option>
-        </select>
-        <button onclick="applyPw()">筛选</button>
-        <button class="owner-btn" onclick="openOwner('陪玩')">+ 我要接单</button>
-      </div>
+      <span class="cnt" id="cntPw"></span>
     </div>
     <div class="grid" id="listPw"><div class="loading">加载中…</div></div>
   </section>
@@ -120,16 +97,7 @@
   <section class="block">
     <div class="block-head">
       <h2>⚔️ 代肝 · 跑刀代刷</h2>
-      <div class="block-tools">
-        <input id="fMaxDg" type="number" placeholder="最高价(元/单)">
-        <select id="fSortDg" title="排序方式">
-          <option value="">排序：默认</option>
-          <option value="price">价格↑</option>
-          <option value="rank">段位</option>
-        </select>
-        <button onclick="applyDg()">筛选</button>
-        <button class="owner-btn" onclick="openOwner('代肝')">+ 我要接单</button>
-      </div>
+      <span class="cnt" id="cntDg"></span>
     </div>
     <div class="grid" id="listDg"><div class="loading">加载中…</div></div>
   </section>
@@ -170,78 +138,14 @@
   </div>
 </div>
 
-<!-- 我要接单 登记弹窗 -->
-<div class="mask" id="ownerMask">
-  <div class="modal">
-    <h3>📝 我要接单登记（<span id="ownerType">陪玩</span>）</h3>
-    <form id="regForm">
-      <label>段位 <span class="req">*</span></label>
-      <select name="rank" required>
-        <option value="">请选择</option>
-        <option>青铜</option><option>白银</option><option>黄金</option><option>铂金</option>
-        <option>钻石</option><option>黑鹰</option><option>三角洲巅峰</option>
-      </select>
-      <label><span id="strongLabel">擅长干员·枪械·模式</span> <span class="req">*</span></label>
-      <textarea name="strong" required placeholder="擅长干员·枪械·模式"></textarea>
-      <div class="frow">
-        <div>
-          <label>价格(元) <span class="req">*</span></label>
-          <input name="price" type="number" step="0.5" required placeholder="如 50">
-        </div>
-        <div>
-          <label>计价单位</label>
-          <select name="unit">
-            <option value="局">局</option>
-            <option value="单">单</option>
-          </select>
-        </div>
-      </div>
-      <div class="price-preview" id="pricePreview">💰 你到手价：填好价格后自动显示</div>
-      <div class="frow">
-        <div>
-          <label>游戏端</label>
-          <select name="platform">
-            <option value="">请选择</option>
-            <option>PC</option><option>手游</option>
-          </select>
-        </div>
-        <div>
-          <label>是否带麦</label>
-          <select name="mic">
-            <option value="">请选择</option>
-            <option>带麦</option><option>不带麦</option>
-          </select>
-        </div>
-      </div>
-      <label>在线时段（选填）</label>
-      <input name="online" placeholder="如 晚8-12点">
-      <label>备注（选填）</label>
-      <textarea name="note" placeholder="服务要求等"></textarea>
-      <label class="owner-agree">
-        <input type="checkbox" name="agree" required>
-        <span>我承诺：所提供服务真实合法、本人已满 18 周岁；知悉代肝登录客户账号可能违反游戏协议导致封号的风险，由交易双方自行承担。</span>
-      </label>
-      <button type="submit" class="submit-btn">提交并上架</button>
-      <div class="ok-msg" id="okMsg"></div>
-      <div class="err-msg" id="errMsg"></div>
-      <div class="hint">
-        数据安全提示：请勿在表单填写账号密码，成交时由中介私下对接。<br>
-        提交即通过 GitHub 直接写入数据并上架，约几十秒后出现在对应板块。
-      </div>
-    </form>
-  </div>
-</div>
-
 <script src="config.js"></script>
 <script>
 let DATA = [];
 let ANN = { title:"接单必看", bars:[] };
-let currentType = "陪玩";
 
-// 利润/加价率：接单方底价(d.price) + 全局加价率 = 客户上架价，差价为平台利润
+// 利润/加价率：底价(d.price) + 全局加价率 = 客户上架价，差价为平台利润
 let MARKUP = 0.1;  // 默认 10%，由 profit.json 控制，管理后台可改
 function listedPrice(base){ const m = Number(base)||0; return Math.round(m * (1 + MARKUP)); }
-function profitOf(base){ return listedPrice(base) - (Number(base)||0); }
 
 async function loadProfit(){
   try {
@@ -256,9 +160,43 @@ async function loadProfit(){
 
 function statusClass(s){ return s === "可接" ? "ok" : s === "忙碌" ? "busy" : "maint"; }
 function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, c=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
+function unb64(b){ return decodeURIComponent(escape(atob(b))); }
+
+// 头像（失败回退到昵称首字）
+function avatarHTML(d){
+  const nm = (d.name || d.rank || "?").trim();
+  const ini = nm.slice(0,1) || "?";
+  if(d.avatar){
+    return `<div class="ava"><img src="${esc(d.avatar)}" alt="${esc(nm)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"><span class="ava-ini" style="display:none">${esc(ini)}</span></div>`;
+  }
+  return `<div class="ava"><span class="ava-ini">${esc(ini)}</span></div>`;
+}
+
+// 六边形雷达图（自我特点）
+const RADAR_LABELS = ["技术","沟通","耐心","效率","娱乐","靠谱"];
+function radarSVG(vals, size){
+  const cx = size/2, cy = size/2, R = size*0.32, labR = size*0.40, n = 6;
+  const ang = i => (Math.PI/180) * (-90 + i*(360/n));
+  const pt = (i, r) => [ (cx + r*Math.cos(ang(i))).toFixed(1), (cy + r*Math.sin(ang(i))).toFixed(1) ];
+  let grid = "";
+  [1, 0.66, 0.33].forEach(f=>{
+    const p = []; for(let i=0;i<n;i++){ const a=pt(i,R*f); p.push(a[0]+","+a[1]); }
+    grid += `<polygon points="${p.join(' ')}" fill="none" stroke="#2d3744" stroke-width="1"/>`;
+  });
+  let axes = "";
+  for(let i=0;i<n;i++){ const a=pt(i,R); axes += `<line x1="${cx}" y1="${cy}" x2="${a[0]}" y2="${a[1]}" stroke="#2d3744" stroke-width="1"/>`; }
+  const dp = []; for(let i=0;i<n;i++){ const v=Math.max(0,Math.min(100, Number(vals[i])||0))/100; const a=pt(i,R*v); dp.push(a[0]+","+a[1]); }
+  const dataPoly = `<polygon points="${dp.join(' ')}" fill="rgba(255,210,74,0.30)" stroke="#ffd24a" stroke-width="2"/>`;
+  let labs = "";
+  for(let i=0;i<n;i++){ const a=pt(i,labR); const c=Math.cos(ang(i)); let anchor="middle"; if(c>0.3)anchor="start"; else if(c<-0.3)anchor="end"; labs += `<text x="${a[0]}" y="${(Number(a[1])+3).toFixed(1)}" fill="#b8c0cc" font-size="10" text-anchor="${anchor}">${esc(RADAR_LABELS[i])}</text>`; }
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">${grid}${axes}${dataPoly}${labs}</svg>`;
+}
 
 function renderCard(d){
   const seq = "#" + (d.no ? String(d.no).padStart(3,"0") : "");
+  const radar = radarSVG(
+    [Number(d.tech)||0, Number(d.comm)||0, Number(d.patience)||0, Number(d.eff)||0, Number(d.fun)||0, Number(d.reliable)||0],
+    168);
   const tags = [];
   if(d.platform) tags.push(`<span class="tag">${esc(d.platform)}</span>`);
   if(d.mic) tags.push(`<span class="tag">${esc(d.mic)}</span>`);
@@ -266,36 +204,36 @@ function renderCard(d){
   return `
   <div class="card">
     <div class="top">
-      <span class="rank">${esc(d.rank || "未标段位")}</span>
+      ${avatarHTML(d)}
+      <div class="who">
+        <div class="name">${esc(d.name || "未命名")}</div>
+        <div class="sub">${esc(d.rank || "未标段位")} · ${esc(d.type || "")}</div>
+      </div>
       <span class="badge ${statusClass(d.status)}">${esc(d.status || "可接")}</span>
     </div>
-    <div class="price">￥${listedPrice(d.price)}<small>/${esc(d.unit || "局")}</small></div>
+    ${d.games ? `<div class="games">🎯 擅长的游戏：${esc(d.games)}</div>` : ""}
+    <div class="price-row"><span class="price">￥${listedPrice(d.price)}<small>/${esc(d.unit || "局")}</small></span></div>
+    <div class="radar-wrap">${radar}</div>
     <div class="row-info">${tags.join("")}</div>
     ${d.strong ? `<div class="note"><b>擅长：</b>${esc(d.strong)}</div>` : ""}
-    ${(d.note||d.gear) ? `<div class="note">${esc(d.note || d.gear)}</div>` : ""}
     <div class="seq-line">编号 ${seq}</div>
   </div>`;
 }
 
-function render(list, elId){
+function render(list, elId, cntId){
   const el = document.getElementById(elId);
-  if(!list.length){ el.innerHTML = '<div class="empty">暂无符合条件的服务，调低筛选试试</div>'; return; }
+  if(!list.length){ el.innerHTML = '<div class="empty">暂无成员，去管理后台新增接单即可上架</div>'; document.getElementById(cntId).textContent = ""; return; }
   el.innerHTML = list.map(renderCard).join("");
+  document.getElementById(cntId).textContent = "（" + list.length + " 位）";
 }
 
-function filterList(type, fMaxId, fSortId){
-  const m = parseFloat(document.getElementById(fMaxId).value) || 99999;
-  const sortBy = document.getElementById(fSortId).value;
-  let list = DATA.filter(d => d.type === type && d.status !== "忙碌" && listedPrice(d.price) <= m);
-  if(sortBy === "price") list.sort((a,b)=> (Number(a.price)||0) - (Number(b.price)||0));
-  else if(sortBy === "rank") list.sort((a,b)=> (a.rank||"").localeCompare(b.rank||""));
-  return list;
+function filterList(type){
+  return DATA.filter(d => d.type === type && d.status !== "维护中");
 }
-function applyPw(){ render(filterList("陪玩","fMaxPw","fSortPw"), "listPw"); }
-function applyDg(){ render(filterList("代肝","fMaxDg","fSortDg"), "listDg"); }
+function applyPw(){ render(filterList("陪玩"), "listPw", "cntPw"); }
+function applyDg(){ render(filterList("代肝"), "listDg", "cntDg"); }
 function applyAll(){ applyPw(); applyDg(); }
 
-// 读取顺序：GitHub API（带令牌，数据最新）→ raw（绕过缓存）→ 本地预览
 async function refresh(){
   try {
     const r = await fetch(API_URL + "?t=" + Date.now(), { headers:{ Authorization:`Bearer ${GH_TOKEN}`, Accept:"application/vnd.github+json" } });
@@ -314,13 +252,6 @@ async function refresh(){
 
 function openQr(){ document.getElementById("qrMask").classList.add("show"); }
 function closeQr(){ document.getElementById("qrMask").classList.remove("show"); }
-function openOwner(type){
-  currentType = type;
-  document.getElementById("ownerType").textContent = type;
-  document.getElementById("strongLabel").textContent = (type === "代肝") ? "代刷内容 / 代练项目" : "擅长干员·枪械·模式";
-  document.getElementById("ownerMask").classList.add("show");
-}
-function closeOwner(){ document.getElementById("ownerMask").classList.remove("show"); }
 function openNotice(){ document.getElementById("noticeMask").classList.add("show"); }
 function closeNotice(){ document.getElementById("noticeMask").classList.remove("show"); }
 
@@ -354,90 +285,12 @@ async function loadAnn(){
   } catch(e){}
 }
 document.getElementById("qrMask").addEventListener("click", e=>{ if(e.target.id==="qrMask") closeQr(); });
-document.getElementById("ownerMask").addEventListener("click", e=>{ if(e.target.id==="ownerMask") closeOwner(); });
 document.getElementById("noticeMask").addEventListener("click", e=>{ if(e.target.id==="noticeMask") closeNotice(); });
-
-// ===== 我要接单：直写仓库（单个细粒度令牌，仅限本仓库 Contents 读写）=====
-function b64(str){ return btoa(unescape(encodeURIComponent(str))); }
-function unb64(b){ return decodeURIComponent(escape(atob(b))); }
-
-document.getElementById("regForm").addEventListener("submit", async (e)=>{
-  e.preventDefault();
-  const ok = document.getElementById("okMsg"), err = document.getElementById("errMsg");
-  ok.style.display = "none"; err.style.display = "none";
-  const agreeEl = e.target.agree;
-  if(!agreeEl || !agreeEl.checked){
-    err.textContent = "请先勾选承诺（服务真实合法、已成年、知悉代肝封号风险）后再提交。";
-    err.style.display = "block";
-    return;
-  }
-  const fd = new FormData(e.target);
-  const g = Object.fromEntries(fd.entries());
-  const price = parseFloat(g.price);
-  if(isNaN(price) || price <= 0){
-    err.textContent = "请填写有效的价格（数字）。";
-    err.style.display = "block";
-    return;
-  }
-  const rec = {
-    id: "U" + Date.now(),
-    type: currentType,
-    rank: g.rank || "",
-    strong: g.strong || "",
-    price: price,
-    unit: g.unit || "局",
-    platform: g.platform || "",
-    mic: g.mic || "",
-    online: g.online || "",
-    status: "可接",
-    note: g.note || "",
-    image: ""
-  };
-  try {
-    const headers = { Authorization:`Bearer ${GH_TOKEN}`, Accept:"application/vnd.github+json" };
-    const getResp = await fetch(API_URL, { headers });
-    let list = [], sha = null;
-    if(getResp.ok){ const j = await getResp.json(); list = JSON.parse(unb64(j.content)); sha = j.sha; }
-    else if(getResp.status !== 404){ throw new Error("读取数据失败：" + getResp.status); }
-    let maxNo = 0;
-    list.forEach(x => { const n = Number(x.no); if(!isNaN(n) && n > maxNo) maxNo = n; });
-    rec.no = maxNo + 1;
-    list.push(rec);
-    const body = { message:"add service via form", content: b64(JSON.stringify(list, null, 2)), branch: GH_BRANCH };
-    if(sha) body.sha = sha;
-    const putResp = await fetch(API_URL, { method:"PUT", headers:{...headers,"Content-Type":"application/json"}, body: JSON.stringify(body) });
-    if(!putResp.ok){ const e2 = await putResp.json().catch(()=>({})); throw new Error("提交失败："+putResp.status+" "+(e2.message||"")); }
-    ok.textContent = "登记成功！已上架到「" + currentType + "」板块，马上出现在列表中。";
-    ok.style.display = "block";
-    e.target.reset();
-    refresh();
-  } catch(ex){
-    err.textContent = "提交出错：" + ex.message + "（请确认 config.js 中令牌已正确填写且有本仓库写权限）";
-    err.style.display = "block";
-    console.error(ex);
-  }
-});
-
-// 价格实时预览：只显示接单方到手价，不展示平台利润
-function updatePricePreview(){
-  const p = document.getElementById("pricePreview");
-  const c = parseFloat(document.querySelector('input[name=price]').value);
-  const u = document.querySelector('select[name=unit]').value;
-  if(c > 0){
-    p.innerHTML = `💰 你到手价：￥${c}/${u}（客户支付金额已含平台服务费，此处为你的到手价）`;
-    p.classList.add("active");
-  } else {
-    p.textContent = "💰 你到手价：填好价格后自动显示";
-    p.classList.remove("active");
-  }
-}
-document.querySelector('input[name=price]').addEventListener("input", updatePricePreview);
-document.querySelector('select[name=unit]').addEventListener("change", updatePricePreview);
 
 refresh();
 loadAnn();
 loadProfit();
-setInterval(refresh, 30000); // 每30秒轮询，号主提交后自动出现
+setInterval(refresh, 30000); // 每30秒轮询，后台新增后自动出现
 
 // ===== 进入年龄确认 =====
 function acceptAge(){ try{ sessionStorage.setItem("age_ok","1"); }catch(e){} document.getElementById("ageMask").classList.remove("show"); }
