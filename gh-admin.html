@@ -157,7 +157,7 @@
   </div>
 
   <div class="bar">
-    <input class="search" id="q" type="text" placeholder="搜索：段位 / 卖点 / 微信 / 编号…" oninput="renderList()">
+    <input class="search" id="q" type="text" placeholder="搜索：段位 / 卖点 / 管理 / 编号…" oninput="renderList()">
     <select id="fStatus" onchange="renderList()">
       <option value="">全部状态</option><option>可租</option><option>已租</option><option value="__other">其他/维护</option>
     </select>
@@ -223,12 +223,12 @@
         <div><label>体力</label><input name="ti" placeholder="如 7"></div>
         <div><label>负重</label><input name="fu" placeholder="如 6"></div>
       </div>
-      <label>装备亮点 / 卖点</label>
-      <textarea name="gear" placeholder="满改M4、稀有皮肤等"></textarea>
+      <label>角色皮肤 / 刀皮 / AW子弹数量</label>
+      <textarea name="gear" placeholder="如 角色皮肤：暗影 / 刀皮：热能 / AW子弹：320发"></textarea>
       <label>备注</label>
       <textarea name="note" placeholder="租期要求、扣押金规则等"></textarea>
-      <label>号主微信（不公开展示）</label>
-      <input name="wechat" placeholder="仅管理端可见">
+      <label>添加管理员并备注 上架账号的编号</label>
+      <input name="admin" placeholder="如 管理员：张三，本号上架编号见卡片 #">
       <div class="foot">
         <button class="btn btn-y" id="edSave" onclick="saveEdit()">保存</button>
         <button class="btn btn-d" onclick="closeEdit()">取消</button>
@@ -381,7 +381,7 @@ function visibleList(){
     if(fr === "__none"){ if((d.rank||"").trim()) return false; }
     else if(fr && !(d.rank||"").includes(fr)) return false;
     if(q){
-      const hay = [seq, d.no, d.id, d.rank, d.level, d.zone, d.price, d.coin, d.gear, d.note, d.wechat, d.status]
+      const hay = [seq, d.no, d.id, d.rank, d.level, d.zone, d.price, d.coin, d.gear, d.note, d.admin, d.status]
                     .map(x=>String(x==null?"":x)).join(" ").toLowerCase();
       if(!hay.includes(q)) return false;
     }
@@ -481,7 +481,7 @@ function renderList(){
           ${d.insurance?`<span class="tag">保险 ${esc(d.insurance)}</span>`:""}
           ${d.ratio?`<span class="tag">比例 ${esc(d.ratio)}</span>`:""}
           ${tf?`<span class="tag">${esc(tf)}</span>`:""}
-          ${d.wechat?`<span class="tag">微信 ${esc(d.wechat)}</span>`:""}
+          ${d.admin?`<span class="tag">管理 ${esc(d.admin)}</span>`:""}
         </div>
         ${desc?`<div class="l2">${esc(desc)}</div>`:""}
         <div class="idtxt">id: ${id}</div>
@@ -594,7 +594,7 @@ async function copyOne(id){
 }
 
 /* ================= 新增 / 编辑 ================= */
-const FIELDS = ["rank","status","level","zone","price","deposit","coin","insurance","ratio","ti","fu","gear","note","wechat"];
+const FIELDS = ["rank","status","level","zone","price","deposit","coin","insurance","ratio","ti","fu","gear","note","admin"];
 let EDIT_ID = null;
 
 function openEdit(id){
@@ -632,7 +632,7 @@ async function saveEdit(){
     rank:g.rank, status:g.status || "可租", level:g.level, zone:g.zone,
     price:Number(g.price), deposit:g.deposit ? Number(g.deposit) : "",
     coin:g.coin, insurance:g.insurance, ratio:g.ratio, ti:g.ti, fu:g.fu,
-    gear:g.gear, note:g.note, wechat:g.wechat
+    gear:g.gear, note:g.note, admin:g.admin
   };
   const editing = EDIT_ID;
   const okDone = await mutate(list=>{
