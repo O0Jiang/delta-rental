@@ -239,14 +239,18 @@ function apply(){
   }));
 }
 
-// 优先读本地 accounts.json（本地预览），否则读 GitHub raw（线上）
+// 读取顺序：GitHub API（带令牌，数据最新）→ raw（绕过缓存）→ 本地预览
 async function refresh(){
   try {
-    const r = await fetch("accounts.json");
-    if(r.ok){ DATA = await r.json(); DATA.forEach((d,i)=> d._seq = i+1); apply(); return; }
+    const r = await fetch(API_URL + "?t=" + Date.now(), { headers:{ Authorization:`Bearer ${GH_TOKEN}`, Accept:"application/vnd.github+json" } });
+    if(r.ok){ const j = await r.json(); DATA = JSON.parse(unb64(j.content)); DATA.forEach((d,i)=> d._seq = i+1); apply(); return; }
   } catch(e){}
   try {
     const r = await fetch(RAW_URL + "?t=" + Date.now());
+    if(r.ok){ DATA = await r.json(); DATA.forEach((d,i)=> d._seq = i+1); apply(); return; }
+  } catch(e){}
+  try {
+    const r = await fetch("accounts.json");
     if(r.ok){ DATA = await r.json(); DATA.forEach((d,i)=> d._seq = i+1); apply(); return; }
   } catch(e){}
   DATA = []; apply();
@@ -300,9 +304,10 @@ document.getElementById("regForm").addEventListener("submit", async (e)=>{
     if(sha) body.sha = sha;
     const putResp = await fetch(API_URL, { method:"PUT", headers:{...headers,"Content-Type":"application/json"}, body: JSON.stringify(body) });
     if(!putResp.ok){ const e2 = await putResp.json().catch(()=>({})); throw new Error("提交失败："+putResp.status+" "+(e2.message||"")); }
-    ok.textContent = "登记成功！账号已上架，约几十秒后自动出现在列表中。";
+    ok.textContent = "登记成功！账号已上架，马上出现在列表中。";
     ok.style.display = "block";
     e.target.reset();
+    refresh(); // 提交后立即刷新，立即可见
   } catch(ex){
     err.textContent = "提交出错：" + ex.message + "（请确认 config.js 中令牌已正确填写且有本仓库写权限）";
     err.style.display = "block";
