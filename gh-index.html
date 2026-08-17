@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>三角洲账号出租 · 可选账号</title>
+<title>三角洲陪玩·代肝 · COS电竞</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: #0f1419; color: #e6e6e6; }
@@ -19,53 +19,42 @@
   .notice-body { font-size: 13px; color: #b8c0cc; line-height: 1.75; max-height: 60vh; overflow-y: auto; padding-right: 6px; }
   .notice-body p { margin-bottom: 12px; }
   .notice-body b { color: #ffd24a; font-weight: 600; }
-  .filters { display: flex; flex-wrap: wrap; gap: 10px; background: #1a212b; padding: 14px; border-radius: 12px; margin: 16px 0; }
-  .filters select, .filters input { background: #0f1419; color: #e6e6e6; border: 1px solid #2d3744; border-radius: 8px; padding: 9px 10px; font-size: 13px; flex: 1; min-width: 110px; }
-  .filters button { background: #ffd24a; color: #0f1419; border: none; border-radius: 8px; padding: 9px 16px; font-size: 13px; font-weight: 600; cursor: pointer; }
+
+  .block { margin: 18px 0; }
+  .block-head { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .block-head h2 { font-size: 18px; color: #ffd24a; }
+  .block-tools { display: flex; flex-wrap: wrap; gap: 8px; }
+  .block-tools input, .block-tools select { background: #0f1419; color: #e6e6e6; border: 1px solid #2d3744; border-radius: 8px; padding: 9px 10px; font-size: 13px; }
+  .block-tools input { width: 120px; }
+  .block-tools button { background: #ffd24a; color: #0f1419; border: none; border-radius: 8px; padding: 9px 14px; font-size: 13px; font-weight: 600; cursor: pointer; }
   .owner-btn { background: #2d6cdf !important; color: #fff !important; }
+
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   @media (max-width: 560px){ .grid { grid-template-columns: 1fr; } }
-  .card { background: #1a212b; border: 1px solid #2d3744; border-radius: 12px; overflow: hidden; display: flex; flex-direction: row; }
-  .card .left { width: 88px; flex-shrink: 0; background: #121820; border-right: 1px solid #2d3744; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 14px 4px; gap: 18px; }
-  .coin-box { display: flex; flex-direction: column; align-items: center; width: 100%; }
-  .coin-label { font-size: 11px; color: #8a94a6; line-height: 1; }
-  .coin-val { font-size: 24px; font-weight: 800; color: #ffd24a; margin-top: 8px; line-height: 1; white-space: nowrap; }
-  .coin-unit { font-size: 12px; font-weight: 700; margin-left: 1px; }
-  .ins-box { width: 100%; border: 1px solid #5e4a18; background: #2d220b; color: #ffd24a; border-radius: 8px; padding: 8px 4px; font-size: 14px; font-weight: 800; }
-  .ins-label { font-size: 10px; color: #c4a33a; font-weight: 400; }
-  .ratio-box { width: 100%; border: 1px solid #1f4a5a; background: #0c2630; color: #6fd3e8; border-radius: 8px; padding: 5px 4px; font-size: 14px; font-weight: 800; }
-  .ratio-label { font-size: 10px; color: #4a9fb5; font-weight: 400; }
-  .card .right { flex: 1; padding: 12px 13px; display: flex; flex-direction: column; gap: 7px; }
+  .card { background: #1a212b; border: 1px solid #2d3744; border-radius: 12px; padding: 13px; display: flex; flex-direction: column; gap: 9px; }
   .card .top { display: flex; justify-content: space-between; align-items: center; }
-  .card .rank { font-size: 15px; font-weight: 700; color: #fff; }
+  .card .rank { font-size: 17px; font-weight: 800; color: #ffd24a; }
   .badge { font-size: 11px; padding: 3px 9px; border-radius: 20px; white-space: nowrap; }
   .ok { background: #16351f; color: #5fd97a; }
   .busy { background: #3a2a12; color: #ffb24a; }
   .maint { background: #2d2d2d; color: #aaa; }
-  .row-kpi { display: flex; gap: 6px; }
-  .kpi { flex: 1; background: #0f1419; border: 1px solid #2d3744; border-radius: 9px; padding: 7px 2px; text-align: center; }
-  .k-label { font-size: 10px; color: #8a94a6; }
-  .k-val { font-size: 14px; font-weight: 800; color: #ffd24a; margin-top: 2px; }
-  .row-stats { font-size: 12px; color: #b8c0cc; background: #0f1419; border: 1px solid #2d3744; border-radius: 8px; padding: 7px 9px; }
-  .row-info { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-  .row-info span { font-size: 11.5px; background: #0f1419; border: 1px solid #2d3744; color: #b8c0cc; padding: 3px 8px; border-radius: 6px; }
-  .rank-tag { background: #2a2410 !important; border-color: #5e4a18 !important; color: #ffd24a !important; font-weight: 700; font-size: 12.5px; padding: 4px 10px; border-radius: 6px; }
-  .level-tag { background: #0c2630 !important; border: 1px solid #1f4a5a !important; color: #6fd3e8 !important; font-weight: 700; font-size: 12.5px; padding: 4px 10px; border-radius: 6px; }
-  .zone-q { background: #3a1416 !important; color: #ff6b6b !important; border-color: #7a2a2e !important; }
-  .zone-v { background: #0f2e1a !important; color: #5fd97a !important; border-color: #1f5a35 !important; }
-  .row-note { font-size: 11.5px; color: #8a94a6; line-height: 1.45; }
-  .contact { position: fixed; bottom: 0; left: 0; right: 0; background: #ffd24a; color: #0f1419; text-align: center; padding: 14px; font-weight: 700; font-size: 15px; cursor: pointer; z-index: 5; }
+  .card .price { font-size: 20px; font-weight: 800; color: #fff; }
+  .card .price small { font-size: 12px; color: #8a94a6; font-weight: 600; margin-left: 2px; }
+  .row-info { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag { font-size: 11.5px; background: #0f1419; border: 1px solid #2d3744; color: #b8c0cc; padding: 3px 8px; border-radius: 6px; }
+  .card .note { font-size: 12px; color: #8a94a6; line-height: 1.5; }
+  .card .note b { color: #b8c0cc; }
+  .seq-line { font-size: 10.5px; color: #5a6474; }
   .empty { text-align: center; color: #8a94a6; padding: 40px 0; font-size: 14px; grid-column: 1 / -1; }
   .loading { text-align: center; color: #8a94a6; padding: 40px 0; font-size: 14px; grid-column: 1 / -1; }
 
-  /* 弹窗（二维码 + 我要出租） */
+  /* 弹窗（二维码 + 我要接单） */
   .mask { position: fixed; inset: 0; background: rgba(0,0,0,.6); display: none; align-items: center; justify-content: center; z-index: 10; padding: 16px; overflow-y: auto; }
   .mask.show { display: flex; }
   .modal { background: #1a212b; border: 1px solid #2d3744; border-radius: 14px; padding: 20px; width: 100%; max-width: 380px; margin: auto; }
   .modal h3 { color: #ffd24a; font-size: 17px; margin-bottom: 14px; text-align: center; }
   .modal > .cancel { width: 100%; padding: 11px; border-radius: 8px; border: none; font-size: 14px; background: #2d3744; color: #e6e6e6; cursor: pointer; margin-top: 10px; }
 
-  /* 我要出租表单 */
   .modal label { display: block; font-size: 12px; color: #b8c0cc; margin: 12px 0 4px; }
   .modal label .req { color: #ff6b6b; }
   .modal input, .modal select, .modal textarea { width: 100%; background: #0f1419; color: #e6e6e6; border: 1px solid #2d3744; border-radius: 8px; padding: 10px; font-size: 14px; box-sizing: border-box; }
@@ -76,8 +65,6 @@
   .modal .ok-msg { display: none; background: #16351f; color: #5fd97a; border: 1px solid #1f5a35; border-radius: 8px; padding: 12px; margin-top: 14px; font-size: 13px; text-align: center; }
   .modal .err-msg { display: none; background: #3a1416; color: #ff6b6b; border: 1px solid #7a2a2e; border-radius: 8px; padding: 12px; margin-top: 14px; font-size: 13px; text-align: center; }
   .modal .hint { font-size: 11px; color: #8a94a6; margin-top: 12px; line-height: 1.6; background: #0f1419; border: 1px solid #2d3744; border-radius: 8px; padding: 10px; }
-  .unit-input { position: relative; }
-  .unit-input .unit-suffix { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 12px; color: #8a94a6; pointer-events: none; }
   .price-preview { margin-top: 4px; background: #0c2630; border: 1px solid #1f4a5a; color: #6fd3e8; border-radius: 8px; padding: 13px; font-size: 14px; text-align: center; font-weight: 700; letter-spacing: .3px; }
   .price-preview.active { background: #103040; border-color: #2f6a82; color: #7fe3f5; }
 
@@ -92,53 +79,76 @@
   .age-note { display: none; font-size: 12px; color: #ffb24a; text-align: center; margin-top: 12px; line-height: 1.5; }
   .modal label.owner-agree { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; color: #b8c0cc; margin: 16px 0 0; line-height: 1.5; cursor: pointer; }
   .modal label.owner-agree input { margin-top: 2px; flex-shrink: 0; width: auto; }
+
+  .contact { position: fixed; bottom: 0; left: 0; right: 0; background: #ffd24a; color: #0f1419; text-align: center; padding: 14px; font-weight: 700; font-size: 15px; cursor: pointer; z-index: 5; }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <h1>COS电竞 · 三角洲账号出租</h1>
-    <p>以下账号可供租赁 · 选中后长按二维码加微信对接 · 号主自助上架、实时同步</p>
+    <h1>COS电竞 · 三角洲陪玩·代肝</h1>
+    <p>技术护航 / 跑刀代刷 · 选中后长按二维码加微信对接 · 服务者自助上架、实时同步</p>
   </header>
 
-  <div class="compliance-bar">⚠️ 本平台仅向 <b>18 周岁以上</b> 成年用户提供游戏账号租赁信息服务。游戏账号出租可能违反游戏运营方用户协议并导致账号封禁，相关风险由用户自行承担；平台仅提供信息撮合，不代收代付资金。</div>
+  <div class="compliance-bar">⚠️ 本平台仅向 <b>18 周岁以上</b> 成年用户提供游戏陪玩/代肝信息服务。陪玩为同场游戏、不登录他人账号；代肝需登录客户账号，可能违反游戏运营方用户协议并导致账号封禁，相关风险由用户自行承担。平台仅提供信息撮合，不代收代付资金。</div>
 
   <div class="notice-bar" onclick="openNotice()">
     <span class="notice-dot"></span>
-    <span class="notice-title" id="noticeTitle">📢 租号必看</span>
+    <span class="notice-title" id="noticeTitle">📢 接单必看</span>
     <span class="notice-arrow">›</span>
   </div>
 
-  <div class="filters">
-    <input id="fMax" type="number" placeholder="最高租金">
-    <select id="fSort" title="排序方式">
-      <option value="">排序：默认</option>
-      <option value="ins">保险格数↓</option>
-      <option value="ratio">比例↓</option>
-      <option value="price">租金↑</option>
-      <option value="coin">纯币↓</option>
-    </select>
-    <button onclick="apply()">筛选</button>
-    <button class="owner-btn" onclick="openOwner()">+ 我要出租</button>
-  </div>
+  <!-- 陪玩板块 -->
+  <section class="block">
+    <div class="block-head">
+      <h2>🎮 陪玩 · 技术护航</h2>
+      <div class="block-tools">
+        <input id="fMaxPw" type="number" placeholder="最高价(元/局)">
+        <select id="fSortPw" title="排序方式">
+          <option value="">排序：默认</option>
+          <option value="price">价格↑</option>
+          <option value="rank">段位</option>
+        </select>
+        <button onclick="applyPw()">筛选</button>
+        <button class="owner-btn" onclick="openOwner('陪玩')">+ 我要接单</button>
+      </div>
+    </div>
+    <div class="grid" id="listPw"><div class="loading">加载中…</div></div>
+  </section>
 
-  <div class="grid" id="list"><div class="loading">加载中…</div></div>
+  <!-- 代肝板块 -->
+  <section class="block">
+    <div class="block-head">
+      <h2>⚔️ 代肝 · 跑刀代刷</h2>
+      <div class="block-tools">
+        <input id="fMaxDg" type="number" placeholder="最高价(元/单)">
+        <select id="fSortDg" title="排序方式">
+          <option value="">排序：默认</option>
+          <option value="price">价格↑</option>
+          <option value="rank">段位</option>
+        </select>
+        <button onclick="applyDg()">筛选</button>
+        <button class="owner-btn" onclick="openOwner('代肝')">+ 我要接单</button>
+      </div>
+    </div>
+    <div class="grid" id="listDg"><div class="loading">加载中…</div></div>
+  </section>
 </div>
 
-<div class="contact" id="contactBtn" onclick="openQr()">看中账号？点此加微信对接</div>
+<div class="contact" id="contactBtn" onclick="openQr()">看中服务？点此加微信对接</div>
 
 <!-- 进入年龄确认 -->
 <div class="mask" id="ageMask">
   <div class="modal age-modal">
     <h3>进入前须知</h3>
     <div class="age-text">
-      本平台仅向 <b>18 周岁以上</b> 成年用户提供游戏账号租赁信息服务。<br><br>
-      游戏账号出租可能违反游戏运营方用户协议，存在账号被封禁的风险，由此产生的损失由用户自行承担；平台仅提供信息撮合，不代收、不代付资金，不参与具体交易。<br><br>
+      本平台仅向 <b>18 周岁以上</b> 成年用户提供游戏陪玩/代肝信息服务。<br><br>
+      代肝需登录客户账号，可能违反游戏运营方用户协议并导致账号封禁，相关风险由交易双方自行承担；平台仅提供信息撮合，不代收、不代付资金，不参与具体交易。<br><br>
       点击「我已满 18 岁并已知悉以上风险」即代表您确认已成年，并自愿承担相关风险。
     </div>
     <button type="button" class="age-btn ok" onclick="acceptAge()">我已满 18 岁并已知悉以上风险</button>
     <button type="button" class="age-btn no" onclick="rejectAge()">我还未成年</button>
-    <div class="age-note" id="ageNote">抱歉，本平台不向未成年人提供账号租赁服务。</div>
+    <div class="age-note" id="ageNote">抱歉，本平台不向未成年人提供陪玩/代肝服务。</div>
   </div>
 </div>
 
@@ -154,16 +164,16 @@
 <!-- 公告 / 安全须知 -->
 <div class="mask" id="noticeMask">
   <div class="modal">
-    <h3>租号必看 · 安全须知</h3>
+    <h3>接单必看 · 安全须知</h3>
     <div class="notice-body" id="noticeBody"></div>
     <button type="button" class="cancel" onclick="closeNotice()">我知道了</button>
   </div>
 </div>
 
-<!-- 我要出租 登记弹窗 -->
+<!-- 我要接单 登记弹窗 -->
 <div class="mask" id="ownerMask">
   <div class="modal">
-    <h3>📝 我要出租登记</h3>
+    <h3>📝 我要接单登记（<span id="ownerType">陪玩</span>）</h3>
     <form id="regForm">
       <label>段位 <span class="req">*</span></label>
       <select name="rank" required>
@@ -171,70 +181,52 @@
         <option>青铜</option><option>白银</option><option>黄金</option><option>铂金</option>
         <option>钻石</option><option>黑鹰</option><option>三角洲巅峰</option>
       </select>
+      <label><span id="strongLabel">擅长干员·枪械·模式</span> <span class="req">*</span></label>
+      <textarea name="strong" required placeholder="擅长干员·枪械·模式"></textarea>
       <div class="frow">
         <div>
-          <label>等级（选填）</label>
-          <input name="level" type="number" placeholder="如 60，即60级">
+          <label>价格(元) <span class="req">*</span></label>
+          <input name="price" type="number" step="0.5" required placeholder="如 50">
         </div>
         <div>
-          <label>区服 <span class="req">*</span></label>
-          <select name="zone" required>
-            <option value="">请选择</option>
-            <option>Q区</option><option>V区</option>
+          <label>计价单位</label>
+          <select name="unit">
+            <option value="局">局</option>
+            <option value="单">单</option>
           </select>
         </div>
       </div>
+      <div class="price-preview" id="pricePreview">💰 你到手价：填好价格后自动显示</div>
       <div class="frow">
         <div>
-          <label>押金(元,选填)</label>
-          <input name="deposit" type="number" placeholder="200">
+          <label>游戏端</label>
+          <select name="platform">
+            <option value="">请选择</option>
+            <option>PC</option><option>手游</option>
+          </select>
         </div>
         <div>
-          <label>保险格数(选填)</label>
-          <input name="insurance" type="number" placeholder="如 9">
+          <label>是否带麦</label>
+          <select name="mic">
+            <option value="">请选择</option>
+            <option>带麦</option><option>不带麦</option>
+          </select>
         </div>
       </div>
-      <div class="frow">
-        <div>
-          <label>纯币数量(单位 M) <span class="req">*</span></label>
-          <div class="unit-input">
-            <input name="coin" type="number" step="0.1" required placeholder="如 50">
-            <span class="unit-suffix">M</span>
-          </div>
-        </div>
-        <div>
-          <label>比例(直接填数字) <span class="req">*</span></label>
-          <div class="unit-input">
-            <input name="ratio" type="number" required placeholder="如 29">
-            <span class="unit-suffix">即 1:N</span>
-          </div>
-        </div>
-      </div>
-      <div class="frow">
-        <div>
-          <label>体力(选填)</label>
-          <input name="ti" type="number" placeholder="如 7">
-        </div>
-        <div>
-          <label>负重(选填)</label>
-          <input name="fu" type="number" placeholder="如 6">
-        </div>
-      </div>
-      <div class="price-preview" id="pricePreview">💰 预计租金：填好「纯币」和「比例」后自动算出</div>
-      <label>角色皮肤 / 刀皮 / AW子弹数量 <span class="req">*</span></label>
-      <textarea name="gear" required placeholder="角色皮肤/刀皮/AW子弹数量"></textarea>
+      <label>在线时段（选填）</label>
+      <input name="online" placeholder="如 晚8-12点">
       <label>备注（选填）</label>
-      <textarea name="note" placeholder="租期要求等"></textarea>
+      <textarea name="note" placeholder="服务要求等"></textarea>
       <label class="owner-agree">
         <input type="checkbox" name="agree" required>
-        <span>我承诺：所出租账号来源合法、本人已满 18 周岁，并已知悉账号出租可能被游戏运营方封禁的风险。</span>
+        <span>我承诺：所提供服务真实合法、本人已满 18 周岁；知悉代肝登录客户账号可能违反游戏协议导致封号的风险，由交易双方自行承担。</span>
       </label>
       <button type="submit" class="submit-btn">提交并上架</button>
       <div class="ok-msg" id="okMsg"></div>
       <div class="err-msg" id="errMsg"></div>
       <div class="hint">
         数据安全提示：请勿在表单填写账号密码，成交时由中介私下对接。<br>
-        提交即通过 GitHub 直接写入数据并上架，约几十秒后出现在列表中。
+        提交即通过 GitHub 直接写入数据并上架，约几十秒后出现在对应板块。
       </div>
     </form>
   </div>
@@ -243,9 +235,10 @@
 <script src="config.js"></script>
 <script>
 let DATA = [];
-let ANN = { title:"租号必看", bars:[] };
+let ANN = { title:"接单必看", bars:[] };
+let currentType = "陪玩";
 
-// 利润/加价率：号主底价(d.price) + 全局加价率 = 租客上架价，差价为平台利润
+// 利润/加价率：接单方底价(d.price) + 全局加价率 = 客户上架价，差价为平台利润
 let MARKUP = 0.1;  // 默认 10%，由 profit.json 控制，管理后台可改
 function listedPrice(base){ const m = Number(base)||0; return Math.round(m * (1 + MARKUP)); }
 function profitOf(base){ return listedPrice(base) - (Number(base)||0); }
@@ -253,108 +246,80 @@ function profitOf(base){ return listedPrice(base) - (Number(base)||0); }
 async function loadProfit(){
   try {
     const r = await fetch(PROFIT_API + "?t=" + Date.now(), { headers:{ Authorization:`Bearer ${GH_TOKEN}`, Accept:"application/vnd.github+json" } });
-    if(r.ok){ const j = await r.json(); const o = JSON.parse(unb64(j.content)); if(typeof o.markup === "number") MARKUP = o.markup; apply(); return; }
+    if(r.ok){ const j = await r.json(); const o = JSON.parse(unb64(j.content)); if(typeof o.markup === "number") MARKUP = o.markup; applyAll(); return; }
   } catch(e){}
   try {
     const r = await fetch(PROFIT_RAW + "?t=" + Date.now());
-    if(r.ok){ const o = await r.json(); if(typeof o.markup === "number") MARKUP = o.markup; apply(); return; }
+    if(r.ok){ const o = await r.json(); if(typeof o.markup === "number") MARKUP = o.markup; applyAll(); return; }
   } catch(e){}
 }
 
-function statusClass(s){ return s === "可租" ? "ok" : s === "已租" ? "busy" : "maint"; }
+function statusClass(s){ return s === "可接" ? "ok" : s === "忙碌" ? "busy" : "maint"; }
 function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, c=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
 
-function coinParts(c){
-  if(!c) return { num: "—", unit: "" };
-  const m = String(c).match(/([\d.]+)\s*(M)?/i);
-  if(m) return { num: m[1], unit: m[2] ? "M" : "" };
-  return { num: String(c).replace(/纯币/g,"").trim() || "—", unit: "" };
+function renderCard(d){
+  const seq = "#" + (d.no ? String(d.no).padStart(3,"0") : "");
+  const tags = [];
+  if(d.platform) tags.push(`<span class="tag">${esc(d.platform)}</span>`);
+  if(d.mic) tags.push(`<span class="tag">${esc(d.mic)}</span>`);
+  if(d.online) tags.push(`<span class="tag">在线 ${esc(d.online)}</span>`);
+  return `
+  <div class="card">
+    <div class="top">
+      <span class="rank">${esc(d.rank || "未标段位")}</span>
+      <span class="badge ${statusClass(d.status)}">${esc(d.status || "可接")}</span>
+    </div>
+    <div class="price">￥${listedPrice(d.price)}<small>/${esc(d.unit || "局")}</small></div>
+    <div class="row-info">${tags.join("")}</div>
+    ${d.strong ? `<div class="note"><b>擅长：</b>${esc(d.strong)}</div>` : ""}
+    ${(d.note||d.gear) ? `<div class="note">${esc(d.note || d.gear)}</div>` : ""}
+    <div class="seq-line">编号 ${seq}</div>
+  </div>`;
 }
 
-function render(list){
-  const el = document.getElementById("list");
-  if(!list.length){ el.innerHTML = '<div class="empty">暂无符合条件账号，调低筛选试试</div>'; return; }
-  el.innerHTML = list.map(d=>{
-    const seq = "#" + (d.no ? String(d.no).padStart(3,"0") : (d._seq || ""));
-    const cp = coinParts(d.coin);
-    const ti = d.ti ? `体力 ${d.ti}` : "";
-    const fu = d.fu ? `负重 ${d.fu}` : "";
-    const tf = (ti + (ti && fu ? " · " : "") + fu) || "—";
-    return `
-    <div class="card">
-      <div class="left">
-        <div class="coin-box">
-          <div class="coin-label">纯币</div>
-          <div class="coin-val">${cp.num}<span class="coin-unit">${cp.unit}</span></div>
-        </div>
-        <div class="ins-box">
-          <div class="ins-label">保险</div>
-          <div>${d.insurance || "—"}</div>
-        </div>
-        <div class="ratio-box">
-          <div class="ratio-label">比例</div>
-          <div>${d.ratio || "—"}</div>
-        </div>
-      </div>
-      <div class="right">
-        <div class="top"><span class="rank">编号 ${seq}</span><span class="badge ${statusClass(d.status)}">${d.status}</span></div>
-        <div class="row-kpi">
-          <div class="kpi"><div class="k-label">租金</div><div class="k-val">￥${listedPrice(d.price)}</div></div>
-          <div class="kpi"><div class="k-label">押金</div><div class="k-val">${d.deposit ? ("￥"+d.deposit) : "—"}</div></div>
-        </div>
-        <div class="row-stats">${tf}</div>
-        <div class="row-info">
-          ${d.rank && d.rank !== "未标注" ? `<span class="rank-tag">段位 ${d.rank}</span>` : ""}
-          ${d.level?`<span class="level-tag">${d.level}</span>`:""}
-          ${d.zone?`<span class="${d.zone==='Q区'?'zone-q':d.zone==='V区'?'zone-v':''}">${d.zone}</span>`:""}
-        </div>
-        ${(d.gear||d.note)?`<div class="row-note">${[d.gear,d.note].filter(Boolean).map(x=>String(x).replace(/\n/g,"<br>")).join("<br>")}</div>`:""}
-      </div>
-    </div>`;
-  }).join("");
+function render(list, elId){
+  const el = document.getElementById(elId);
+  if(!list.length){ el.innerHTML = '<div class="empty">暂无符合条件的服务，调低筛选试试</div>'; return; }
+  el.innerHTML = list.map(renderCard).join("");
 }
 
-// 字段数值解析
-function insNum(v){ const m = String(v||"").match(/(\d+)/); return m ? parseInt(m[1],10) : 0; }
-function ratioNum(v){ const s = String(v||""); const m = s.match(/1\s*:\s*(\d+)/i); if(m) return parseInt(m[1],10); const m2 = s.match(/(\d+)/); return m2 ? parseInt(m2[1],10) : 0; }
-function coinNum(c){ const m = String(c||"").match(/([\d.]+)/); return m ? parseFloat(m[1]) : 0; }
-
-function apply(){
-  const m = parseFloat(document.getElementById("fMax").value) || 99999;
-  const sortBy = document.getElementById("fSort").value;
-  let list = DATA.filter(d => {
-    if(d.status === "已租") return false; // 默认只展示可租账号
-    if(listedPrice(d.price) > m) return false;
-    return true;
-  });
-  // 排序（默认保持数据原顺序，即管理员在后台调过的顺序）
-  if(sortBy === "ins") list.sort((a,b)=> insNum(b.insurance) - insNum(a.insurance));
-  else if(sortBy === "ratio") list.sort((a,b)=> ratioNum(b.ratio) - ratioNum(a.ratio));
-  else if(sortBy === "price") list.sort((a,b)=> (Number(a.price)||0) - (Number(b.price)||0));
-  else if(sortBy === "coin") list.sort((a,b)=> coinNum(b.coin) - coinNum(a.coin));
-  render(list);
+function filterList(type, fMaxId, fSortId){
+  const m = parseFloat(document.getElementById(fMaxId).value) || 99999;
+  const sortBy = document.getElementById(fSortId).value;
+  let list = DATA.filter(d => d.type === type && d.status !== "忙碌" && listedPrice(d.price) <= m);
+  if(sortBy === "price") list.sort((a,b)=> (Number(a.price)||0) - (Number(b.price)||0));
+  else if(sortBy === "rank") list.sort((a,b)=> (a.rank||"").localeCompare(b.rank||""));
+  return list;
 }
+function applyPw(){ render(filterList("陪玩","fMaxPw","fSortPw"), "listPw"); }
+function applyDg(){ render(filterList("代肝","fMaxDg","fSortDg"), "listDg"); }
+function applyAll(){ applyPw(); applyDg(); }
 
 // 读取顺序：GitHub API（带令牌，数据最新）→ raw（绕过缓存）→ 本地预览
 async function refresh(){
   try {
     const r = await fetch(API_URL + "?t=" + Date.now(), { headers:{ Authorization:`Bearer ${GH_TOKEN}`, Accept:"application/vnd.github+json" } });
-    if(r.ok){ const j = await r.json(); DATA = JSON.parse(unb64(j.content)); DATA.forEach((d,i)=> d._seq = i+1); apply(); return; }
+    if(r.ok){ const j = await r.json(); DATA = JSON.parse(unb64(j.content)); applyAll(); return; }
   } catch(e){}
   try {
     const r = await fetch(RAW_URL + "?t=" + Date.now());
-    if(r.ok){ DATA = await r.json(); DATA.forEach((d,i)=> d._seq = i+1); apply(); return; }
+    if(r.ok){ DATA = await r.json(); applyAll(); return; }
   } catch(e){}
   try {
     const r = await fetch("accounts.json");
-    if(r.ok){ DATA = await r.json(); DATA.forEach((d,i)=> d._seq = i+1); apply(); return; }
+    if(r.ok){ DATA = await r.json(); applyAll(); return; }
   } catch(e){}
-  DATA = []; apply();
+  DATA = []; applyAll();
 }
 
 function openQr(){ document.getElementById("qrMask").classList.add("show"); }
 function closeQr(){ document.getElementById("qrMask").classList.remove("show"); }
-function openOwner(){ document.getElementById("ownerMask").classList.add("show"); }
+function openOwner(type){
+  currentType = type;
+  document.getElementById("ownerType").textContent = type;
+  document.getElementById("strongLabel").textContent = (type === "代肝") ? "代刷内容 / 代练项目" : "擅长干员·枪械·模式";
+  document.getElementById("ownerMask").classList.add("show");
+}
 function closeOwner(){ document.getElementById("ownerMask").classList.remove("show"); }
 function openNotice(){ document.getElementById("noticeMask").classList.add("show"); }
 function closeNotice(){ document.getElementById("noticeMask").classList.remove("show"); }
@@ -363,7 +328,7 @@ function closeNotice(){ document.getElementById("noticeMask").classList.remove("
 const ANN_API = API_URL.replace('accounts.json','ann.json');
 const ANN_RAW = RAW_URL.replace('accounts.json','ann.json');
 function applyAnn(){
-  const t = (ANN && ANN.title) ? ANN.title : "租号必看";
+  const t = (ANN && ANN.title) ? ANN.title : "接单必看";
   document.getElementById("noticeTitle").textContent = "📢 " + t;
   const b = document.getElementById("noticeBody");
   if(ANN && ANN.bars && ANN.bars.length){
@@ -392,7 +357,7 @@ document.getElementById("qrMask").addEventListener("click", e=>{ if(e.target.id=
 document.getElementById("ownerMask").addEventListener("click", e=>{ if(e.target.id==="ownerMask") closeOwner(); });
 document.getElementById("noticeMask").addEventListener("click", e=>{ if(e.target.id==="noticeMask") closeNotice(); });
 
-// ===== 我要出租：方案A 直写仓库（单个细粒度令牌，仅限本仓库 Contents 读写）=====
+// ===== 我要接单：直写仓库（单个细粒度令牌，仅限本仓库 Contents 读写）=====
 function b64(str){ return btoa(unescape(encodeURIComponent(str))); }
 function unb64(b){ return decodeURIComponent(escape(atob(b))); }
 
@@ -402,35 +367,31 @@ document.getElementById("regForm").addEventListener("submit", async (e)=>{
   ok.style.display = "none"; err.style.display = "none";
   const agreeEl = e.target.agree;
   if(!agreeEl || !agreeEl.checked){
-    err.textContent = "请先勾选承诺（账号来源合法、已成年、知悉封号风险）后再提交。";
+    err.textContent = "请先勾选承诺（服务真实合法、已成年、知悉代肝封号风险）后再提交。";
     err.style.display = "block";
     return;
   }
   const fd = new FormData(e.target);
   const g = Object.fromEntries(fd.entries());
-  // 纯币：默认单位 M，号主只填数字
-  const coinVal = parseFloat(g.coin);
-  const coin = isNaN(coinVal) ? "" : (coinVal + " M纯币");
-  // 比例：号主只填数字，存成 1:N
-  const ratioVal = parseInt(g.ratio, 10);
-  const ratio = isNaN(ratioVal) ? "" : ("1:" + ratioVal);
-  // 租金：按 纯币(M)*100 / 比例 自动计算（即 纯币万数 ÷ 比例），号主不手填
-  let price = "";
-  if(coinVal > 0 && ratioVal > 0){ price = Math.round(coinVal * 100 / ratioVal); }
+  const price = parseFloat(g.price);
+  if(isNaN(price) || price <= 0){
+    err.textContent = "请填写有效的价格（数字）。";
+    err.style.display = "block";
+    return;
+  }
   const rec = {
     id: "U" + Date.now(),
-    rank: g.rank,
-    level: g.level ? (g.level + "级") : "",
-    zone: g.zone,
+    type: currentType,
+    rank: g.rank || "",
+    strong: g.strong || "",
     price: price,
-    deposit: g.deposit ? Number(g.deposit) : "",
-    coin: coin,
-    insurance: g.insurance || "",
-    ratio: ratio,
-    ti: g.ti || "",
-    fu: g.fu || "",
-    status: "可租",
-    note: [g.gear, g.note].filter(Boolean).join("\n")
+    unit: g.unit || "局",
+    platform: g.platform || "",
+    mic: g.mic || "",
+    online: g.online || "",
+    status: "可接",
+    note: g.note || "",
+    image: ""
   };
   try {
     const headers = { Authorization:`Bearer ${GH_TOKEN}`, Accept:"application/vnd.github+json" };
@@ -440,16 +401,16 @@ document.getElementById("regForm").addEventListener("submit", async (e)=>{
     else if(getResp.status !== 404){ throw new Error("读取数据失败：" + getResp.status); }
     let maxNo = 0;
     list.forEach(x => { const n = Number(x.no); if(!isNaN(n) && n > maxNo) maxNo = n; });
-    rec.no = maxNo + 1; // 自动接上最大编号
+    rec.no = maxNo + 1;
     list.push(rec);
-    const body = { message:"add account via form", content: b64(JSON.stringify(list, null, 2)), branch: GH_BRANCH };
+    const body = { message:"add service via form", content: b64(JSON.stringify(list, null, 2)), branch: GH_BRANCH };
     if(sha) body.sha = sha;
     const putResp = await fetch(API_URL, { method:"PUT", headers:{...headers,"Content-Type":"application/json"}, body: JSON.stringify(body) });
     if(!putResp.ok){ const e2 = await putResp.json().catch(()=>({})); throw new Error("提交失败："+putResp.status+" "+(e2.message||"")); }
-    ok.textContent = "登记成功！账号已上架，马上出现在列表中。";
+    ok.textContent = "登记成功！已上架到「" + currentType + "」板块，马上出现在列表中。";
     ok.style.display = "block";
     e.target.reset();
-    refresh(); // 提交后立即刷新，立即可见
+    refresh();
   } catch(ex){
     err.textContent = "提交出错：" + ex.message + "（请确认 config.js 中令牌已正确填写且有本仓库写权限）";
     err.style.display = "block";
@@ -457,22 +418,21 @@ document.getElementById("regForm").addEventListener("submit", async (e)=>{
   }
 });
 
-// 租金实时预览：填好纯币与比例即算出
+// 价格实时预览：只显示接单方到手价，不展示平台利润
 function updatePricePreview(){
   const p = document.getElementById("pricePreview");
-  const c = parseFloat(document.querySelector('input[name=coin]').value);
-  const r = parseInt(document.querySelector('input[name=ratio]').value, 10);
-  if(c > 0 && r > 0){
-    const base = Math.round(c * 100 / r);
-    p.innerHTML = `💰 号主到手价：￥${base}（按 纯币 ${c}M ÷ 比例 1:${r} 自动核算）`;
+  const c = parseFloat(document.querySelector('input[name=price]').value);
+  const u = document.querySelector('select[name=unit]').value;
+  if(c > 0){
+    p.innerHTML = `💰 你到手价：￥${c}/${u}（客户支付金额已含平台服务费，此处为你的到手价）`;
     p.classList.add("active");
   } else {
-    p.textContent = "💰 预计租金：填好「纯币」和「比例」后自动算出";
+    p.textContent = "💰 你到手价：填好价格后自动显示";
     p.classList.remove("active");
   }
 }
-document.querySelector('input[name=coin]').addEventListener("input", updatePricePreview);
-document.querySelector('input[name=ratio]').addEventListener("input", updatePricePreview);
+document.querySelector('input[name=price]').addEventListener("input", updatePricePreview);
+document.querySelector('select[name=unit]').addEventListener("change", updatePricePreview);
 
 refresh();
 loadAnn();
