@@ -93,9 +93,6 @@
 </div>
 <script src="config.js"></script>
 <script>
-function b64(str){ return btoa(unescape(encodeURIComponent(str))); }
-function unb64(b){ return decodeURIComponent(escape(atob(b))); }
-
 document.getElementById("regForm").addEventListener("submit", async (e)=>{
   e.preventDefault();
   const ok=document.getElementById("okMsg"), err=document.getElementById("errMsg");
@@ -123,17 +120,15 @@ document.getElementById("regForm").addEventListener("submit", async (e)=>{
     note: [g.gear, g.note].filter(Boolean).join("\n")
   };
   try {
-    const headers = { Authorization:`Bearer ${GH_TOKEN}`, Accept:"application/vnd.github+json" };
-    const getResp = await fetch(API_URL, { headers });
-    let list=[], sha=null;
-    if(getResp.ok){ const j=await getResp.json(); list=JSON.parse(unb64(j.content)); sha=j.sha; }
-    else if(getResp.status!==404){ throw new Error("读取数据失败："+getResp.status); }
-    list.push(rec);
-    const body = { message:"add account via form", content: b64(JSON.stringify(list,null,2)), branch: GH_BRANCH };
-    if(sha) body.sha = sha;
-    const putResp = await fetch(API_URL, { method:"PUT", headers:{...headers,"Content-Type":"application/json"}, body: JSON.stringify(body) });
-    if(!putResp.ok){ const e2=await putResp.json().catch(()=>({})); throw new Error("提交失败："+putResp.status+" "+(e2.message||"")); }
-    ok.textContent="登记成功！账号已上架，租号人网页几秒后即可看到。";
+    // 触发 GitHub Actions 工作流来写库（写令牌在服务器端 Secrets，不进前端）
+    const dispatchUrl = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/actions/workflows/add-account.yml/dispatches`;
+    const dResp = await fetch(dispatchUrl, {
+      method:"POST",
+      headers:{ Authorization:`Bearer ${GH_TOKEN}`, Accept:"application/vnd.github+json", "Content-Type":"application/json" },
+      body: JSON.stringify({ ref: GH_BRANCH, inputs: { data: JSON.stringify(rec) } })
+    });
+    if(!dResp.ok){ const e2=await dResp.json().catch(()=>({})); throw new Error("提交失败："+dResp.status+" "+(e2.message||"")); }
+    ok.textContent="登记成功！账号正在上架，约 10~30 秒后租号人网页即可看到。";
     ok.style.display="block";
     e.target.reset();
   } catch(ex){

@@ -1,0 +1,54 @@
+name: Add Account
+on:
+  workflow_dispatch:
+    inputs:
+      data:
+        description: "JSON string of the account record to append"
+        required: true
+
+# 工作流自带的 GITHUB_TOKEN 被授予 contents:write，用来读写仓库里的 accounts.json。
+# 注意：无需任何自定义 Secret，写令牌不进前端源码。
+permissions:
+  contents: write
+
+jobs:
+  add:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Append account to accounts.json
+        env:
+          DATA: ${{ github.event.inputs.data }}
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: O0Jiang/delta-rental
+        run: |
+          python3 - <<'PY'
+          import json, base64, os, urllib.request
+
+          data = json.loads(os.environ['DATA'])
+          # 基本防护：必须含关键字段
+          for k in ('id','rank','zone','price','coin','status'):
+              if k not in data:
+                  raise SystemExit(f"缺少字段: {k}")
+          if not data.get('status'):
+              data['status'] = '可租'
+
+          api = f"https://api.github.com/repos/{os.environ['REPO']}/contents/accounts.json"
+          hdr = {"Authorization": "Bearer " + os.environ['TOKEN'],
+                 "Accept": "application/vnd.github+json"}
+          j = json.load(urllib.request.urlopen(urllib.request.Request(api, headers=hdr)))
+          sha = j['sha']
+          lst = json.loads(base64.b64decode(j['content']))
+          # 防重复（同 id 不重复追加）
+          if any(x.get('id') == data.get('id') for x in lst):
+              print("该 id 已存在，跳过")
+          else:
+              lst.append(data)
+              body = json.dumps({
+                  "message": "add account via form",
+                  "content": base64.b64encode(json.dumps(lst, ensure_ascii=False, indent=2).encode()).decode(),
+                  "sha": sha
+              }).encode()
+              req = urllib.request.Request(api, data=body, headers={**hdr, "Content-Type": "application/json"}, method="PUT")
+              print("write status:", urllib.request.urlopen(req).status)
+          print("total records:", len(lst))
+          PY
