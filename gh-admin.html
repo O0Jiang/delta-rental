@@ -97,6 +97,8 @@
   .radar-inputs { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:4px; }
   .radar-inputs > div label { display:block; font-size:11px; color:#b8c0cc; margin:0 0 4px; }
   .radar-inputs input { width:100%; }
+  .radar-inputs input[type=range] { accent-color:#ffd24a; }
+  .radar-inputs .rv { color:#ffd24a; font-weight:700; }
   .modal .foot { display:flex; gap:10px; margin-top:18px; }
   .modal .foot .btn { flex:1; padding:12px; font-size:14px; }
 
@@ -154,13 +156,9 @@
   </div>
 
   <div class="bar">
-    <input class="search" id="q" type="text" placeholder="搜索：段位 / 擅长 / 编号…" oninput="renderList()">
+    <input class="search" id="q" type="text" placeholder="搜索：昵称 / 擅长游戏 / 编号…" oninput="renderList()">
     <select id="fStatus" onchange="renderList()">
       <option value="">全部状态</option><option>可接</option><option>忙碌</option><option value="__other">其他/维护</option>
-    </select>
-    <select id="fRank" onchange="renderList()">
-      <option value="">全部段位</option><option>青铜</option><option>白银</option><option>黄金</option>
-      <option>铂金</option><option>钻石</option><option>黑鹰</option><option>三角洲巅峰</option><option value="__none">未标段位</option>
     </select>
     <button class="btn btn-y" onclick="openEdit(null)">＋ 新增接单</button>
     <button class="btn btn-d" onclick="reload(true)">↻ 刷新</button>
@@ -206,44 +204,37 @@
       </div>
       <div class="frow">
         <div><label>昵称 <span class="req">*</span></label><input name="name" placeholder="如 夜刃"></div>
-        <div><label>头像(图片链接)</label><input name="avatar" placeholder="https://… 留空用昵称首字"></div>
+        <div>
+          <label>头像</label>
+          <input name="avatar" placeholder="图片链接，或下方上传">
+          <input type="file" accept="image/*" style="margin-top:6px;font-size:12px;color:#b8c0cc;" onchange="onAvatarFile(this)">
+          <div id="avaPrev" style="margin-top:7px;display:none;"><img id="avaPrevImg" style="width:46px;height:46px;border-radius:50%;object-fit:cover;border:1px solid #2d3744;"></div>
+        </div>
       </div>
       <label>擅长的游戏</label>
       <input name="games" placeholder="如 三角洲行动 / PUBG">
       <div class="frow">
-        <div>
-          <label>段位</label>
-          <input name="rank" list="rankList" placeholder="如 铂金 / 钻石 II（留空=不标注）">
-          <datalist id="rankList">
-            <option>青铜</option><option>白银</option><option>黄金</option><option>铂金</option>
-            <option>钻石</option><option>黑鹰</option><option>三角洲巅峰</option>
-          </datalist>
-        </div>
-        <div>
-          <label>游戏端</label>
-          <select name="platform"><option value="">请选择</option><option>PC</option><option>手游</option></select>
-        </div>
+        <div><label>游戏端</label><select name="platform"><option value="">请选择</option><option>PC</option><option>手游</option></select></div>
+        <div><label>是否带麦</label><select name="mic"><option value="">请选择</option><option>带麦</option><option>不带麦</option></select></div>
       </div>
       <div class="frow">
         <div><label>价格(元) <span class="req">*</span></label><input name="price" type="number" step="0.5" placeholder="50"></div>
         <div><label>计价单位</label><select name="unit"><option value="局">局</option><option value="单">单</option></select></div>
       </div>
-      <div class="frow">
-        <div><label>是否带麦</label><select name="mic"><option value="">请选择</option><option>带麦</option><option>不带麦</option></select></div>
-        <div><label>在线时段</label><input name="online" placeholder="如 晚8-12点"></div>
-      </div>
+      <label>在线时段</label>
+      <input name="online" placeholder="如 晚8-12点">
       <label>擅长 / 服务内容 <span class="req">*</span></label>
       <textarea name="strong" placeholder="擅长干员·枪械·模式 / 代刷内容·代练项目"></textarea>
       <label>备注</label>
       <textarea name="note" placeholder="服务要求等"></textarea>
-      <label>自我特点（六边形雷达，每项 0–100）</label>
+      <label>自我特点（六边形雷达，每项 1–5 调节）</label>
       <div class="radar-inputs">
-        <div><label>技术</label><input name="tech" type="number" min="0" max="100" placeholder="0-100"></div>
-        <div><label>沟通</label><input name="comm" type="number" min="0" max="100" placeholder="0-100"></div>
-        <div><label>耐心</label><input name="patience" type="number" min="0" max="100" placeholder="0-100"></div>
-        <div><label>效率</label><input name="eff" type="number" min="0" max="100" placeholder="0-100"></div>
-        <div><label>娱乐</label><input name="fun" type="number" min="0" max="100" placeholder="0-100"></div>
-        <div><label>靠谱</label><input name="reliable" type="number" min="0" max="100" placeholder="0-100"></div>
+        <div><label>技术 <b class="rv" id="rv-tech">3</b></label><input type="range" name="tech" min="1" max="5" step="1" value="3" oninput="document.getElementById('rv-tech').textContent=this.value"></div>
+        <div><label>沟通 <b class="rv" id="rv-comm">3</b></label><input type="range" name="comm" min="1" max="5" step="1" value="3" oninput="document.getElementById('rv-comm').textContent=this.value"></div>
+        <div><label>耐心 <b class="rv" id="rv-patience">3</b></label><input type="range" name="patience" min="1" max="5" step="1" value="3" oninput="document.getElementById('rv-patience').textContent=this.value"></div>
+        <div><label>效率 <b class="rv" id="rv-eff">3</b></label><input type="range" name="eff" min="1" max="5" step="1" value="3" oninput="document.getElementById('rv-eff').textContent=this.value"></div>
+        <div><label>娱乐 <b class="rv" id="rv-fun">3</b></label><input type="range" name="fun" min="1" max="5" step="1" value="3" oninput="document.getElementById('rv-fun').textContent=this.value"></div>
+        <div><label>靠谱 <b class="rv" id="rv-reliable">3</b></label><input type="range" name="reliable" min="1" max="5" step="1" value="3" oninput="document.getElementById('rv-reliable').textContent=this.value"></div>
       </div>
       <div class="foot">
         <button class="btn btn-y" id="edSave" onclick="saveEdit()">保存</button>
@@ -395,15 +386,12 @@ function noOf(d, i){ const n = (d.no != null && d.no !== "") ? d.no : (i+1); ret
 function visibleList(){
   const q = document.getElementById("q").value.trim().toLowerCase();
   const fs = document.getElementById("fStatus").value;
-  const fr = document.getElementById("fRank").value;
   return DATA.map((d,i)=>({ d, seq:i+1 })).filter(({d,seq})=>{
     if(TYPE_FILTER && d.type !== TYPE_FILTER) return false;
     if(fs === "__other"){ if(d.status === "可接" || d.status === "忙碌") return false; }
     else if(fs && d.status !== fs) return false;
-    if(fr === "__none"){ if((d.rank||"").trim()) return false; }
-    else if(fr && !(d.rank||"").includes(fr)) return false;
     if(q){
-      const hay = [seq, d.no, d.id, d.type, d.name, d.games, d.rank, d.platform, d.mic, d.online, d.price, d.unit, d.strong, d.note, d.status, d.tech, d.comm, d.patience, d.eff, d.fun, d.reliable]
+      const hay = [seq, d.no, d.id, d.type, d.name, d.games, d.platform, d.mic, d.online, d.price, d.unit, d.strong, d.note, d.status, d.tech, d.comm, d.patience, d.eff, d.fun, d.reliable]
                     .map(x=>String(x==null?"":x)).join(" ").toLowerCase();
       if(!hay.includes(q)) return false;
     }
@@ -501,7 +489,6 @@ function renderList(){
           <span class="badge ${statusClass(d.status)}">${esc(d.status||"—")}</span>
           <span class="tag t-price" title="接单到底价">底价 ￥${esc(d.price)}</span>
           <span class="tag t-profit" title="加价后的利润">利润 ￥${profitOf(d.price)}</span>
-          ${(d.rank||"").trim()?`<span class="tag t-rank">${esc(d.rank)}</span>`:`<span class="tag">未标段位</span>`}
           ${d.platform?`<span class="tag">${esc(d.platform)}</span>`:""}
           ${d.mic?`<span class="tag">${esc(d.mic)}</span>`:""}
           ${d.online?`<span class="tag">在线 ${esc(d.online)}</span>`:""}
@@ -617,29 +604,66 @@ async function copyOne(id){
 }
 
 /* ================= 新增 / 编辑 ================= */
-const FIELDS = ["type","name","avatar","games","rank","status","platform","mic","online","price","unit","strong","note","tech","comm","patience","eff","fun","reliable"];
+const FIELDS = ["type","name","avatar","games","status","platform","mic","online","price","unit","strong","note","tech","comm","patience","eff","fun","reliable"];
 let EDIT_ID = null;
 
 function openEdit(id){
   EDIT_ID = id;
   const f = document.getElementById("edForm");
   f.reset();
+  document.getElementById("avaPrev").style.display = "none";
   if(id){
     const d = DATA.find(x=>String(x.id)===String(id)) || {};
     const seq = DATA.findIndex(x=>String(x.id)===String(id)) + 1;
     document.getElementById("edTitle").textContent = "编辑服务 #" + (d.no != null && d.no !== "" ? d.no : seq);
     document.getElementById("edSub").textContent = "id: " + id;
     FIELDS.forEach(k=>{ if(f[k]) f[k].value = (d[k] == null ? "" : d[k]); });
+    // 六边形滑块：旧数据可能缺值，按 1–5 归位（默认 3）
+    ["tech","comm","patience","eff","fun","reliable"].forEach(k=>{
+      const n = Number(d[k]); const v = (n>=1 && n<=5) ? n : 3;
+      if(f[k]) f[k].value = v;
+      const lab = document.getElementById("rv-"+k); if(lab) lab.textContent = v;
+    });
     if(f.status && !["可接","忙碌","维护中"].includes(d.status||"")){
       const o = document.createElement("option"); o.textContent = d.status || ""; f.status.appendChild(o); f.status.value = d.status || "";
     }
+    if(d.avatar){ document.getElementById("avaPrev").style.display = "block"; document.getElementById("avaPrevImg").src = d.avatar; }
   } else {
     document.getElementById("edTitle").textContent = "新增接单";
     document.getElementById("edSub").textContent = "由管理员直接上架";
     f.status.value = "可接";
     f.type.value = (TYPE_FILTER === "代肝") ? "代肝" : "陪玩";
+    ["tech","comm","patience","eff","fun","reliable"].forEach(k=>{
+      if(f[k]) f[k].value = 3;
+      const lab = document.getElementById("rv-"+k); if(lab) lab.textContent = 3;
+    });
   }
   document.getElementById("edMask").classList.add("show");
+}
+
+// 头像：本地图片上传 → 压缩成 base64 直接存，无需图床
+function onAvatarFile(input){
+  const file = input.files && input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      const max = 240;
+      let w = img.width, h = img.height;
+      if(w > max || h > max){ const r = Math.min(max/w, max/h); w = Math.round(w*r); h = Math.round(h*r); }
+      const cv = document.createElement("canvas"); cv.width = w; cv.height = h;
+      cv.getContext("2d").drawImage(img, 0, 0, w, h);
+      const dataUrl = cv.toDataURL("image/jpeg", 0.82);
+      document.getElementById("edForm").avatar.value = dataUrl;
+      document.getElementById("avaPrev").style.display = "block";
+      document.getElementById("avaPrevImg").src = dataUrl;
+    };
+    img.onerror = () => toast("图片读取失败，请换一张", true);
+    img.src = e.target.result;
+  };
+  reader.onerror = () => toast("文件读取失败", true);
+  reader.readAsDataURL(file);
 }
 function closeEdit(){ document.getElementById("edMask").classList.remove("show"); EDIT_ID = null; }
 document.getElementById("edMask").addEventListener("click", e=>{ if(e.target.id==="edMask") closeEdit(); });
@@ -657,7 +681,6 @@ async function saveEdit(){
     name: g.name,
     avatar: g.avatar,
     games: g.games,
-    rank: g.rank,
     status: g.status || "可接",
     platform: g.platform,
     mic: g.mic,
@@ -666,12 +689,12 @@ async function saveEdit(){
     unit: g.unit || "局",
     strong: g.strong,
     note: g.note,
-    tech: Number(g.tech) || 0,
-    comm: Number(g.comm) || 0,
-    patience: Number(g.patience) || 0,
-    eff: Number(g.eff) || 0,
-    fun: Number(g.fun) || 0,
-    reliable: Number(g.reliable) || 0
+    tech: Number(g.tech) || 3,
+    comm: Number(g.comm) || 3,
+    patience: Number(g.patience) || 3,
+    eff: Number(g.eff) || 3,
+    fun: Number(g.fun) || 3,
+    reliable: Number(g.reliable) || 3
   };
   const editing = EDIT_ID;
   const okDone = await mutate(list=>{
