@@ -727,5 +727,23 @@
     "status": "可租",
     "wechat": "",
     "note": "无"
+  },
+  {
+    "id": "TEST1786948504",
+    "rank": "钻石",
+    "status": "可租",
+    "level": "55级",
+    "zone": "V区",
+    "price": 88,
+    "deposit": 300,
+    "coin": "60M",
+    "insurance": "9",
+    "ratio": "1:30",
+    "ti": "7",
+    "fu": "6",
+    "gear": "自检测试用",
+    "note": "",
+    "wechat": "",
+    "image": ""
   }
 ]
