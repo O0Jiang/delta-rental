@@ -412,7 +412,7 @@ function updatePricePreview(){
   const r = parseInt(document.querySelector('input[name=ratio]').value, 10);
   if(c > 0 && r > 0){
     const price = Math.round(c * 100 / r);
-    p.textContent = `💰 预计租金：￥${price} / 天（纯币 ${c}M ÷ 比例 1:${r}）`;
+    p.textContent = `💰 预计租金：￥${price}（纯币 ${c}M ÷ 比例 1:${r}）`;
     p.classList.add("active");
   } else {
     p.textContent = "💰 预计租金：填好「纯币」和「比例」后自动算出";
