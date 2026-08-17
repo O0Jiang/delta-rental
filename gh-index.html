@@ -76,6 +76,10 @@
   .modal .ok-msg { display: none; background: #16351f; color: #5fd97a; border: 1px solid #1f5a35; border-radius: 8px; padding: 12px; margin-top: 14px; font-size: 13px; text-align: center; }
   .modal .err-msg { display: none; background: #3a1416; color: #ff6b6b; border: 1px solid #7a2a2e; border-radius: 8px; padding: 12px; margin-top: 14px; font-size: 13px; text-align: center; }
   .modal .hint { font-size: 11px; color: #8a94a6; margin-top: 12px; line-height: 1.6; background: #0f1419; border: 1px solid #2d3744; border-radius: 8px; padding: 10px; }
+  .unit-input { position: relative; }
+  .unit-input .unit-suffix { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 12px; color: #8a94a6; pointer-events: none; }
+  .price-preview { margin-top: 4px; background: #0c2630; border: 1px solid #1f4a5a; color: #6fd3e8; border-radius: 8px; padding: 13px; font-size: 14px; text-align: center; font-weight: 700; letter-spacing: .3px; }
+  .price-preview.active { background: #103040; border-color: #2f6a82; color: #7fe3f5; }
 </style>
 </head>
 <body>
@@ -153,34 +157,41 @@
       </div>
       <div class="frow">
         <div>
-          <label>租金/天(元) <span class="req">*</span></label>
-          <input name="price" type="number" required placeholder="30">
-        </div>
-        <div>
           <label>押金(元,选填)</label>
           <input name="deposit" type="number" placeholder="200">
         </div>
-      </div>
-      <div class="frow">
         <div>
-          <label>纯币 <span class="req">*</span></label>
-          <input name="coin" required placeholder="如 50M">
-        </div>
-        <div>
-          <label>保险(选填)</label>
-          <input name="insurance" placeholder="如 9">
+          <label>保险格数(选填)</label>
+          <input name="insurance" type="number" placeholder="如 9">
         </div>
       </div>
       <div class="frow">
         <div>
-          <label>比例(选填)</label>
-          <input name="ratio" placeholder="如 1:29">
+          <label>纯币数量(单位 M) <span class="req">*</span></label>
+          <div class="unit-input">
+            <input name="coin" type="number" step="0.1" required placeholder="如 50">
+            <span class="unit-suffix">M</span>
+          </div>
         </div>
         <div>
-          <label>体力/负重(选填)</label>
-          <input name="tifu" placeholder="如 7体6负">
+          <label>比例(直接填数字) <span class="req">*</span></label>
+          <div class="unit-input">
+            <input name="ratio" type="number" required placeholder="如 29">
+            <span class="unit-suffix">即 1:N</span>
+          </div>
         </div>
       </div>
+      <div class="frow">
+        <div>
+          <label>体力(选填)</label>
+          <input name="ti" type="number" placeholder="如 7">
+        </div>
+        <div>
+          <label>负重(选填)</label>
+          <input name="fu" type="number" placeholder="如 6">
+        </div>
+      </div>
+      <div class="price-preview" id="pricePreview">💰 预计租金：填好「纯币」和「比例」后自动算出</div>
       <label>装备亮点 / 卖点 <span class="req">*</span></label>
       <textarea name="gear" required placeholder="满改M4、稀有皮肤等"></textarea>
       <label>备注（选填）</label>
@@ -344,22 +355,27 @@ document.getElementById("regForm").addEventListener("submit", async (e)=>{
   ok.style.display = "none"; err.style.display = "none";
   const fd = new FormData(e.target);
   const g = Object.fromEntries(fd.entries());
-  const tifu = (g.tifu||"").trim();
-  let ti="", fu="";
-  const m1 = tifu.match(/(\d+)\s*体/); if(m1) ti = m1[1];
-  const m2 = tifu.match(/(\d+)\s*负/); if(m2) fu = m2[1];
+  // 纯币：默认单位 M，号主只填数字
+  const coinVal = parseFloat(g.coin);
+  const coin = isNaN(coinVal) ? "" : (coinVal + " M纯币");
+  // 比例：号主只填数字，存成 1:N
+  const ratioVal = parseInt(g.ratio, 10);
+  const ratio = isNaN(ratioVal) ? "" : ("1:" + ratioVal);
+  // 租金：按 纯币(M)*100 / 比例 自动计算（即 纯币万数 ÷ 比例），号主不手填
+  let price = "";
+  if(coinVal > 0 && ratioVal > 0){ price = Math.round(coinVal * 100 / ratioVal); }
   const rec = {
     id: "U" + Date.now(),
     rank: g.rank,
     level: g.level ? (g.level + "级") : "",
     zone: g.zone,
-    price: Number(g.price),
+    price: price,
     deposit: g.deposit ? Number(g.deposit) : "",
-    coin: g.coin,
+    coin: coin,
     insurance: g.insurance || "",
-    ratio: g.ratio || "",
-    ti: ti,
-    fu: fu,
+    ratio: ratio,
+    ti: g.ti || "",
+    fu: g.fu || "",
     status: "可租",
     wechat: g.wechat || "",
     note: [g.gear, g.note].filter(Boolean).join("\n")
@@ -388,6 +404,23 @@ document.getElementById("regForm").addEventListener("submit", async (e)=>{
     console.error(ex);
   }
 });
+
+// 租金实时预览：填好纯币与比例即算出
+function updatePricePreview(){
+  const p = document.getElementById("pricePreview");
+  const c = parseFloat(document.querySelector('input[name=coin]').value);
+  const r = parseInt(document.querySelector('input[name=ratio]').value, 10);
+  if(c > 0 && r > 0){
+    const price = Math.round(c * 100 / r);
+    p.textContent = `💰 预计租金：￥${price} / 天（纯币 ${c}M ÷ 比例 1:${r}）`;
+    p.classList.add("active");
+  } else {
+    p.textContent = "💰 预计租金：填好「纯币」和「比例」后自动算出";
+    p.classList.remove("active");
+  }
+}
+document.querySelector('input[name=coin]').addEventListener("input", updatePricePreview);
+document.querySelector('input[name=ratio]').addEventListener("input", updatePricePreview);
 
 refresh();
 loadAnn();
