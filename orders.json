@@ -7,6 +7,7 @@
     "client": "1",
     "note": "",
     "status": "待分配",
-    "createdAt": "2026-08-18T13:33:50.493Z"
+    "createdAt": "2026-08-18T13:33:50.493Z",
+    "assignedTo": "U1786966308995"
   }
 ]
