@@ -187,9 +187,10 @@
 
   <div class="list" id="ordersView" style="display:none;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
-      <span class="cnt">📥 客户在展示页提交的订单（平台不碰资金，钱由双方微信私下走）</span>
+      <span class="cnt">📥 客户订单：你统一接单 → 派给打手 → 差价即利润（钱微信走，平台不代收）</span>
       <button class="btn btn-r" onclick="clearOrders()">清空全部订单</button>
     </div>
+    <div id="orderSummary" style="background:#1a212b;border:1px solid #5e4a18;border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:13px;color:#b8c0cc;"></div>
     <div id="orderList"><div class="loading">加载中…</div></div>
   </div>
 </div>
@@ -225,8 +226,8 @@
       </div>
       <label>擅长的游戏</label>
       <input name="games" placeholder="如 三角洲行动 / PUBG">
-      <label>对外联系方式（展示给客户，露出在展示页）</label>
-      <input name="contact" placeholder="如 微信 abc123 / QQ 123456（留空则不展示）">
+      <label>内部联系方式（仅后台可见，不对外展示）</label>
+      <input name="contact" placeholder="如 微信 abc123 / QQ 123456（你派单/结算时联系打手用）">
       <div class="frow">
         <div><label>游戏端</label><select name="platform"><option value="">请选择</option><option>PC</option><option>手游</option></select></div>
         <div><label>是否带麦</label><select name="mic"><option value="">请选择</option><option>带麦</option><option>不带麦</option></select></div>
@@ -844,25 +845,76 @@ async function loadOrdersAdmin(){
   }
 }
 
+function memberOptions(selectedId){
+  const ms = DATA.filter(d => d.type === "陪玩" || d.type === "代肝");
+  let html = `<option value="">未分配</option>`;
+  ms.forEach(m=>{
+    const id = String(m.id);
+    const sel = (id === String(selectedId)) ? " selected" : "";
+    html += `<option value="${esc(id)}"${sel}>${esc(m.name||"未命名")}（${esc(m.type||"")}）</option>`;
+  });
+  return html;
+}
+
+async function updateOrderAt(idx, patch){
+  if(idx < 0 || idx >= __ORDERS__.length) return;
+  Object.assign(__ORDERS__[idx], patch);
+  try {
+    await saveOrdersAdmin(__ORDERS__, "更新订单分配/结算");
+    renderOrders();
+    toast("订单已更新");
+  } catch(e){ toast("更新失败：" + e.message, true); }
+}
+
+function renderOrderSummary(){
+  const list = __ORDERS__ || [];
+  let rev = 0, cost = 0;
+  list.forEach(o=>{ rev += Number(o.amount)||0; cost += Number(o.payout)||0; });
+  const profit = rev - cost;
+  const el = document.getElementById("orderSummary");
+  if(!el) return;
+  el.innerHTML = `本期订单 <b>${list.length}</b> 笔 ｜ 客户总付 <b style="color:#ffd24a">￥${Math.round(rev)}</b> ｜ 打手总成本 <b style="color:#5fd97a">￥${Math.round(cost)}</b> ｜ 你的利润 <b style="color:#ffd24a">￥${Math.round(profit)}</b>`;
+}
+
 function renderOrders(){
   const list = __ORDERS__ || [];
   const el = document.getElementById("orderList");
-  if(!list.length){ el.innerHTML = '<div class="empty">暂无客户订单</div>'; return; }
+  if(!list.length){ el.innerHTML = '<div class="empty">暂无客户订单</div>'; renderOrderSummary(); return; }
   const sorted = list.map((o,i)=>({o,i})).sort((a,b)=> (b.o.createdAt||"").localeCompare(a.o.createdAt||""));
   el.innerHTML = sorted.map(({o,i})=>{
     const time = o.createdAt ? new Date(o.createdAt).toLocaleString("zh-CN") : "—";
+    const amount = Number(o.amount)||0;
+    const payout = Number(o.payout)||0;
+    const profit = amount - payout;
+    const margin = amount > 0 ? Math.round(profit/amount*100) : 0;
+    const st = o.status || "待分配";
     return `
     <div class="row">
       <div class="body">
         <div class="l1">
           <span class="seq" style="background:#241a3a;border-color:#5e4a8a;color:#c9b3ff">${esc(o.type||"")}</span>
-          <span class="tag t-type">${esc(o.memberName||"未知成员")}</span>
-          <span class="tag">客户联系：${esc(o.client||"—")}</span>
+          <span class="tag">客户：${esc(o.client||"—")}</span>
           <span class="tag">${esc(time)}</span>
+          <span class="tag t-type">${esc(st)}</span>
         </div>
         <div class="l2"><b style="color:#b8c0cc;">需求：</b>${esc(o.need||"—")}</div>
         ${o.time?`<div class="l2">期望时间：${esc(o.time)}</div>`:""}
         ${o.note?`<div class="l2">备注：${esc(o.note)}</div>`:""}
+        <div class="l2" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:7px;">
+          <span>派给打手：
+            <select onchange="updateOrderAt(${i},{assignedTo:this.value})" style="background:#0f1419;color:#e6e6e6;border:1px solid #2d3744;border-radius:6px;padding:5px 7px;font-size:12px;">${memberOptions(o.assignedTo)}</select>
+          </span>
+          <span>客户付￥<input type="number" min="0" value="${amount}" onchange="updateOrderAt(${i},{amount:Number(this.value)||0})" style="width:82px;background:#0f1419;color:#ffd24a;border:1px solid #2d3744;border-radius:6px;padding:5px 7px;font-size:12px;"></span>
+          <span>给打手￥<input type="number" min="0" value="${payout}" onchange="updateOrderAt(${i},{payout:Number(this.value)||0})" style="width:82px;background:#0f1419;color:#5fd97a;border:1px solid #2d3744;border-radius:6px;padding:5px 7px;font-size:12px;"></span>
+          <span style="color:#ffd24a;font-weight:700;">利润 ￥${profit}${amount>0?` (${margin}%)`:""}</span>
+          <span>状态：
+            <select onchange="updateOrderAt(${i},{status:this.value})" style="background:#0f1419;color:#e6e6e6;border:1px solid #2d3744;border-radius:6px;padding:5px 7px;font-size:12px;">
+              <option value="待分配"${st==="待分配"?" selected":""}>待分配</option>
+              <option value="已派单"${st==="已派单"?" selected":""}>已派单</option>
+              <option value="已完成"${st==="已完成"?" selected":""}>已完成</option>
+            </select>
+          </span>
+        </div>
         <div class="idtxt">订单索引：#${i}</div>
       </div>
       <div class="acts">
@@ -870,6 +922,7 @@ function renderOrders(){
       </div>
     </div>`;
   }).join("");
+  renderOrderSummary();
 }
 
 async function saveOrdersAdmin(list, message){
