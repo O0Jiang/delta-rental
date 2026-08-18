@@ -92,7 +92,7 @@
     <p>技术护航 / 跑刀代刷 · 俱乐部成员展示 · 看中后长按二维码加微信对接</p>
   </header>
 
-  <div class="compliance-bar">⚠️ 本平台仅向 <b>18 周岁以上</b> 成年用户提供游戏陪玩/代肝信息服务。陪玩为同场游戏、不登录他人账号；代肝需登录客户账号，可能违反游戏运营方用户协议并导致账号封禁，相关风险由用户自行承担。平台仅提供信息撮合，不代收代付资金。</div>
+  <div class="compliance-bar">⚠️ 本平台仅向 <b>18 周岁以上</b> 成年用户提供游戏陪玩/代肝信息服务。陪玩为同场游戏、不登录他人账号；代肝需登录客户账号，可能违反游戏运营方用户协议并导致账号封禁，相关风险由用户自行承担。本俱乐部<b>统一接单、派单</b>，不代收代付资金，交易通过微信进行。</div>
 
   <div class="notice-bar" onclick="openNotice()">
     <span class="notice-dot"></span>
@@ -127,7 +127,7 @@
     <h3>进入前须知</h3>
     <div class="age-text">
       本平台仅向 <b>18 周岁以上</b> 成年用户提供游戏陪玩/代肝信息服务。<br><br>
-      代肝需登录客户账号，可能违反游戏运营方用户协议并导致账号封禁，相关风险由交易双方自行承担；平台仅提供信息撮合，不代收、不代付资金，不参与具体交易。<br><br>
+      代肝需登录客户账号，可能违反游戏运营方用户协议并导致账号封禁，相关风险由交易双方自行承担；俱乐部统一接单、派单，不代收、不代付资金，交易通过微信进行。<br><br>
       点击「我已满 18 岁并已知悉以上风险」即代表您确认已成年，并自愿承担相关风险。
     </div>
     <button type="button" class="age-btn ok" onclick="acceptAge()">我已满 18 岁并已知悉以上风险</button>
@@ -182,7 +182,7 @@
         <button type="button" class="btn btn-d" style="flex:1;padding:12px;background:#2d3744;color:#e6e6e6;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;" onclick="closeOrder()">取消</button>
       </div>
     </form>
-    <div class="order-hint">⚠️ 平台仅做<b>信息撮合</b>，<b>不代收代付资金</b>。提交后请直接按上方成员「联系方式」微信对接，钱自行微信转账；注意交易安全，谨防诈骗。</div>
+    <div class="order-hint">⚠️ 订单由<b>俱乐部统一接单派单</b>，<b>不代收代付资金</b>。提交后请留好您的微信，老板会主动联系您安排打手；交易通过微信进行，注意安全谨防诈骗。</div>
   </div>
 </div>
 
@@ -269,9 +269,8 @@ function renderCard(d){
     <div class="radar-wrap">${radar}</div>
     <div class="row-info">${tags.join("")}</div>
     ${d.strong ? `<div class="note"><b>擅长：</b>${esc(d.strong)}</div>` : ""}
-    ${d.contact ? `<div class="contact-row">📞 联系方式：<span class="ctext">${esc(d.contact)}</span><button class="btn-copy" onclick="copyContact(this)">复制</button></div>` : ""}
     <div class="card-actions">
-      <button class="btn-order" onclick="openOrder('${esc(d.id)}')">我要下单 / 预约</button>
+      <button class="btn-order" onclick="openOrder()">我要下单 / 预约</button>
     </div>
     <div class="seq-line">编号 ${seq}</div>
   </div>`;
@@ -357,26 +356,12 @@ function toast(msg, isErr){
   t.textContent = msg; t.className = "toast show" + (isErr ? " err" : "");
   clearTimeout(t._tm); t._tm = setTimeout(()=> t.className = "toast", isErr ? 5200 : 2600);
 }
-function copyContact(btn){
-  const txt = (btn.previousElementSibling.textContent || "").trim();
-  if(!txt) return;
-  if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(txt).then(()=> toast("已复制联系方式：" + txt)).catch(()=> toast("复制失败，请手动长按", true));
-  } else { toast("请长按联系方式手动复制", true); }
-}
-
-let ORDER_TARGET = null;
-function openOrder(id){
-  const d = DATA.find(x => String(x.id) === String(id));
-  if(!d){ toast("该成员已不存在", true); return; }
-  ORDER_TARGET = { id: d.id, name: d.name || "未命名", type: d.type || "" };
-  document.getElementById("orderMember").textContent = "向「" + (d.name||"未命名") + "」(" + (d.type||"") + ") 下单 / 预约";
-  const oType = document.getElementById("oType");
-  if(d.type === "代肝" || d.type === "陪玩"){ for(const o of oType.options){ if(o.value === d.type){ o.selected = true; break; } } }
+function openOrder(){
+  document.getElementById("orderMember").textContent = "向 COS电竞俱乐部 下单，老板统一派单";
   document.getElementById("orderForm").reset();
   document.getElementById("orderMask").classList.add("show");
 }
-function closeOrder(){ document.getElementById("orderMask").classList.remove("show"); ORDER_TARGET = null; }
+function closeOrder(){ document.getElementById("orderMask").classList.remove("show"); }
 document.getElementById("orderMask").addEventListener("click", e=>{ if(e.target.id==="orderMask") closeOrder(); });
 
 async function loadOrders(){
@@ -407,7 +392,6 @@ async function saveOrder(order){
 }
 
 async function placeOrder(){
-  if(!ORDER_TARGET){ toast("未选择成员", true); return; }
   const need = document.getElementById("oNeed").value.trim();
   const client = document.getElementById("oClient").value.trim();
   if(!need){ toast("请填写需求描述", true); return; }
@@ -415,20 +399,20 @@ async function placeOrder(){
   const btn = document.getElementById("oSubmit");
   btn.disabled = true; btn.textContent = "提交中…";
   const order = {
-    memberId: ORDER_TARGET.id,
-    memberName: ORDER_TARGET.name,
+    id: "O" + Date.now(),
     type: document.getElementById("oType").value,
     need,
     time: document.getElementById("oTime").value.trim(),
     client,
     note: document.getElementById("oNote").value.trim(),
+    status: "待分配",
     createdAt: new Date().toISOString()
   };
   try {
     await saveOrder(order);
     btn.disabled = false; btn.textContent = "提交订单";
     closeOrder();
-    toast("下单成功！请按成员「联系方式」微信对接，钱各自微信走");
+    toast("下单成功！老板会按您留的微信联系您派单");
   } catch(e){
     btn.disabled = false; btn.textContent = "提交订单";
     toast("提交失败：" + e.message + "（可稍后重试）", true);
