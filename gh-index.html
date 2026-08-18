@@ -51,6 +51,17 @@
   .toast.err { background:#3a1416; color:#ff8b8b; border-color:#7a2a2e; }
   .toast.show { display:block; }
 
+  /* 细分服务选择小面板 */
+  .sub-hint { font-size:12px; color:#8a94a6; text-align:center; margin-bottom:14px; }
+  .sub-list { display:flex; flex-direction:column; gap:10px; }
+  .sub-item { display:flex; align-items:center; gap:12px; background:#0f1419; border:1px solid #2d3744; border-radius:11px; padding:13px 14px; cursor:pointer; transition:border-color .15s, background .15s; }
+  .sub-item:hover { border-color:#ffd24a; background:#161d27; }
+  .sub-item .si-ico { width:40px; height:40px; border-radius:10px; background:#1a212b; border:1px solid #2d3744; display:flex; align-items:center; justify-content:center; font-size:21px; flex-shrink:0; }
+  .sub-item .si-main { flex:1; min-width:0; }
+  .sub-item .si-name { font-size:15px; font-weight:700; color:#fff; }
+  .sub-item .si-desc { font-size:11.5px; color:#8a94a6; margin-top:2px; line-height:1.5; }
+  .sub-item .si-arrow { color:#8a94a6; font-size:18px; flex-shrink:0; }
+
   /* 弹窗（二维码 + 公告） */
   .mask { position: fixed; inset: 0; background: rgba(0,0,0,.6); display: none; align-items: center; justify-content: center; z-index: 10; padding: 16px; overflow-y: auto; }
   .mask.show { display: flex; }
@@ -137,6 +148,7 @@
     <button class="modal-close" onclick="closeOrder()" title="关闭" aria-label="关闭">×</button>
     <h3>我要下单 / 预约</h3>
     <div class="mh" id="orderMember" style="font-size:12px;color:#8a94a6;text-align:center;margin-bottom:12px;"></div>
+    <div id="oSub" style="display:none;font-size:12.5px;color:#ffd24a;text-align:center;margin:-6px 0 8px;font-weight:700;"></div>
     <form id="orderForm" onsubmit="return false;">
       <div class="frow">
         <div>
@@ -163,12 +175,23 @@
   </div>
 </div>
 
+<!-- 细分服务选择小面板 -->
+<div class="mask" id="subMask">
+  <div class="modal" style="max-width:420px;">
+    <button class="modal-close" onclick="closeSub()" title="关闭" aria-label="关闭">×</button>
+    <h3 id="subTitle">选择服务细分</h3>
+    <div class="sub-hint">选择具体服务项目，老板会按此统一派单</div>
+    <div class="sub-list" id="subList"></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script src="config.js"></script>
 <script>
 let DATA = [];
 let ANN = { title:"接单必看", bars:[] };
+let ORDER_SUB = "";
 
 // 利润/加价率：底价(d.price) + 全局加价率 = 客户上架价，差价为平台利润
 let MARKUP = 0.1;  // 默认 10%，由 profit.json 控制，管理后台可改
@@ -194,6 +217,21 @@ const PT_META = {
   "陪玩": { icon:"🎮", desc:"技术护航 · 同场游戏不登录他人账号" },
   "代肝": { icon:"⚔️", desc:"跑刀代刷 · 需登录客户账号（有封号风险，请知悉）" }
 };
+// 细分服务（点大类后弹出的小面板，老板选具体一项）
+const SUB_TYPES = {
+  "陪玩": [
+    { icon:"🛡️", name:"技术护航", desc:"高手带飞，保吃鸡/突围，同场不登号" },
+    { icon:"💬", name:"娱乐陪聊", desc:"连麦唠嗑图开心，轻松上分" },
+    { icon:"📈", name:"上分单", desc:"按段位目标，从 X 打到 Y" },
+    { icon:"🎓", name:"教学", desc:"教枪法/意识/路线，包教包会" }
+  ],
+  "代肝": [
+    { icon:"🔪", name:"跑刀代刷", desc:"代跑物资、代刷装备/关卡" },
+    { icon:"🏅", name:"段位上分", desc:"代打段位，按目标结算" },
+    { icon:"📅", name:"周常任务", desc:"代做每日/每周任务" },
+    { icon:"🌱", name:"养号代练", desc:"长期代练养成账号" }
+  ]
+};
 function renderPriceTable(){
   const el = document.getElementById("priceTable");
   if(!el) return;
@@ -216,7 +254,7 @@ function renderPriceTable(){
       <div class="pt-side">
         <div class="pt-price">${priceTxt}</div>
         <div class="pt-unit">起 / ${esc(unit)}</div>
-        <button class="pt-btn" onclick="openOrder('${esc(t)}')">选这个下单</button>
+        <button class="pt-btn" onclick="openSubTypes('${esc(t)}')">选这个下单</button>
       </div>
     </div>`;
   }).filter(Boolean);
@@ -290,17 +328,40 @@ function toast(msg, isErr){
   t.textContent = msg; t.className = "toast show" + (isErr ? " err" : "");
   clearTimeout(t._tm); t._tm = setTimeout(()=> t.className = "toast", isErr ? 5200 : 2600);
 }
-function openOrder(type){
+function openOrder(type, sub){
   document.getElementById("orderMember").textContent = "向 COS电竞俱乐部 下单，老板统一派单";
   document.getElementById("orderForm").reset();
   if(type){
     const oType = document.getElementById("oType");
     for(const o of oType.options){ if(o.value === type){ o.selected = true; break; } }
   }
+  ORDER_SUB = sub || "";
+  const subEl = document.getElementById("oSub");
+  if(ORDER_SUB){ subEl.style.display = "block"; subEl.textContent = "已选服务：" + ORDER_SUB; }
+  else { subEl.style.display = "none"; }
   document.getElementById("orderMask").classList.add("show");
 }
 function closeOrder(){ document.getElementById("orderMask").classList.remove("show"); }
 document.getElementById("orderMask").addEventListener("click", e=>{ if(e.target.id==="orderMask") closeOrder(); });
+
+// 细分服务小面板
+function openSubTypes(type){
+  const subs = SUB_TYPES[type] || [];
+  document.getElementById("subTitle").textContent = "选择「" + (type||"") + "」的具体服务";
+  const list = document.getElementById("subList");
+  if(!subs.length){ list.innerHTML = '<div class="pt-empty">该分类暂无可选项</div>'; }
+  else {
+    list.innerHTML = subs.map(s=>`<div class="sub-item" onclick="chooseSub('${esc(type)}','${esc(s.name)}')">
+      <div class="si-ico">${s.icon}</div>
+      <div class="si-main"><div class="si-name">${esc(s.name)}</div><div class="si-desc">${esc(s.desc)}</div></div>
+      <div class="si-arrow">›</div>
+    </div>`).join("");
+  }
+  document.getElementById("subMask").classList.add("show");
+}
+function closeSub(){ document.getElementById("subMask").classList.remove("show"); }
+function chooseSub(type, sub){ closeSub(); openOrder(type, sub); }
+document.getElementById("subMask").addEventListener("click", e=>{ if(e.target.id==="subMask") closeSub(); });
 
 async function loadOrders(){
   try {
@@ -339,6 +400,7 @@ async function placeOrder(){
   const order = {
     id: "O" + Date.now(),
     type: document.getElementById("oType").value,
+    subType: ORDER_SUB,
     need,
     time: document.getElementById("oTime").value.trim(),
     client,
