@@ -32,3 +32,8 @@ const API_URL = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${
 const PROFIT_PATH = "profit.json";
 const PROFIT_RAW = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/${PROFIT_PATH}`;
 const PROFIT_API = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${PROFIT_PATH}`;
+
+// 客户下单数据（纯撮合：平台不碰资金，仅登记需求，钱由双方微信私下走）
+const ORDERS_PATH = "orders.json";
+const ORDERS_RAW = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/${ORDERS_PATH}`;
+const ORDERS_API = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${ORDERS_PATH}`;
