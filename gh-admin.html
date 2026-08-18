@@ -157,7 +157,7 @@
     </div>
   </div>
 
-  <div class="bar">
+  <div class="bar" id="toolbar">
     <input class="search" id="q" type="text" placeholder="搜索：昵称 / 擅长游戏 / 编号…" oninput="renderList()">
     <select id="fStatus" onchange="renderList()">
       <option value="">全部状态</option><option>可接</option><option>忙碌</option><option value="__other">其他/维护</option>
@@ -172,6 +172,7 @@
     <button class="tab active" id="tabPw" onclick="setType('陪玩')">🎮 陪玩</button>
     <button class="tab" id="tabDg" onclick="setType('代肝')">⚔️ 代肝</button>
     <button class="tab" id="tabAll" onclick="setType('')">全部</button>
+    <button class="tab" id="tabOrders" onclick="showOrders()">📥 客户订单</button>
   </div>
 
   <div class="bulk" id="bulk">
@@ -183,6 +184,14 @@
   </div>
 
   <div class="list" id="list"><div class="loading">加载中…</div></div>
+
+  <div class="list" id="ordersView" style="display:none;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+      <span class="cnt">📥 客户在展示页提交的订单（平台不碰资金，钱由双方微信私下走）</span>
+      <button class="btn btn-r" onclick="clearOrders()">清空全部订单</button>
+    </div>
+    <div id="orderList"><div class="loading">加载中…</div></div>
+  </div>
 </div>
 
 <!-- 编辑/新增弹窗 -->
@@ -216,6 +225,8 @@
       </div>
       <label>擅长的游戏</label>
       <input name="games" placeholder="如 三角洲行动 / PUBG">
+      <label>对外联系方式（展示给客户，露出在展示页）</label>
+      <input name="contact" placeholder="如 微信 abc123 / QQ 123456（留空则不展示）">
       <div class="frow">
         <div><label>游戏端</label><select name="platform"><option value="">请选择</option><option>PC</option><option>手游</option></select></div>
         <div><label>是否带麦</label><select name="mic"><option value="">请选择</option><option>带麦</option><option>不带麦</option></select></div>
@@ -313,6 +324,11 @@ if(sessionStorage.getItem("dr_admin") === "1"){
 let DATA = [], SHA = null, SEL = new Set(), BUSY = false;
 let TYPE_FILTER = "陪玩";
 function setType(t){
+  document.getElementById("tabOrders").classList.remove("active");
+  document.getElementById("toolbar").style.display = "";
+  document.getElementById("bulk").style.display = "";
+  document.getElementById("list").style.display = "";
+  document.getElementById("ordersView").style.display = "none";
   TYPE_FILTER = t;
   document.getElementById("tabPw").classList.toggle("active", t === "陪玩");
   document.getElementById("tabDg").classList.toggle("active", t === "代肝");
@@ -607,7 +623,7 @@ async function copyOne(id){
 }
 
 /* ================= 新增 / 编辑 ================= */
-const FIELDS = ["type","name","avatar","games","status","platform","mic","online","price","unit","strong","note","tech","comm","patience","eff","fun","reliable"];
+const FIELDS = ["type","name","avatar","games","status","platform","mic","online","contact","price","unit","strong","note","tech","comm","patience","eff","fun","reliable"];
 let EDIT_ID = null;
 
 function openEdit(id){
@@ -695,6 +711,7 @@ async function saveEdit(){
     avatar: g.avatar,
     games: g.games,
     status: g.status || "可接",
+    contact: g.contact,
     platform: g.platform,
     mic: g.mic,
     online: g.online,
@@ -797,6 +814,99 @@ async function saveAnn(){
     toast("保存公告失败：" + e.message, true);
     console.error(e);
   }
+}
+
+/* ================= 客户订单视图（纯撮合） ================= */
+let __ORDERS__ = [];
+
+async function showOrders(){
+  document.getElementById("tabPw").classList.remove("active");
+  document.getElementById("tabDg").classList.remove("active");
+  document.getElementById("tabAll").classList.remove("active");
+  document.getElementById("tabOrders").classList.add("active");
+  document.getElementById("toolbar").style.display = "none";
+  document.getElementById("bulk").style.display = "none";
+  document.getElementById("list").style.display = "none";
+  document.getElementById("ordersView").style.display = "block";
+  await loadOrdersAdmin();
+}
+
+async function loadOrdersAdmin(){
+  const el = document.getElementById("orderList");
+  el.innerHTML = '<div class="loading">加载中…</div>';
+  try {
+    const r = await fetch(ORDERS_API + "?t=" + Date.now(), { headers: HEAD() });
+    if(r.ok){ const j = await r.json(); __ORDERS__ = JSON.parse(unb64(j.content)); if(!Array.isArray(__ORDERS__)) __ORDERS__ = []; renderOrders(); return; }
+    if(r.status === 404){ __ORDERS__ = []; renderOrders(); return; }
+    throw new Error("读取失败 " + r.status);
+  } catch(e){
+    el.innerHTML = '<div class="empty">订单读取失败：' + esc(e.message) + '</div>';
+  }
+}
+
+function renderOrders(){
+  const list = __ORDERS__ || [];
+  const el = document.getElementById("orderList");
+  if(!list.length){ el.innerHTML = '<div class="empty">暂无客户订单</div>'; return; }
+  const sorted = list.map((o,i)=>({o,i})).sort((a,b)=> (b.o.createdAt||"").localeCompare(a.o.createdAt||""));
+  el.innerHTML = sorted.map(({o,i})=>{
+    const time = o.createdAt ? new Date(o.createdAt).toLocaleString("zh-CN") : "—";
+    return `
+    <div class="row">
+      <div class="body">
+        <div class="l1">
+          <span class="seq" style="background:#241a3a;border-color:#5e4a8a;color:#c9b3ff">${esc(o.type||"")}</span>
+          <span class="tag t-type">${esc(o.memberName||"未知成员")}</span>
+          <span class="tag">客户联系：${esc(o.client||"—")}</span>
+          <span class="tag">${esc(time)}</span>
+        </div>
+        <div class="l2"><b style="color:#b8c0cc;">需求：</b>${esc(o.need||"—")}</div>
+        ${o.time?`<div class="l2">期望时间：${esc(o.time)}</div>`:""}
+        ${o.note?`<div class="l2">备注：${esc(o.note)}</div>`:""}
+        <div class="idtxt">订单索引：#${i}</div>
+      </div>
+      <div class="acts">
+        <button class="mini m-del" onclick="delOrder(${i})">删除</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+async function saveOrdersAdmin(list, message){
+  let sha = null;
+  const r0 = await fetch(ORDERS_API + "?t=" + Date.now(), { headers: HEAD() });
+  if(r0.ok){ const j0 = await r0.json(); sha = j0.sha; }
+  else if(r0.status !== 404){ throw new Error("读取失败 " + r0.status); }
+  const body = { message, content: b64(JSON.stringify(list, null, 2)), branch: GH_BRANCH };
+  if(sha) body.sha = sha;
+  const resp = await fetch(ORDERS_API, { method:"PUT", headers:{ ...HEAD(), "Content-Type":"application/json" }, body: JSON.stringify(body) });
+  if(!resp.ok){ const ej = await resp.json().catch(()=>({})); throw new Error(resp.status + " " + (ej.message||"")); }
+  return true;
+}
+
+function delOrder(idx){
+  if(idx<0 || idx>=__ORDERS__.length) return;
+  showConfirm("确认删除订单", "将永久删除这条客户订单，无法撤销。", async ()=>{
+    closeConfirm();
+    try {
+      __ORDERS__.splice(idx, 1);
+      await saveOrdersAdmin(__ORDERS__, "删除客户订单");
+      renderOrders();
+      toast("已删除该订单");
+    } catch(e){ toast("删除失败：" + e.message, true); }
+  });
+}
+
+function clearOrders(){
+  showConfirm("确认清空全部订单", "将<b>永久删除所有</b>客户订单记录，无法撤销。", async ()=>{
+    closeConfirm();
+    try {
+      __ORDERS__ = [];
+      await saveOrdersAdmin([], "清空客户订单");
+      renderOrders();
+      toast("已清空所有订单");
+    } catch(e){ toast("清空失败：" + e.message, true); }
+  });
 }
 
 /* 启动 */
