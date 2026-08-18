@@ -41,6 +41,16 @@
   .pt-empty { font-size:12.5px; color:#8a94a6; text-align:center; padding:22px 12px; line-height:1.7; }
   .pt-foot { font-size:11.5px; color:#8a94a6; text-align:center; padding:12px 4px 6px; line-height:1.6; }
 
+  /* 服务类目（主页入口，不显示价格） */
+  .cat-list { display:flex; flex-direction:column; gap:12px; }
+  .cat-card { display:flex; align-items:center; gap:14px; background:#1a212b; border:1px solid #2d3744; border-radius:14px; padding:18px 16px; cursor:pointer; transition:border-color .15s, background .15s; }
+  .cat-card:hover { border-color:#ffd24a; background:#161d27; }
+  .cat-ico { width:52px; height:52px; border-radius:13px; background:#0f1419; border:1px solid #2d3744; display:flex; align-items:center; justify-content:center; font-size:27px; flex-shrink:0; }
+  .cat-main { flex:1; min-width:0; }
+  .cat-name { font-size:18px; font-weight:800; color:#fff; }
+  .cat-desc { font-size:12px; color:#8a94a6; margin-top:3px; line-height:1.5; }
+  .cat-arrow { color:#8a94a6; font-size:24px; flex-shrink:0; }
+
   .btn-order { flex:1; border:none; border-radius:9px; padding:11px; font-size:14px; font-weight:700; cursor:pointer; background:#ffd24a; color:#0f1419; }
   .btn-order:hover { filter:brightness(1.06); }
   .order-hint { font-size:11.5px; color:#c4a33a; background:#2d220b; border:1px solid #5e4a18; border-radius:9px; padding:9px 11px; margin-top:14px; line-height:1.6; }
@@ -61,6 +71,9 @@
   .sub-item .si-name { font-size:15px; font-weight:700; color:#fff; }
   .sub-item .si-desc { font-size:11.5px; color:#8a94a6; margin-top:2px; line-height:1.5; }
   .sub-item .si-arrow { color:#8a94a6; font-size:18px; flex-shrink:0; }
+  .sub-item .si-price { text-align:right; flex-shrink:0; padding-right:8px; }
+  .sub-item .si-price .sp-num { font-size:18px; font-weight:800; color:#ffd24a; line-height:1; }
+  .sub-item .si-price .sp-unit { font-size:10px; color:#8a94a6; display:block; margin-top:2px; }
 
   /* 弹窗（二维码 + 公告） */
   .mask { position: fixed; inset: 0; background: rgba(0,0,0,.6); display: none; align-items: center; justify-content: center; z-index: 10; padding: 16px; overflow-y: auto; }
@@ -85,7 +98,7 @@
 <div class="wrap">
   <header>
     <h1>COS电竞俱乐部 · 陪玩·代肝</h1>
-    <p>技术护航 / 跑刀代刷 · 看价目表选服务，加微信对接，老板统一派单</p>
+    <p>技术护航 / 跑刀代刷 · 选类目看服务与价格，加微信对接，老板统一派单</p>
   </header>
 
   <div class="compliance-bar">⚠️ 本平台仅向 <b>18 周岁以上</b> 成年用户提供游戏陪玩/代肝信息服务。陪玩为同场游戏、不登录他人账号；代肝需登录客户账号，可能违反游戏运营方用户协议并导致账号封禁，相关风险由用户自行承担。本俱乐部<b>统一接单、派单</b>，不代收代付资金，交易通过微信进行。</div>
@@ -96,13 +109,13 @@
     <span class="notice-arrow">›</span>
   </div>
 
-  <!-- 俱乐部价目表 -->
+  <!-- 服务类目入口（主页不显示价格，点开才看细分与价格） -->
   <section class="block">
     <div class="block-head">
-      <h2>📋 俱乐部价目表</h2>
-      <span class="cnt">老板统一接单派单</span>
+      <h2>🎯 选择服务类目</h2>
+      <span class="cnt">点开看具体服务与价格</span>
     </div>
-    <div class="pt" id="priceTable"><div class="loading">加载中…</div></div>
+    <div class="cat-list" id="catList"><div class="loading">加载中…</div></div>
     <div class="pt-foot">长按页面底部「加微信」付款 · 不代收代付资金，交易通过微信进行</div>
   </section>
 </div>
@@ -160,6 +173,8 @@
           <input id="oTime" style="width:100%;background:#0f1419;color:#e6e6e6;border:1px solid #2d3744;border-radius:8px;padding:10px;font-size:14px;" placeholder="如 今晚8点 / 周末">
         </div>
       </div>
+      <label style="display:block;font-size:12px;color:#b8c0cc;margin:11px 0 4px;">游戏名称 <span style="color:#ff6b6b;">*</span></label>
+      <input id="oGame" style="width:100%;background:#0f1419;color:#e6e6e6;border:1px solid #2d3744;border-radius:8px;padding:10px;font-size:14px;" placeholder="如 三角洲行动 / 和平精英 / PUBG">
       <label style="display:block;font-size:12px;color:#b8c0cc;margin:11px 0 4px;">需求描述 <span style="color:#ff6b6b;">*</span></label>
       <textarea id="oNeed" style="width:100%;background:#0f1419;color:#e6e6e6;border:1px solid #2d3744;border-radius:8px;padding:10px;font-size:14px;resize:vertical;min-height:54px;" placeholder="如 三角洲行动 3把 护航上分 / 代刷某关卡"></textarea>
       <label style="display:block;font-size:12px;color:#b8c0cc;margin:11px 0 4px;">你的联系方式（微信） <span style="color:#ff6b6b;">*</span></label>
@@ -211,55 +226,43 @@ async function loadProfit(){
 function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, c=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
 function unb64(b){ return decodeURIComponent(escape(atob(b))); }
 
-function applyAll(){ renderPriceTable(); }
+function applyAll(){ renderCategories(); }
 
 const PT_META = {
   "陪玩": { icon:"🎮", desc:"技术护航 · 同场游戏不登录他人账号" },
   "代肝": { icon:"⚔️", desc:"跑刀代刷 · 需登录客户账号（有封号风险，请知悉）" }
 };
 // 细分服务（点大类后弹出的小面板，老板选具体一项）
+// price / unit 为对外公示价（占位，请告诉我真实报价我来改）
 const SUB_TYPES = {
   "陪玩": [
-    { icon:"🛡️", name:"技术护航", desc:"高手带飞，保吃鸡/突围，同场不登号" },
-    { icon:"💬", name:"娱乐陪聊", desc:"连麦唠嗑图开心，轻松上分" },
-    { icon:"📈", name:"上分单", desc:"按段位目标，从 X 打到 Y" },
-    { icon:"🎓", name:"教学", desc:"教枪法/意识/路线，包教包会" }
+    { icon:"🛡️", name:"技术护航", desc:"高手带飞，保吃鸡/突围，同场不登号", price:50, unit:"局" },
+    { icon:"💬", name:"娱乐陪聊", desc:"连麦唠嗑图开心，轻松上分", price:30, unit:"局" },
+    { icon:"📈", name:"上分单", desc:"按段位目标，从 X 打到 Y", price:80, unit:"段" },
+    { icon:"🎓", name:"教学", desc:"教枪法/意识/路线，包教包会", price:60, unit:"课时" }
   ],
   "代肝": [
-    { icon:"🔪", name:"跑刀代刷", desc:"代跑物资、代刷装备/关卡" },
-    { icon:"🏅", name:"段位上分", desc:"代打段位，按目标结算" },
-    { icon:"📅", name:"周常任务", desc:"代做每日/每周任务" },
-    { icon:"🌱", name:"养号代练", desc:"长期代练养成账号" }
+    { icon:"🔪", name:"跑刀代刷", desc:"代跑物资、代刷装备/关卡", price:40, unit:"次" },
+    { icon:"🏅", name:"段位上分", desc:"代打段位，按目标结算", price:100, unit:"段" },
+    { icon:"📅", name:"周常任务", desc:"代做每日/每周任务", price:25, unit:"周" },
+    { icon:"🌱", name:"养号代练", desc:"长期代练养成账号", price:200, unit:"月" }
   ]
 };
-function renderPriceTable(){
-  const el = document.getElementById("priceTable");
+function renderCategories(){
+  const el = document.getElementById("catList");
   if(!el) return;
   const types = ["陪玩","代肝"];
-  const rows = types.map(t=>{
-    const arr = DATA.filter(d=> d.type===t && d.price!=null && d.price!=="");
-    if(!arr.length) return null;
-    const prices = arr.map(d=> listedPrice(d.price));
-    const minP = Math.min.apply(null, prices);
-    const maxP = Math.max.apply(null, prices);
-    const unit = (arr.find(d=> d.unit) || {}).unit || "局";
+  el.innerHTML = types.map(t=>{
     const m = PT_META[t] || { icon:"🎯", desc:"" };
-    const priceTxt = (minP === maxP) ? ("￥" + minP) : ("￥" + minP + "~" + maxP);
-    return `<div class="pt-row">
-      <div class="pt-ico">${m.icon}</div>
-      <div class="pt-main">
-        <div class="pt-name">${esc(t)}</div>
-        <div class="pt-desc">${esc(m.desc)}</div>
+    return `<div class="cat-card" onclick="openSubTypes('${esc(t)}')">
+      <div class="cat-ico">${m.icon}</div>
+      <div class="cat-main">
+        <div class="cat-name">${esc(t)}</div>
+        <div class="cat-desc">${esc(m.desc)}</div>
       </div>
-      <div class="pt-side">
-        <div class="pt-price">${priceTxt}</div>
-        <div class="pt-unit">起 / ${esc(unit)}</div>
-        <button class="pt-btn" onclick="openSubTypes('${esc(t)}')">选这个下单</button>
-      </div>
+      <div class="cat-arrow">›</div>
     </div>`;
-  }).filter(Boolean);
-  if(!rows.length){ el.innerHTML = '<div class="pt-empty">暂无公开价目，长按页面底部「加微信」咨询老板报价</div>'; return; }
-  el.innerHTML = rows.join("");
+  }).join("");
 }
 
 async function refresh(){
@@ -354,6 +357,7 @@ function openSubTypes(type){
     list.innerHTML = subs.map(s=>`<div class="sub-item" onclick="chooseSub('${esc(type)}','${esc(s.name)}')">
       <div class="si-ico">${s.icon}</div>
       <div class="si-main"><div class="si-name">${esc(s.name)}</div><div class="si-desc">${esc(s.desc)}</div></div>
+      <div class="si-price"><span class="sp-num">￥${s.price}</span><span class="sp-unit">/${esc(s.unit||"次")}</span></div>
       <div class="si-arrow">›</div>
     </div>`).join("");
   }
@@ -391,8 +395,10 @@ async function saveOrder(order){
 }
 
 async function placeOrder(){
+  const game = document.getElementById("oGame").value.trim();
   const need = document.getElementById("oNeed").value.trim();
   const client = document.getElementById("oClient").value.trim();
+  if(!game){ toast("请填写游戏名称", true); return; }
   if(!need){ toast("请填写需求描述", true); return; }
   if(!client){ toast("请填写你的联系方式（微信）", true); return; }
   const btn = document.getElementById("oSubmit");
@@ -401,6 +407,7 @@ async function placeOrder(){
     id: "O" + Date.now(),
     type: document.getElementById("oType").value,
     subType: ORDER_SUB,
+    game,
     need,
     time: document.getElementById("oTime").value.trim(),
     client,
