@@ -25,49 +25,22 @@
   .block-head h2 { font-size: 18px; color: #ffd24a; }
   .cnt { font-size: 12px; color: #8a94a6; }
 
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  @media (max-width: 560px){ .grid { grid-template-columns: 1fr; } }
-  .card { background: #1a212b; border: 1px solid #2d3744; border-radius: 12px; padding: 13px; display: flex; flex-direction: column; gap: 10px; }
-  .card .top { display: flex; align-items: center; gap: 10px; }
-  .card .who { flex: 1; min-width: 0; }
-  .card .name { font-size: 15px; font-weight: 700; color: #fff; }
-  .card .sub { font-size: 12px; color: #8a94a6; margin-top: 2px; }
-  .ava { width: 46px; height: 46px; border-radius: 50%; overflow: hidden; background: #22303f; border: 1px solid #2d3744; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
-  .ava img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .ava-ini { font-size: 18px; font-weight: 800; color: #ffd24a; }
-  .badge { font-size: 11px; padding: 3px 9px; border-radius: 20px; white-space: nowrap; }
-  .ok { background: #16351f; color: #5fd97a; }
-  .busy { background: #3a2a12; color: #ffb24a; }
-  .maint { background: #2d2d2d; color: #aaa; }
-  .games { font-size: 12.5px; color: #b8c0cc; background: #0f1419; border: 1px solid #2d3744; border-radius: 8px; padding: 7px 9px; }
-  .price-row { display: flex; align-items: baseline; }
-  .card .price { font-size: 19px; font-weight: 800; color: #fff; }
-  .card .price small { font-size: 12px; color: #8a94a6; font-weight: 600; margin-left: 2px; }
-  .radar-wrap { text-align: center; padding: 2px 0; }
-  .row-info { display: flex; flex-wrap: wrap; gap: 6px; }
-  .tag { font-size: 11.5px; background: #0f1419; border: 1px solid #2d3744; color: #b8c0cc; padding: 3px 8px; border-radius: 6px; }
-  .card .note { font-size: 12px; color: #8a94a6; line-height: 1.5; }
-  .card .note b { color: #b8c0cc; }
-  .seq-line { font-size: 10.5px; color: #5a6474; }
-
   /* 俱乐部价目表 */
-  .pt { background:#1a212b; border:1px solid #2d3744; border-radius:12px; padding:14px; }
-  .pt h3 { font-size:15px; color:#ffd24a; margin-bottom:4px; }
-  .pt .pt-sub { font-size:11.5px; color:#8a94a6; line-height:1.6; margin-bottom:12px; }
-  .pt-row { display:flex; align-items:center; gap:12px; padding:12px 0; border-top:1px solid #2d3744; }
+  .pt { background:#1a212b; border:1px solid #2d3744; border-radius:14px; padding:8px 16px; }
+  .pt-row { display:flex; align-items:center; gap:14px; padding:16px 2px; border-top:1px solid #232c38; }
   .pt-row:first-of-type { border-top:none; }
-  .pt-icon { font-size:22px; flex-shrink:0; }
+  .pt-ico { width:48px; height:48px; border-radius:12px; background:#0f1419; border:1px solid #2d3744; display:flex; align-items:center; justify-content:center; font-size:25px; flex-shrink:0; }
   .pt-main { flex:1; min-width:0; }
-  .pt-name { font-size:14px; font-weight:700; color:#fff; }
-  .pt-desc { font-size:11.5px; color:#8a94a6; margin-top:2px; line-height:1.5; }
-  .pt-price { text-align:right; flex-shrink:0; }
-  .pt-price .num { font-size:17px; font-weight:800; color:#fff; }
-  .pt-price .unit { font-size:11px; color:#8a94a6; }
-  .pt-btn { margin-top:7px; border:none; border-radius:8px; padding:7px 12px; font-size:12.5px; font-weight:700; cursor:pointer; background:#ffd24a; color:#0f1419; width:100%; }
+  .pt-name { font-size:16px; font-weight:800; color:#fff; }
+  .pt-desc { font-size:12px; color:#8a94a6; margin-top:3px; line-height:1.5; }
+  .pt-side { text-align:right; flex-shrink:0; }
+  .pt-price { font-size:21px; font-weight:800; color:#ffd24a; line-height:1; }
+  .pt-unit { font-size:11px; color:#8a94a6; margin-top:3px; }
+  .pt-btn { margin-top:9px; border:none; border-radius:9px; padding:8px 16px; font-size:12.5px; font-weight:700; cursor:pointer; background:#ffd24a; color:#0f1419; }
   .pt-btn:hover { filter:brightness(1.06); }
-  .pt-empty { font-size:12.5px; color:#8a94a6; text-align:center; padding:16px 0; line-height:1.7; }
+  .pt-empty { font-size:12.5px; color:#8a94a6; text-align:center; padding:22px 12px; line-height:1.7; }
+  .pt-foot { font-size:11.5px; color:#8a94a6; text-align:center; padding:12px 4px 6px; line-height:1.6; }
 
-  .card-actions { display:flex; gap:8px; }
   .btn-order { flex:1; border:none; border-radius:9px; padding:11px; font-size:14px; font-weight:700; cursor:pointer; background:#ffd24a; color:#0f1419; }
   .btn-order:hover { filter:brightness(1.06); }
   .order-hint { font-size:11.5px; color:#c4a33a; background:#2d220b; border:1px solid #5e4a18; border-radius:9px; padding:9px 11px; margin-top:14px; line-height:1.6; }
@@ -101,7 +74,7 @@
 <div class="wrap">
   <header>
     <h1>COS电竞俱乐部 · 陪玩·代肝</h1>
-    <p>技术护航 / 跑刀代刷 · 俱乐部成员展示 · 看中后长按二维码加微信对接</p>
+    <p>技术护航 / 跑刀代刷 · 看价目表选服务，加微信对接，老板统一派单</p>
   </header>
 
   <div class="compliance-bar">⚠️ 本平台仅向 <b>18 周岁以上</b> 成年用户提供游戏陪玩/代肝信息服务。陪玩为同场游戏、不登录他人账号；代肝需登录客户账号，可能违反游戏运营方用户协议并导致账号封禁，相关风险由用户自行承担。本俱乐部<b>统一接单、派单</b>，不代收代付资金，交易通过微信进行。</div>
@@ -114,26 +87,12 @@
 
   <!-- 俱乐部价目表 -->
   <section class="block">
-    <div class="block-head"><h2>📋 俱乐部价目表</h2></div>
+    <div class="block-head">
+      <h2>📋 俱乐部价目表</h2>
+      <span class="cnt">老板统一接单派单</span>
+    </div>
     <div class="pt" id="priceTable"><div class="loading">加载中…</div></div>
-  </section>
-
-  <!-- 陪玩板块 -->
-  <section class="block">
-    <div class="block-head">
-      <h2>🎮 陪玩 · 技术护航</h2>
-      <span class="cnt" id="cntPw"></span>
-    </div>
-    <div class="grid" id="listPw"><div class="loading">加载中…</div></div>
-  </section>
-
-  <!-- 代肝板块 -->
-  <section class="block">
-    <div class="block-head">
-      <h2>⚔️ 代肝 · 跑刀代刷</h2>
-      <span class="cnt" id="cntDg"></span>
-    </div>
-    <div class="grid" id="listDg"><div class="loading">加载中…</div></div>
+    <div class="pt-foot">长按页面底部「加微信」付款 · 不代收代付资金，交易通过微信进行</div>
   </section>
 </div>
 
@@ -226,87 +185,10 @@ async function loadProfit(){
   } catch(e){}
 }
 
-function statusClass(s){ return s === "可接" ? "ok" : s === "忙碌" ? "busy" : "maint"; }
 function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, c=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
 function unb64(b){ return decodeURIComponent(escape(atob(b))); }
 
-// 头像（失败回退到昵称首字）
-function avatarHTML(d){
-  const nm = (d.name || "?").trim();
-  const ini = nm.slice(0,1) || "?";
-  if(d.avatar){
-    return `<div class="ava"><img src="${esc(d.avatar)}" alt="${esc(nm)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"><span class="ava-ini" style="display:none">${esc(ini)}</span></div>`;
-  }
-  return `<div class="ava"><span class="ava-ini">${esc(ini)}</span></div>`;
-}
-
-// 六边形雷达图（自我特点）
-const RADAR_LABELS = ["技术","沟通","耐心","效率","娱乐","靠谱"];
-function radarSVG(vals, size){
-  const cx = size/2, cy = size/2, R = size*0.32, labR = size*0.40, n = 6;
-  const ang = i => (Math.PI/180) * (-90 + i*(360/n));
-  const pt = (i, r) => [ (cx + r*Math.cos(ang(i))).toFixed(1), (cy + r*Math.sin(ang(i))).toFixed(1) ];
-  let grid = "";
-  [1, 0.66, 0.33].forEach(f=>{
-    const p = []; for(let i=0;i<n;i++){ const a=pt(i,R*f); p.push(a[0]+","+a[1]); }
-    grid += `<polygon points="${p.join(' ')}" fill="none" stroke="#2d3744" stroke-width="1"/>`;
-  });
-  let axes = "";
-  for(let i=0;i<n;i++){ const a=pt(i,R); axes += `<line x1="${cx}" y1="${cy}" x2="${a[0]}" y2="${a[1]}" stroke="#2d3744" stroke-width="1"/>`; }
-  const dp = []; for(let i=0;i<n;i++){ const v=Math.max(0,Math.min(100, Number(vals[i])||0))/100; const a=pt(i,R*v); dp.push(a[0]+","+a[1]); }
-  const dataPoly = `<polygon points="${dp.join(' ')}" fill="rgba(255,210,74,0.30)" stroke="#ffd24a" stroke-width="2"/>`;
-  let labs = "";
-  for(let i=0;i<n;i++){ const a=pt(i,labR); const c=Math.cos(ang(i)); let anchor="middle"; if(c>0.3)anchor="start"; else if(c<-0.3)anchor="end"; labs += `<text x="${a[0]}" y="${(Number(a[1])+3).toFixed(1)}" fill="#b8c0cc" font-size="10" text-anchor="${anchor}">${esc(RADAR_LABELS[i])}</text>`; }
-  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">${grid}${axes}${dataPoly}${labs}</svg>`;
-}
-
-function renderCard(d){
-  const seq = "#" + (d.no ? String(d.no).padStart(3,"0") : "");
-  // 六边形存的是 1–5，放大到 0–100 再画雷达；缺值/越界按 3 处理
-  const v5 = x => { const n = Number(x); return (n >= 1 && n <= 5) ? n : 3; };
-  const to100 = x => v5(x) * 20;
-  const radar = radarSVG(
-    [to100(d.tech), to100(d.comm), to100(d.patience), to100(d.eff), to100(d.fun), to100(d.reliable)],
-    168);
-  const tags = [];
-  if(d.platform) tags.push(`<span class="tag">${esc(d.platform)}</span>`);
-  if(d.mic) tags.push(`<span class="tag">${esc(d.mic)}</span>`);
-  if(d.online) tags.push(`<span class="tag">在线 ${esc(d.online)}</span>`);
-  return `
-  <div class="card">
-    <div class="top">
-      ${avatarHTML(d)}
-      <div class="who">
-        <div class="name">${esc(d.name || "未命名")}</div>
-        <div class="sub">${esc(d.type || "")}</div>
-      </div>
-      <span class="badge ${statusClass(d.status)}">${esc(d.status || "可接")}</span>
-    </div>
-    ${d.games ? `<div class="games">🎯 擅长的游戏：${esc(d.games)}</div>` : ""}
-    <div class="price-row"><span class="price">￥${listedPrice(d.price)}<small>/${esc(d.unit || "局")}</small></span></div>
-    <div class="radar-wrap">${radar}</div>
-    <div class="row-info">${tags.join("")}</div>
-    ${d.strong ? `<div class="note"><b>擅长：</b>${esc(d.strong)}</div>` : ""}
-    <div class="card-actions">
-      <button class="btn-order" onclick="openOrder()">我要下单 / 预约</button>
-    </div>
-    <div class="seq-line">编号 ${seq}</div>
-  </div>`;
-}
-
-function render(list, elId, cntId){
-  const el = document.getElementById(elId);
-  if(!list.length){ el.innerHTML = '<div class="empty">暂无成员，去管理后台新增接单即可上架</div>'; document.getElementById(cntId).textContent = ""; return; }
-  el.innerHTML = list.map(renderCard).join("");
-  document.getElementById(cntId).textContent = "（" + list.length + " 位）";
-}
-
-function filterList(type){
-  return DATA.filter(d => d.type === type && d.status !== "维护中");
-}
-function applyPw(){ render(filterList("陪玩"), "listPw", "cntPw"); }
-function applyDg(){ render(filterList("代肝"), "listDg", "cntDg"); }
-function applyAll(){ applyPw(); applyDg(); renderPriceTable(); }
+function applyAll(){ renderPriceTable(); }
 
 const PT_META = {
   "陪玩": { icon:"🎮", desc:"技术护航 · 同场游戏不登录他人账号" },
@@ -321,16 +203,21 @@ function renderPriceTable(){
     if(!arr.length) return null;
     const prices = arr.map(d=> listedPrice(d.price));
     const minP = Math.min.apply(null, prices);
+    const maxP = Math.max.apply(null, prices);
     const unit = (arr.find(d=> d.unit) || {}).unit || "局";
     const m = PT_META[t] || { icon:"🎯", desc:"" };
+    const priceTxt = (minP === maxP) ? ("￥" + minP) : ("￥" + minP + "~" + maxP);
     return `<div class="pt-row">
-      <div class="pt-icon">${m.icon}</div>
+      <div class="pt-ico">${m.icon}</div>
       <div class="pt-main">
         <div class="pt-name">${esc(t)}</div>
         <div class="pt-desc">${esc(m.desc)}</div>
+      </div>
+      <div class="pt-side">
+        <div class="pt-price">${priceTxt}</div>
+        <div class="pt-unit">起 / ${esc(unit)}</div>
         <button class="pt-btn" onclick="openOrder('${esc(t)}')">选这个下单</button>
       </div>
-      <div class="pt-price"><div class="num">￥${minP}</div><div class="unit">起 / ${esc(unit)}</div></div>
     </div>`;
   }).filter(Boolean);
   if(!rows.length){ el.innerHTML = '<div class="pt-empty">暂无公开价目，长按页面底部「加微信」咨询老板报价</div>'; return; }
