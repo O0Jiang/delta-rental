@@ -50,10 +50,26 @@
   .card .note b { color: #b8c0cc; }
   .seq-line { font-size: 10.5px; color: #5a6474; }
 
+  /* 纯撮合：联系方式露出 + 我要下单 */
+  .contact-row { font-size: 12.5px; color: #b8c0cc; background: #0f1419; border: 1px dashed #2d3744; border-radius: 8px; padding: 7px 9px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .contact-row .ctext { color:#e6e6e6; font-weight:600; word-break:break-all; }
+  .btn-copy { border:none; background:#2d3744; color:#6fd3e8; border-radius:6px; padding:3px 9px; font-size:11.5px; cursor:pointer; font-weight:600; }
+  .btn-copy:hover { background:#3a4654; }
+  .card-actions { display:flex; gap:8px; }
+  .btn-order { flex:1; border:none; border-radius:9px; padding:11px; font-size:14px; font-weight:700; cursor:pointer; background:#ffd24a; color:#0f1419; }
+  .btn-order:hover { filter:brightness(1.06); }
+  .order-hint { font-size:11.5px; color:#c4a33a; background:#2d220b; border:1px solid #5e4a18; border-radius:9px; padding:9px 11px; margin-top:14px; line-height:1.6; }
+  .order-hint b { color:#ffd24a; }
+  .modal-close { position:absolute; top:12px; right:12px; width:30px; height:30px; border:none; border-radius:50%; background:#2d3744; color:#e6e6e6; font-size:20px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; transition:background .15s,color .15s; }
+  .modal-close:hover { background:#3a4654; color:#fff; }
+  .toast { position:fixed; left:50%; transform:translateX(-50%); bottom:90px; background:#16351f; color:#5fd97a; border:1px solid #1f5a35; padding:12px 20px; border-radius:10px; font-size:14px; z-index:60; display:none; box-shadow:0 6px 20px rgba(0,0,0,.5); max-width:90%; text-align:center; }
+  .toast.err { background:#3a1416; color:#ff8b8b; border-color:#7a2a2e; }
+  .toast.show { display:block; }
+
   /* 弹窗（二维码 + 公告） */
   .mask { position: fixed; inset: 0; background: rgba(0,0,0,.6); display: none; align-items: center; justify-content: center; z-index: 10; padding: 16px; overflow-y: auto; }
   .mask.show { display: flex; }
-  .modal { background: #1a212b; border: 1px solid #2d3744; border-radius: 14px; padding: 20px; width: 100%; max-width: 380px; margin: auto; }
+  .modal { position: relative; background: #1a212b; border: 1px solid #2d3744; border-radius: 14px; padding: 20px; width: 100%; max-width: 380px; margin: auto; }
   .modal h3 { color: #ffd24a; font-size: 17px; margin-bottom: 14px; text-align: center; }
 
   /* 合规：横幅 + 年龄确认弹窗 */
@@ -138,6 +154,40 @@
   </div>
 </div>
 
+<!-- 我要下单 / 预约 -->
+<div class="mask" id="orderMask">
+  <div class="modal">
+    <button class="modal-close" onclick="closeOrder()" title="关闭" aria-label="关闭">×</button>
+    <h3>我要下单 / 预约</h3>
+    <div class="mh" id="orderMember" style="font-size:12px;color:#8a94a6;text-align:center;margin-bottom:12px;"></div>
+    <form id="orderForm" onsubmit="return false;">
+      <div class="frow">
+        <div>
+          <label style="display:block;font-size:12px;color:#b8c0cc;margin:11px 0 4px;">服务类型</label>
+          <select id="oType" style="width:100%;background:#0f1419;color:#e6e6e6;border:1px solid #2d3744;border-radius:8px;padding:10px;font-size:14px;"><option>陪玩</option><option>代肝</option></select>
+        </div>
+        <div>
+          <label style="display:block;font-size:12px;color:#b8c0cc;margin:11px 0 4px;">期望时间</label>
+          <input id="oTime" style="width:100%;background:#0f1419;color:#e6e6e6;border:1px solid #2d3744;border-radius:8px;padding:10px;font-size:14px;" placeholder="如 今晚8点 / 周末">
+        </div>
+      </div>
+      <label style="display:block;font-size:12px;color:#b8c0cc;margin:11px 0 4px;">需求描述 <span style="color:#ff6b6b;">*</span></label>
+      <textarea id="oNeed" style="width:100%;background:#0f1419;color:#e6e6e6;border:1px solid #2d3744;border-radius:8px;padding:10px;font-size:14px;resize:vertical;min-height:54px;" placeholder="如 三角洲行动 3把 护航上分 / 代刷某关卡"></textarea>
+      <label style="display:block;font-size:12px;color:#b8c0cc;margin:11px 0 4px;">你的联系方式（微信） <span style="color:#ff6b6b;">*</span></label>
+      <input id="oClient" style="width:100%;background:#0f1419;color:#e6e6e6;border:1px solid #2d3744;border-radius:8px;padding:10px;font-size:14px;" placeholder="方便接单成员回加你">
+      <label style="display:block;font-size:12px;color:#b8c0cc;margin:11px 0 4px;">备注</label>
+      <textarea id="oNote" style="width:100%;background:#0f1419;color:#e6e6e6;border:1px solid #2d3744;border-radius:8px;padding:10px;font-size:14px;resize:vertical;min-height:46px;" placeholder="特殊要求等（选填）"></textarea>
+      <div style="display:flex;gap:10px;margin-top:16px;">
+        <button type="button" class="btn-order" style="flex:1;padding:12px;" onclick="placeOrder()" id="oSubmit">提交订单</button>
+        <button type="button" class="btn btn-d" style="flex:1;padding:12px;background:#2d3744;color:#e6e6e6;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;" onclick="closeOrder()">取消</button>
+      </div>
+    </form>
+    <div class="order-hint">⚠️ 平台仅做<b>信息撮合</b>，<b>不代收代付资金</b>。提交后请直接按上方成员「联系方式」微信对接，钱自行微信转账；注意交易安全，谨防诈骗。</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script src="config.js"></script>
 <script>
 let DATA = [];
@@ -219,6 +269,10 @@ function renderCard(d){
     <div class="radar-wrap">${radar}</div>
     <div class="row-info">${tags.join("")}</div>
     ${d.strong ? `<div class="note"><b>擅长：</b>${esc(d.strong)}</div>` : ""}
+    ${d.contact ? `<div class="contact-row">📞 联系方式：<span class="ctext">${esc(d.contact)}</span><button class="btn-copy" onclick="copyContact(this)">复制</button></div>` : ""}
+    <div class="card-actions">
+      <button class="btn-order" onclick="openOrder('${esc(d.id)}')">我要下单 / 预约</button>
+    </div>
     <div class="seq-line">编号 ${seq}</div>
   </div>`;
 }
@@ -294,6 +348,93 @@ refresh();
 loadAnn();
 loadProfit();
 setInterval(refresh, 30000); // 每30秒轮询，后台新增后自动出现
+
+/* ================= 纯撮合：客户下单 ================= */
+function b64(s){ return btoa(unescape(encodeURIComponent(s))); }
+function toast(msg, isErr){
+  const t = document.getElementById("toast");
+  if(!t) return;
+  t.textContent = msg; t.className = "toast show" + (isErr ? " err" : "");
+  clearTimeout(t._tm); t._tm = setTimeout(()=> t.className = "toast", isErr ? 5200 : 2600);
+}
+function copyContact(btn){
+  const txt = (btn.previousElementSibling.textContent || "").trim();
+  if(!txt) return;
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(()=> toast("已复制联系方式：" + txt)).catch(()=> toast("复制失败，请手动长按", true));
+  } else { toast("请长按联系方式手动复制", true); }
+}
+
+let ORDER_TARGET = null;
+function openOrder(id){
+  const d = DATA.find(x => String(x.id) === String(id));
+  if(!d){ toast("该成员已不存在", true); return; }
+  ORDER_TARGET = { id: d.id, name: d.name || "未命名", type: d.type || "" };
+  document.getElementById("orderMember").textContent = "向「" + (d.name||"未命名") + "」(" + (d.type||"") + ") 下单 / 预约";
+  const oType = document.getElementById("oType");
+  if(d.type === "代肝" || d.type === "陪玩"){ for(const o of oType.options){ if(o.value === d.type){ o.selected = true; break; } } }
+  document.getElementById("orderForm").reset();
+  document.getElementById("orderMask").classList.add("show");
+}
+function closeOrder(){ document.getElementById("orderMask").classList.remove("show"); ORDER_TARGET = null; }
+document.getElementById("orderMask").addEventListener("click", e=>{ if(e.target.id==="orderMask") closeOrder(); });
+
+async function loadOrders(){
+  try {
+    const r = await fetch(ORDERS_API + "?t=" + Date.now(), { headers:{ Authorization:`Bearer ${GH_TOKEN}`, Accept:"application/vnd.github+json" } });
+    if(r.ok){ const j = await r.json(); const list = JSON.parse(unb64(j.content)); return Array.isArray(list)?list:[]; }
+  } catch(e){}
+  try {
+    const r = await fetch(ORDERS_RAW + "?t=" + Date.now());
+    if(r.ok){ const list = await r.json(); return Array.isArray(list)?list:[]; }
+  } catch(e){}
+  return [];
+}
+
+async function saveOrder(order){
+  let sha = null, list = [];
+  try {
+    const r = await fetch(ORDERS_API + "?t=" + Date.now(), { headers:{ Authorization:`Bearer ${GH_TOKEN}`, Accept:"application/vnd.github+json" } });
+    if(r.ok){ const j = await r.json(); sha = j.sha; list = JSON.parse(unb64(j.content)); if(!Array.isArray(list)) list = []; }
+    else if(r.status === 404){ list = []; }
+    else { throw new Error("读取订单失败 " + r.status); }
+  } catch(e){ list = []; }
+  list.push(order);
+  const body = { message:"客户下单：" + (order.memberName||""), content: b64(JSON.stringify(list, null, 2)), branch: GH_BRANCH };
+  if(sha) body.sha = sha;
+  const resp = await fetch(ORDERS_API, { method:"PUT", headers:{ Authorization:`Bearer ${GH_TOKEN}`, Accept:"application/vnd.github+json", "Content-Type":"application/json" }, body: JSON.stringify(body) });
+  if(!resp.ok){ const ej = await resp.json().catch(()=>({})); throw new Error(resp.status + " " + (ej.message||"")); }
+}
+
+async function placeOrder(){
+  if(!ORDER_TARGET){ toast("未选择成员", true); return; }
+  const need = document.getElementById("oNeed").value.trim();
+  const client = document.getElementById("oClient").value.trim();
+  if(!need){ toast("请填写需求描述", true); return; }
+  if(!client){ toast("请填写你的联系方式（微信）", true); return; }
+  const btn = document.getElementById("oSubmit");
+  btn.disabled = true; btn.textContent = "提交中…";
+  const order = {
+    memberId: ORDER_TARGET.id,
+    memberName: ORDER_TARGET.name,
+    type: document.getElementById("oType").value,
+    need,
+    time: document.getElementById("oTime").value.trim(),
+    client,
+    note: document.getElementById("oNote").value.trim(),
+    createdAt: new Date().toISOString()
+  };
+  try {
+    await saveOrder(order);
+    btn.disabled = false; btn.textContent = "提交订单";
+    closeOrder();
+    toast("下单成功！请按成员「联系方式」微信对接，钱各自微信走");
+  } catch(e){
+    btn.disabled = false; btn.textContent = "提交订单";
+    toast("提交失败：" + e.message + "（可稍后重试）", true);
+    console.error(e);
+  }
+}
 
 // ===== 进入年龄确认 =====
 function acceptAge(){ try{ sessionStorage.setItem("age_ok","1"); }catch(e){} document.getElementById("ageMask").classList.remove("show"); }
