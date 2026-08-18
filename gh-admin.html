@@ -893,6 +893,7 @@ function renderOrders(){
       <div class="body">
         <div class="l1">
           <span class="seq" style="background:#241a3a;border-color:#5e4a8a;color:#c9b3ff">${esc(o.type||"")}</span>
+          ${o.subType?`<span class="tag t-type">${esc(o.subType)}</span>`:""}
           <span class="tag">客户：${esc(o.client||"—")}</span>
           <span class="tag">${esc(time)}</span>
           <span class="tag t-type">${esc(st)}</span>
