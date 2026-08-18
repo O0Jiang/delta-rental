@@ -50,6 +50,23 @@
   .card .note b { color: #b8c0cc; }
   .seq-line { font-size: 10.5px; color: #5a6474; }
 
+  /* 俱乐部价目表 */
+  .pt { background:#1a212b; border:1px solid #2d3744; border-radius:12px; padding:14px; }
+  .pt h3 { font-size:15px; color:#ffd24a; margin-bottom:4px; }
+  .pt .pt-sub { font-size:11.5px; color:#8a94a6; line-height:1.6; margin-bottom:12px; }
+  .pt-row { display:flex; align-items:center; gap:12px; padding:12px 0; border-top:1px solid #2d3744; }
+  .pt-row:first-of-type { border-top:none; }
+  .pt-icon { font-size:22px; flex-shrink:0; }
+  .pt-main { flex:1; min-width:0; }
+  .pt-name { font-size:14px; font-weight:700; color:#fff; }
+  .pt-desc { font-size:11.5px; color:#8a94a6; margin-top:2px; line-height:1.5; }
+  .pt-price { text-align:right; flex-shrink:0; }
+  .pt-price .num { font-size:17px; font-weight:800; color:#fff; }
+  .pt-price .unit { font-size:11px; color:#8a94a6; }
+  .pt-btn { margin-top:7px; border:none; border-radius:8px; padding:7px 12px; font-size:12.5px; font-weight:700; cursor:pointer; background:#ffd24a; color:#0f1419; width:100%; }
+  .pt-btn:hover { filter:brightness(1.06); }
+  .pt-empty { font-size:12.5px; color:#8a94a6; text-align:center; padding:16px 0; line-height:1.7; }
+
   .card-actions { display:flex; gap:8px; }
   .btn-order { flex:1; border:none; border-radius:9px; padding:11px; font-size:14px; font-weight:700; cursor:pointer; background:#ffd24a; color:#0f1419; }
   .btn-order:hover { filter:brightness(1.06); }
@@ -94,6 +111,12 @@
     <span class="notice-title" id="noticeTitle">📢 接单必看</span>
     <span class="notice-arrow">›</span>
   </div>
+
+  <!-- 俱乐部价目表 -->
+  <section class="block">
+    <div class="block-head"><h2>📋 俱乐部价目表</h2></div>
+    <div class="pt" id="priceTable"><div class="loading">加载中…</div></div>
+  </section>
 
   <!-- 陪玩板块 -->
   <section class="block">
@@ -283,7 +306,36 @@ function filterList(type){
 }
 function applyPw(){ render(filterList("陪玩"), "listPw", "cntPw"); }
 function applyDg(){ render(filterList("代肝"), "listDg", "cntDg"); }
-function applyAll(){ applyPw(); applyDg(); }
+function applyAll(){ applyPw(); applyDg(); renderPriceTable(); }
+
+const PT_META = {
+  "陪玩": { icon:"🎮", desc:"技术护航 · 同场游戏不登录他人账号" },
+  "代肝": { icon:"⚔️", desc:"跑刀代刷 · 需登录客户账号（有封号风险，请知悉）" }
+};
+function renderPriceTable(){
+  const el = document.getElementById("priceTable");
+  if(!el) return;
+  const types = ["陪玩","代肝"];
+  const rows = types.map(t=>{
+    const arr = DATA.filter(d=> d.type===t && d.price!=null && d.price!=="");
+    if(!arr.length) return null;
+    const prices = arr.map(d=> listedPrice(d.price));
+    const minP = Math.min.apply(null, prices);
+    const unit = (arr.find(d=> d.unit) || {}).unit || "局";
+    const m = PT_META[t] || { icon:"🎯", desc:"" };
+    return `<div class="pt-row">
+      <div class="pt-icon">${m.icon}</div>
+      <div class="pt-main">
+        <div class="pt-name">${esc(t)}</div>
+        <div class="pt-desc">${esc(m.desc)}</div>
+        <button class="pt-btn" onclick="openOrder('${esc(t)}')">选这个下单</button>
+      </div>
+      <div class="pt-price"><div class="num">￥${minP}</div><div class="unit">起 / ${esc(unit)}</div></div>
+    </div>`;
+  }).filter(Boolean);
+  if(!rows.length){ el.innerHTML = '<div class="pt-empty">暂无公开价目，长按页面底部「加微信」咨询老板报价</div>'; return; }
+  el.innerHTML = rows.join("");
+}
 
 async function refresh(){
   try {
@@ -351,9 +403,13 @@ function toast(msg, isErr){
   t.textContent = msg; t.className = "toast show" + (isErr ? " err" : "");
   clearTimeout(t._tm); t._tm = setTimeout(()=> t.className = "toast", isErr ? 5200 : 2600);
 }
-function openOrder(){
+function openOrder(type){
   document.getElementById("orderMember").textContent = "向 COS电竞俱乐部 下单，老板统一派单";
   document.getElementById("orderForm").reset();
+  if(type){
+    const oType = document.getElementById("oType");
+    for(const o of oType.options){ if(o.value === type){ o.selected = true; break; } }
+  }
   document.getElementById("orderMask").classList.add("show");
 }
 function closeOrder(){ document.getElementById("orderMask").classList.remove("show"); }
