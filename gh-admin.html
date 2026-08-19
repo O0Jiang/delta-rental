@@ -104,6 +104,20 @@
   .modal .foot { display:flex; gap:10px; margin-top:18px; }
   .modal .foot .btn { flex:1; padding:12px; font-size:14px; }
 
+  /* 服务价目管理 */
+  .sv-cat { background:#1a212b; border:1px solid #2d3744; border-radius:11px; padding:12px 14px; margin-bottom:12px; }
+  .sv-cat-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+  .sv-cat-head b { font-size:15px; color:#ffd24a; }
+  .sv-row { display:flex; gap:8px; align-items:center; margin-bottom:9px; flex-wrap:wrap; }
+  .sv-row .sv-ico { width:46px; background:#0f1419; color:#e6e6e6; border:1px solid #2d3744; border-radius:7px; padding:9px 6px; font-size:15px; text-align:center; }
+  .sv-row .sv-name { flex:1; min-width:90px; background:#0f1419; color:#e6e6e6; border:1px solid #2d3744; border-radius:7px; padding:9px 10px; font-size:13px; }
+  .sv-row .sv-desc { flex:2; min-width:150px; background:#0f1419; color:#b8c0cc; border:1px solid #2d3744; border-radius:7px; padding:9px 10px; font-size:13px; }
+  .sv-row .sv-price { width:76px; background:#0f1419; color:#ffd24a; border:1px solid #2d3744; border-radius:7px; padding:9px 8px; font-size:13px; }
+  .sv-row .sv-unit { width:64px; background:#0f1419; color:#e6e6e6; border:1px solid #2d3744; border-radius:7px; padding:9px 8px; font-size:13px; }
+  .sv-row .sv-del { border:none; background:#5a1f24; color:#ff8b8b; border-radius:7px; padding:9px 11px; font-size:13px; cursor:pointer; flex-shrink:0; }
+  .sv-row .sv-del:hover { filter:brightness(1.12); }
+  .sv-empty { font-size:12.5px; color:#8a94a6; padding:8px 0; }
+
   #gate { position:fixed; inset:0; background:#0f1419; display:flex; align-items:center; justify-content:center; z-index:100; padding:20px; }
   #gate .box { background:#1a212b; border:1px solid #2d3744; border-radius:14px; padding:26px 22px; width:100%; max-width:330px; text-align:center; }
   #gate h2 { color:#ffd24a; font-size:18px; margin-bottom:6px; }
@@ -173,6 +187,7 @@
     <button class="tab" id="tabDg" onclick="setType('代肝')">⚔️ 代肝</button>
     <button class="tab" id="tabAll" onclick="setType('')">全部</button>
     <button class="tab" id="tabOrders" onclick="showOrders()">📥 客户订单</button>
+    <button class="tab" id="tabSv" onclick="showServices()">📋 服务价目</button>
   </div>
 
   <div class="bulk" id="bulk">
@@ -192,6 +207,14 @@
     </div>
     <div id="orderSummary" style="background:#1a212b;border:1px solid #5e4a18;border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:13px;color:#b8c0cc;"></div>
     <div id="orderList"><div class="loading">加载中…</div></div>
+  </div>
+
+  <div class="list" id="servicesView" style="display:none;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+      <span class="cnt">📋 服务价目（细分服务及公示价，保存后展示页自动同步）</span>
+      <button class="btn btn-y" onclick="saveServices()">💾 保存价目</button>
+    </div>
+    <div id="svBody"><div class="loading">加载中…</div></div>
   </div>
 </div>
 
@@ -962,6 +985,92 @@ function clearOrders(){
       toast("已清空所有订单");
     } catch(e){ toast("清空失败：" + e.message, true); }
   });
+}
+
+/* ================= 服务价目管理 ================= */
+let SERVICES = null, SERVICES_SHA = null;
+function showServices(){
+  document.querySelectorAll(".tab").forEach(t=> t.classList.remove("active"));
+  document.getElementById("tabSv").classList.add("active");
+  document.getElementById("toolbar").style.display = "none";
+  document.getElementById("bulk").style.display = "none";
+  document.getElementById("list").style.display = "none";
+  document.getElementById("ordersView").style.display = "none";
+  document.getElementById("servicesView").style.display = "block";
+  loadServices();
+}
+async function loadServices(){
+  const body = document.getElementById("svBody");
+  body.innerHTML = '<div class="loading">加载中…</div>';
+  try {
+    const r = await fetch(SERVICES_API + "?t=" + Date.now(), { headers: HEAD() });
+    if(r.ok){ const j = await r.json(); SERVICES_SHA = j.sha; SERVICES = JSON.parse(unb64(j.content)); renderServices(); return; }
+  } catch(e){}
+  try {
+    const r = await fetch(SERVICES_RAW + "?t=" + Date.now());
+    if(r.ok){ SERVICES = await r.json(); renderServices(); return; }
+  } catch(e){}
+  try {
+    const r = await fetch("services.json");
+    if(r.ok){ SERVICES = await r.json(); renderServices(); return; }
+  } catch(e){}
+  SERVICES = { "陪玩":[], "代肝":[] };
+  renderServices();
+}
+function renderServices(){
+  const root = document.getElementById("svBody");
+  if(!SERVICES){ root.innerHTML = '<div class="loading">加载中…</div>'; return; }
+  const cats = ["陪玩","代肝"];
+  root.innerHTML = cats.map(cat=>{
+    const arr = SERVICES[cat] || [];
+    const rows = arr.map((s,idx)=>`
+      <div class="sv-row">
+        <input class="sv-ico" data-cat="${esc(cat)}" data-i="${idx}" data-f="icon" value="${esc(s.icon||"")}" placeholder="🎮">
+        <input class="sv-name" data-cat="${esc(cat)}" data-i="${idx}" data-f="name" value="${esc(s.name||"")}" placeholder="服务名">
+        <input class="sv-desc" data-cat="${esc(cat)}" data-i="${idx}" data-f="desc" value="${esc(s.desc||"")}" placeholder="描述">
+        <input class="sv-price" data-cat="${esc(cat)}" data-i="${idx}" data-f="price" type="number" min="0" value="${s.price!=null?s.price:""}" placeholder="价格">
+        <input class="sv-unit" data-cat="${esc(cat)}" data-i="${idx}" data-f="unit" value="${esc(s.unit||"")}" placeholder="单位">
+        <button class="sv-del" title="删除该项" onclick="delService('${esc(cat)}',${idx})">✕</button>
+      </div>`).join("");
+    return `<div class="sv-cat">
+      <div class="sv-cat-head"><b>${esc(cat)}</b><button class="btn btn-d" onclick="addService('${esc(cat)}')">＋ 新增</button></div>
+      ${rows || '<div class="sv-empty">暂无可选项，点「＋ 新增」添加</div>'}
+    </div>`;
+  }).join("");
+}
+function syncServicesFromDom(){
+  const tmp = { "陪玩":[], "代肝":[] };
+  document.querySelectorAll("#svBody .sv-row").forEach(row=>{
+    const cat = row.querySelector(".sv-ico").dataset.cat;
+    const f = n => row.querySelector(`[data-f="${n}"]`).value.trim();
+    tmp[cat].push({ icon:f("icon"), name:f("name"), desc:f("desc"), price:Number(f("price"))||0, unit:f("unit") });
+  });
+  SERVICES = tmp;
+}
+function addService(cat){ syncServicesFromDom(); (SERVICES[cat] = SERVICES[cat] || []).push({ icon:"", name:"", desc:"", price:0, unit:"" }); renderServices(); }
+function delService(cat, idx){ syncServicesFromDom(); SERVICES[cat].splice(idx, 1); renderServices(); }
+function saveServices(){
+  syncServicesFromDom();
+  doSaveServices(SERVICES);
+}
+async function doSaveServices(obj){
+  try {
+    let sha = null;
+    try {
+      const r0 = await fetch(SERVICES_API + "?t=" + Date.now(), { headers: HEAD() });
+      if(r0.ok){ sha = (await r0.json()).sha; }
+      else if(r0.status !== 404){ throw new Error("读取失败 " + r0.status); }
+    } catch(e){ /* 404 时 sha 保持 null，新建文件 */ }
+    const body = { message:"更新服务价目 services.json", content: b64(JSON.stringify(obj, null, 2)), branch: GH_BRANCH };
+    if(sha) body.sha = sha;
+    const resp = await fetch(SERVICES_API, { method:"PUT", headers:{ ...HEAD(), "Content-Type":"application/json" }, body: JSON.stringify(body) });
+    if(!resp.ok){ const ej = await resp.json().catch(()=>({})); throw new Error(resp.status + " " + (ej.message||"")); }
+    SERVICES_SHA = (await resp.json()).content.sha;
+    toast("✅ 价目已保存，展示页稍后自动同步");
+  } catch(e){
+    toast("保存失败：" + e.message, true);
+    console.error(e);
+  }
 }
 
 /* 启动 */
