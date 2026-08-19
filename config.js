@@ -37,3 +37,8 @@ const PROFIT_API = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents
 const ORDERS_PATH = "orders.json";
 const ORDERS_RAW = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/${ORDERS_PATH}`;
 const ORDERS_API = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${ORDERS_PATH}`;
+
+// 服务价目（细分服务及公示价，后台「服务价目」标签可改，展示页读取此文件）
+const SERVICES_PATH = "services.json";
+const SERVICES_RAW = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/${SERVICES_PATH}`;
+const SERVICES_API = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${SERVICES_PATH}`;
