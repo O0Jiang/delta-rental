@@ -233,8 +233,8 @@ const PT_META = {
   "代肝": { icon:"⚔️", desc:"跑刀代刷 · 需登录客户账号（有封号风险，请知悉）" }
 };
 // 细分服务（点大类后弹出的小面板，老板选具体一项）
-// price / unit 为对外公示价（占位，请告诉我真实报价我来改）
-const SUB_TYPES = {
+// 价格从 services.json 读取（后台「服务价目」标签可改）；下面是离线兜底默认值
+const DEFAULT_SERVICES = {
   "陪玩": [
     { icon:"🛡️", name:"技术护航", desc:"高手带飞，保吃鸡/突围，同场不登号", price:50, unit:"局" },
     { icon:"💬", name:"娱乐陪聊", desc:"连麦唠嗑图开心，轻松上分", price:30, unit:"局" },
@@ -248,6 +248,7 @@ const SUB_TYPES = {
     { icon:"🌱", name:"养号代练", desc:"长期代练养成账号", price:200, unit:"月" }
   ]
 };
+let SERVICES = DEFAULT_SERVICES;
 function renderCategories(){
   const el = document.getElementById("catList");
   if(!el) return;
@@ -321,7 +322,24 @@ document.getElementById("noticeMask").addEventListener("click", e=>{ if(e.target
 refresh();
 loadAnn();
 loadProfit();
+loadServices();
 setInterval(refresh, 30000); // 每30秒轮询，后台新增后自动出现
+setInterval(loadServices, 60000); // 价目后台改后，展示页约1分钟内自动同步
+
+async function loadServices(){
+  try {
+    const r = await fetch(SERVICES_API + "?t=" + Date.now(), { headers:{ Authorization:`Bearer ${GH_TOKEN}`, Accept:"application/vnd.github+json" } });
+    if(r.ok){ SERVICES = JSON.parse(unb64((await r.json()).content)); return; }
+  } catch(e){}
+  try {
+    const r = await fetch(SERVICES_RAW + "?t=" + Date.now());
+    if(r.ok){ SERVICES = await r.json(); return; }
+  } catch(e){}
+  try {
+    const r = await fetch("services.json");
+    if(r.ok){ SERVICES = await r.json(); return; }
+  } catch(e){}
+}
 
 /* ================= 纯撮合：客户下单 ================= */
 function b64(s){ return btoa(unescape(encodeURIComponent(s))); }
@@ -349,7 +367,7 @@ document.getElementById("orderMask").addEventListener("click", e=>{ if(e.target.
 
 // 细分服务小面板
 function openSubTypes(type){
-  const subs = SUB_TYPES[type] || [];
+  const subs = (SERVICES[type] || []);
   document.getElementById("subTitle").textContent = "选择「" + (type||"") + "」的具体服务";
   const list = document.getElementById("subList");
   if(!subs.length){ list.innerHTML = '<div class="pt-empty">该分类暂无可选项</div>'; }
